@@ -2278,66 +2278,25 @@ const data = `15931
 `;
 
 export default () => {
-  const result = 0;
+  var sums = data
+    .split(/\n\s*\n/)
+    .map((item) => {
+      return item
+        .split(/\s+/)
+        .map((item) => {
+          return parseInt(item);
+        })
+        .reduce((a, b) => a + b);
+    })
+    .sort((a, b) => b - a);
 
-  var splitted = data.split(/\n\s*\n/);
   console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    splitted    \x1b[8m\x1b[40m\x1b[0m\n",
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    sums    \x1b[8m\x1b[40m\x1b[0m\n",
     "color: white; background: black; font-weight: bold",
-    splitted
+    sums
   );
 
-  let largestNumIndex = 0;
-  splitted.forEach((element, index) => {
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        element    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2293 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      element
-    );
-
-    const arr = element.split(/\n/);
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        arr    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2299 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      arr
-    );
-
-    let sum = 0;
-
-    arr.forEach((element, index) => {
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    element    \x1b[8m\x1b[40m\x1b[0m\n",
-        "color: white; background: black; font-weight: bold",
-        element
-      );
-
-      const num = parseInt(element);
-
-      if (element !== "") {
-        sum += parseInt(element);
-      }
-    });
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        sum    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2313 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      sum
-    );
-
-    if (sum > largestNumIndex) {
-      largestNumIndex = sum;
-    }
-  });
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      largestNumIndex    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2337 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    largestNumIndex
-  );
+  const result = sums[0];
 
   return <div>{result}</div>;
 };

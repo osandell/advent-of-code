@@ -2278,94 +2278,25 @@ const data = `15931
 `;
 
 export default () => {
-  const result = 0;
-
-  var splitted = data.split(/\n\s*\n/);
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    splitted    \x1b[8m\x1b[40m\x1b[0m\n",
-    "color: white; background: black; font-weight: bold",
-    splitted
-  );
-
-  let largestNumIndex = 0;
-  let secondLargestNumIndex = 0;
-  let thirdLargestNumIndex = 0;
-  let test = 0;
-  splitted.forEach((element, index) => {
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        element    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2293 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      element
-    );
-
-    const arr = element.split(/\n/);
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        arr    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2299 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      arr
-    );
-
-    let sum = 0;
-
-    arr.forEach((element, index) => {
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    element    \x1b[8m\x1b[40m\x1b[0m\n",
-        "color: white; background: black; font-weight: bold",
-        element
-      );
-
-      const num = parseInt(element);
-
-      if (element !== "") {
-        sum += parseInt(element);
-      }
-    });
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        sum    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2313 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      sum
-    );
-
-    if (sum > largestNumIndex) {
-      largestNumIndex = sum;
-    }
-
-    if (sum > secondLargestNumIndex && sum !== 70116) {
-      secondLargestNumIndex = sum;
-    }
-    if (sum > thirdLargestNumIndex && sum !== 70116 && sum !== 68706) {
-      thirdLargestNumIndex = sum;
-    }
-  });
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      largestNumIndex    \x1b[8m\x1b[40m\x1b[0m%c Day1a.jsx 2337 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    largestNumIndex,
-    secondLargestNumIndex,
-    thirdLargestNumIndex
-  );
-
-  const res = largestNumIndex + secondLargestNumIndex + thirdLargestNumIndex;
+  var sums = data
+    .split(/\n\s*\n/)
+    .map((item) => {
+      return item
+        .split(/\s+/)
+        .map((item) => {
+          return parseInt(item);
+        })
+        .reduce((a, b) => a + b);
+    })
+    .sort((a, b) => b - a);
 
   console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    res    \x1b[8m\x1b[40m\x1b[0m%c Day1b.jsx 2350 \n",
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    sums    \x1b[8m\x1b[40m\x1b[0m\n",
     "color: white; background: black; font-weight: bold",
-    "",
-    res
+    sums
   );
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      test    \x1b[8m\x1b[40m\x1b[0m%c Day1b.jsx 2364 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    test
-  );
+  const result = sums[0] + sums[1] + sums[2];
 
   return <div>{result}</div>;
 };
