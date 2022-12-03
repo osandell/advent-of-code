@@ -1,14 +1,14 @@
 import "./App.css";
-import Day1a from "./2022/Day1a";
-import Day1b from "./2022/Day1b";
-import Day2a from "./2022/Day2a";
-import Day2b from "./2022/Day2b";
-import Day3a from "./2022/Day3a";
-import Day3b from "./2022/Day3b";
-import Day4a from "./2022/Day4a";
-import Day4b from "./2022/Day4b";
-import Day5a from "./2022/Day5a";
-import Day5b from "./2022/Day5b";
+import Day1a from "./2022/Day1/Day1a";
+import Day1b from "./2022/Day1/Day1b";
+import Day2a from "./2022/Day2/Day2a";
+import Day2b from "./2022/Day2/Day2b";
+import Day3a from "./2022/Day3/Day3a";
+import Day3b from "./2022/Day3/Day3b";
+import Day4a from "./2022/Day4/Day4a";
+import Day4b from "./2022/Day4/Day4b";
+import Day5a from "./2022/Day5/Day5a";
+import Day5b from "./2022/Day5/Day5b";
 import Day6a from "./2022/Day6a";
 import Day6b from "./2022/Day6b";
 import Day7a from "./2022/Day7a";
@@ -51,7 +51,7 @@ import Day24b from "./2022/Day24b";
 function App() {
   return (
     <div className="App">
-      <Day3b />
+      <Day4a />
     </div>
   );
 }
