@@ -1,10 +1,10 @@
 import React from "react";
 
-const data1 = `A Y
+const exampleData = `A Y
 B X
 C Z`;
 
-const data = `A Z
+const realData = `A Z
 A Y
 B X
 B X
@@ -2505,59 +2505,92 @@ A X
 C Y
 B Z`;
 
+const getLosingMove = (opponentMove) => {
+  switch (opponentMove) {
+    case "rock":
+      return "scissors";
+    case "paper":
+      return "rock";
+    case "scissors":
+      return "paper";
+  }
+};
+
+const getWinningMove = (opponentMove) => {
+  switch (opponentMove) {
+    case "rock":
+      return "paper";
+    case "paper":
+      return "scissors";
+    case "scissors":
+      return "rock";
+  }
+};
+
+const getOurMove = (opponentMove, requiredResult) => {
+  switch (requiredResult) {
+    case "loss":
+      return getLosingMove(opponentMove);
+    case "draw":
+      return opponentMove;
+    case "win":
+      return getWinningMove(opponentMove);
+  }
+};
+
+const getTypePoint = (type) => {
+  switch (type) {
+    case "rock":
+      return 1;
+    case "paper":
+      return 2;
+    case "scissors":
+      return 3;
+  }
+};
+
+const getResultPoint = (requiredResult) => {
+  switch (requiredResult) {
+    case "loss":
+      return 0;
+    case "draw":
+      return 3;
+    case "win":
+      return 6;
+  }
+};
+
+const getRoundPoints = (opponentMove, requiredResult) => {
+  const ourMove = getOurMove(opponentMove, requiredResult);
+  return getTypePoint(ourMove) + getResultPoint(requiredResult);
+};
+
 export default () => {
-  const rounds = data.split(/\n/);
+  const rounds = realData.split(/\n/).map((row) =>
+    row.split(/\s/).map((letter) => {
+      switch (letter) {
+        case "A":
+          return "rock";
+        case "B":
+          return "paper";
+        case "C":
+          return "scissors";
+        case "X":
+          return "loss";
+        case "Y":
+          return "draw";
+        case "Z":
+          return "win";
+      }
+    })
+  );
 
   const result = rounds.reduce((acc, round) => {
-    const moves = round.split(" ");
+    const [opponentMove, requiredResult] = round;
 
-    let point = 0;
-
-    // if (moves[1] === "X") {
-    //   point = 1;
-    // } else if (moves[1] === "Y") {
-    //   point = 2;
-    // } else if (moves[1] === "Z") {
-    //   point = 3;
-    // }
-
-    if (moves[0] === "A" && moves[1] === "X") {
-      point = 3 + 0;
-    }
-    if (moves[0] === "A" && moves[1] === "Y") {
-      point = 1 + 3;
-    }
-    if (moves[0] === "A" && moves[1] === "Z") {
-      point = 2 + 6;
-    }
-    if (moves[0] === "B" && moves[1] === "X") {
-      point = 1 + 0;
-    }
-    if (moves[0] === "B" && moves[1] === "Y") {
-      point = 2 + 3;
-    }
-    if (moves[0] === "B" && moves[1] === "Z") {
-      point = 3 + 6;
-    }
-    if (moves[0] === "C" && moves[1] === "X") {
-      point = 2 + 0;
-    }
-    if (moves[0] === "C" && moves[1] === "Y") {
-      point = 3 + 3;
-    }
-    if (moves[0] === "C" && moves[1] === "Z") {
-      point = 1 + 6;
-    }
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        point    \x1b[8m\x1b[40m\x1b[0m%c Day2a.jsx 2557 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      point
-    );
-
-    return acc + point;
+    return acc + getRoundPoints(opponentMove, requiredResult);
   }, 0);
 
+  // 12 / 8295
   return <div>{result}</div>;
 };
