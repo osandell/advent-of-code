@@ -3,38 +3,34 @@ import exampleData from "./exampleData";
 import realData from "./realData";
 
 export default () => {
-  const data = realData
-    .split(/\n/)
-    .map((row) =>
-      row
-        .split(",")
-        .map((sectionSpan) =>
-          sectionSpan.split("-").map((number) => parseInt(number))
-        )
-    );
+  const data = realData.split(/\n/).map((row) =>
+    row
+      .split(/,/)
+      .map((sectionSpan) =>
+        sectionSpan.split(/-/).map((number) => parseInt(number))
+      )
+      .map(([firstSection, lastSection]) => {
+        let sections = [];
+        for (let index = firstSection; index <= lastSection; index++) {
+          sections.push(index);
+        }
+
+        return sections;
+      })
+  );
 
   let nrOfPairsIncludeAll = 0;
   data.forEach(([sectionsA, sectionsB]) => {
-    let secAList = [];
-    for (var i = sectionsA[0]; i <= sectionsA[1]; i++) {
-      secAList.push(i);
-    }
-    let secBList = [];
-
-    for (var i = sectionsB[0]; i <= sectionsB[1]; i++) {
-      secBList.push(i);
-    }
-
     let aContainsAllB = true;
-    secAList.forEach((secA) => {
-      if (!secBList.includes(secA)) {
+    sectionsA.forEach((section) => {
+      if (!sectionsB.includes(section)) {
         aContainsAllB = false;
       }
     });
 
     let bContainsAllA = true;
-    secBList.forEach((secB) => {
-      if (!secAList.includes(secB)) {
+    sectionsB.forEach((section) => {
+      if (!sectionsA.includes(section)) {
         bContainsAllA = false;
       }
     });
@@ -44,14 +40,7 @@ export default () => {
     }
   });
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      nrOfPairsIncludeAll    \x1b[8m\x1b[40m\x1b[0m%c Day4a.jsx 49 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    nrOfPairsIncludeAll
-  );
-
-  const result = 0;
+  const result = nrOfPairsIncludeAll;
 
   return <div>{result}</div>;
 };
