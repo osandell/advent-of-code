@@ -1,10 +1,5 @@
 import React from "react";
 import exampleData from "./exampleData";
-console.log(
-  "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    exampleData    \x1b[8m\x1b[40m\x1b[0m\n",
-  "color: white; background: black; font-weight: bold",
-  exampleData
-);
 import realData from "./realData";
 
 let exampleStacks = [["Z", "N"], ["M", "C", "D"], ["P"]];
