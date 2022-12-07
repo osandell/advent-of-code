@@ -20,4 +20,20 @@ $ ls
 4060174 j
 8033020 d.log
 5626152 d.ext
-7214296 k`;
+7214296 k
+$ cd ..
+$ cd zjbp
+$ ls
+dir fcsjl
+41522 l.fpf
+dir nmtjtd
+$ cd fcsjl
+$ ls
+276802 m.psm
+197934 n.cdz
+$ cd ..
+$ cd nmtjtd
+$ ls
+47477 o.ths
+51081 p.asdf
+`;
