@@ -1,5 +1,4 @@
-export default `$ cd /
-$ ls
+export default `$ ls
 dir a
 14848514 b.txt
 8504156 c.dat
