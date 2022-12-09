@@ -12,7 +12,7 @@ const isAdjecent = (tail, head) => {
 };
 
 export default () => {
-  const data = exampleData.split(/\n/).map((row) =>
+  const data = realData.split(/\n/).map((row) =>
     row.split(" ").map((item) => {
       return parseInt(item) >= 0 ? parseInt(item) : item;
     })
@@ -60,7 +60,7 @@ export default () => {
       }
       map += "\n";
     }
-    // console.log(map);
+    console.log(map);
 
     for (let i = 0; i < move[1]; i++) {
       for (let j = 0; j < ropeLength; j++) {
@@ -82,43 +82,21 @@ export default () => {
           break;
       }
 
-      let diffX;
-      let diffY;
       for (let j = 1; j < rope.length; j++) {
         if (!isAdjecent(rope[j], rope[j - 1])) {
-          if (j === 1) {
-            rope[j] = lastPositions[j - 1];
-            diffX = rope[j - 1][0] - lastPositions[j - 1][0];
-            diffY = rope[j - 1][1] - lastPositions[j - 1][1];
+          const diffX = rope[j - 1][0] - rope[j][0];
+          const diffY = rope[j - 1][1] - rope[j][1];
 
-            console.log(
-              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                diffX    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 93 \n",
-              "color: white; background: black; font-weight: bold",
-              "",
-              diffX
-            );
+          if (diffX > 0) {
+            rope[j][0] = rope[j][0] + 1;
+          } else if (diffX < 0) {
+            rope[j][0] = rope[j][0] - 1;
+          }
 
-            console.log(
-              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                diffY    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 101 \n",
-              "color: white; background: black; font-weight: bold",
-              "",
-              diffY
-            );
-          } else {
-            switch (move[0]) {
-              case "R":
-                rope[j][0] = rope[j][0] + 1;
-                break;
-              case "L":
-                rope[j][0] = rope[j][0] - 1;
-                break;
-              case "U":
-                rope[j][1] = rope[j][1] + 1;
-                break;
-              case "D":
-                rope[j][1] = rope[j][1] - 1;
-                break;
-            }
+          if (diffY > 0) {
+            rope[j][1] = rope[j][1] + 1;
+          } else if (diffY < 0) {
+            rope[j][1] = rope[j][1] - 1;
           }
         }
       }
