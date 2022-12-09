@@ -1,15 +1,7 @@
 import React from "react";
-import exampleData from "./exampleDataB";
+import exampleData from "./exampleData";
+import exampleDataB from "./exampleDataB";
 import realData from "./realData";
-
-const isAdjecent = (tail, head) => {
-  const res =
-    (tail[0] === head[0] ||
-      tail[0] === head[0] - 1 ||
-      tail[0] === head[0] + 1) &&
-    (tail[1] === head[1] || tail[1] === head[1] - 1 || tail[1] === head[1] + 1);
-  return res;
-};
 
 export default () => {
   const data = realData.split(/\n/).map((row) =>
@@ -18,42 +10,29 @@ export default () => {
     })
   );
 
-  let tailVisitedPos = {};
-  const ropeLength = 10;
-  let rope = [];
-  let lastPositions = [];
-  for (let i = 0; i < ropeLength; i++) {
-    rope.push([0, 0]);
-    lastPositions.push([0, 0]);
-  }
+  const isAdjecent = (part1, part2) =>
+    (part1[0] === part2[0] ||
+      part1[0] === part2[0] - 1 ||
+      part1[0] === part2[0] + 1) &&
+    (part1[1] === part2[1] ||
+      part1[1] === part2[1] - 1 ||
+      part1[1] === part2[1] + 1);
 
-  // debugger;
-  data.forEach((move) => {
+  const logMap = () => {
     let map = "";
-    let size = 20;
-    // for (var y = 0; y < size; y++) {
-    for (var y = size - 1; y >= 0; y--) {
-      for (var x = 0; x < size; x++) {
-        if (x === rope[0][0] && y === rope[0][1]) {
+    let size = 40;
+    for (let y = size / 2 - 1; y >= -size / 2; y--) {
+      for (let x = -size / 2; x < size / 2; x++) {
+        let partOfRopeOnThisTile;
+        for (let j = ROPE_LENGTH - 1; j >= 0; j--) {
+          if (x === rope[j][0] && y === rope[j][1]) {
+            partOfRopeOnThisTile = j;
+          }
+        }
+        if (partOfRopeOnThisTile === 0) {
           map += "H";
-        } else if (x === rope[1][0] && y === rope[1][1]) {
-          map += "1";
-        } else if (x === rope[2][0] && y === rope[2][1]) {
-          map += "2";
-        } else if (x === rope[3][0] && y === rope[3][1]) {
-          map += "3";
-        } else if (x === rope[4][0] && y === rope[4][1]) {
-          map += "4";
-        } else if (x === rope[5][0] && y === rope[5][1]) {
-          map += "5";
-        } else if (x === rope[6][0] && y === rope[6][1]) {
-          map += "6";
-        } else if (x === rope[7][0] && y === rope[7][1]) {
-          map += "7";
-        } else if (x === rope[8][0] && y === rope[8][1]) {
-          map += "8";
-        } else if (x === rope[9][0] && y === rope[9][1]) {
-          map += "9";
+        } else if (partOfRopeOnThisTile) {
+          map += partOfRopeOnThisTile.toString();
         } else {
           map += ".";
         }
@@ -61,58 +40,68 @@ export default () => {
       map += "\n";
     }
     console.log(map);
+  };
 
-    for (let i = 0; i < move[1]; i++) {
-      for (let j = 0; j < ropeLength; j++) {
-        lastPositions[j] = [...rope[j]];
-      }
+  const moveHead = (moveType) => {
+    switch (moveType) {
+      case "R":
+        return (rope[0][0] = rope[0][0] + 1);
+      case "L":
+        return (rope[0][0] = rope[0][0] - 1);
+      case "U":
+        return (rope[0][1] = rope[0][1] + 1);
+      case "D":
+        return (rope[0][1] = rope[0][1] - 1);
+    }
+  };
 
-      switch (move[0]) {
-        case "R":
-          rope[0][0] = rope[0][0] + 1;
-          break;
-        case "L":
-          rope[0][0] = rope[0][0] - 1;
-          break;
-        case "U":
-          rope[0][1] = rope[0][1] + 1;
-          break;
-        case "D":
-          rope[0][1] = rope[0][1] - 1;
-          break;
-      }
+  const moveRestOfRope = () => {
+    for (let j = 1; j < rope.length; j++) {
+      if (!isAdjecent(rope[j], rope[j - 1])) {
+        const diffX = rope[j - 1][0] - rope[j][0];
+        const diffY = rope[j - 1][1] - rope[j][1];
 
-      for (let j = 1; j < rope.length; j++) {
-        if (!isAdjecent(rope[j], rope[j - 1])) {
-          const diffX = rope[j - 1][0] - rope[j][0];
-          const diffY = rope[j - 1][1] - rope[j][1];
+        if (diffX > 0) {
+          rope[j][0] = rope[j][0] + 1;
+        } else if (diffX < 0) {
+          rope[j][0] = rope[j][0] - 1;
+        }
 
-          if (diffX > 0) {
-            rope[j][0] = rope[j][0] + 1;
-          } else if (diffX < 0) {
-            rope[j][0] = rope[j][0] - 1;
-          }
-
-          if (diffY > 0) {
-            rope[j][1] = rope[j][1] + 1;
-          } else if (diffY < 0) {
-            rope[j][1] = rope[j][1] - 1;
-          }
+        if (diffY > 0) {
+          rope[j][1] = rope[j][1] + 1;
+        } else if (diffY < 0) {
+          rope[j][1] = rope[j][1] - 1;
         }
       }
+    }
+  };
 
-      tailVisitedPos[rope[9].toString() + ":" + rope[9].toString()] = true;
+  const ROPE_LENGTH = 10;
+
+  let tailVisitedPos = {};
+  let rope = [];
+  for (let i = 0; i < ROPE_LENGTH; i++) {
+    rope.push([0, 0]);
+  }
+
+  data.forEach((move) => {
+    // logMap();
+    const moveType = move[0];
+    const nrOfMovesInCurrentDirection = move[1];
+    for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
+      moveHead(moveType);
+      moveRestOfRope();
+
+      tailVisitedPos[
+        rope[ROPE_LENGTH - 1].toString() +
+          ":" +
+          rope[ROPE_LENGTH - 1].toString()
+      ] = true;
     }
   });
 
-  // console.log(
-  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      rope    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 60 \n",
-  //   "color: white; background: black; font-weight: bold",
-  //   "",
-  //   rope
-  // );
-
   const result = Object.keys(tailVisitedPos).length;
 
+  // 2487
   return <div>{result}</div>;
 };
