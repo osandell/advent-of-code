@@ -67,6 +67,7 @@ export default () => {
         shouldInvertY={false}
         sizeX={"11px"}
         sizeY={"15px"}
+        isCenterOrigin={false}
       />
     </div>
   );

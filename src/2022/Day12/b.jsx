@@ -1,10 +1,148 @@
-import React from "react";
-import exampleData from "./exampleData";
-import realData from "./realData";
+import React, { useState } from "react";
+import eData from "./exampleData";
+import rData from "./realData";
+import Render from "../../Render";
+
+const MAP_SIZE = 30;
+const ROPE_LENGTH = 10;
+
+const data = eData.split(/\n/).map((row) =>
+  row.split(" ").map((item) => {
+    return parseInt(item) >= 0 ? parseInt(item) : item;
+  })
+);
+
+const isAdjecent = (part1, part2) =>
+  (part1[0] === part2[0] ||
+    part1[0] === part2[0] - 1 ||
+    part1[0] === part2[0] + 1) &&
+  (part1[1] === part2[1] ||
+    part1[1] === part2[1] - 1 ||
+    part1[1] === part2[1] + 1);
 
 export default () => {
-  const data = exampleData;
-  const result = 0;
+  let currMove = 0;
 
-  return <div>{result}</div>;
+  // let totalNrOfMoves = 0;
+  // for (let i = 0; i < data.length; i++) {
+  //   const move = data[i];
+  //   const nrOfMovesInCurrentDirection = move[1];
+  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
+  //     totalNrOfMoves++;
+  //   }
+  // }
+  const totalNrOfMoves = data.length;
+
+  const [moveNr, setMoveNr] = useState(0);
+  const moveNrRef = React.useRef(moveNr);
+  moveNrRef.current = moveNr;
+
+  const startPlaying = () => {
+    if (moveNr < totalNrOfMoves) {
+      const timer = setInterval(() => {
+        moveNrRef.current < totalNrOfMoves
+          ? setMoveNr(moveNrRef.current + 1)
+          : clearInterval(timer);
+      }, 30);
+    }
+  };
+
+  // *********************************************************************************
+
+  for (let i = 0; i < data.length; i++) {
+    if (currMove === moveNr) {
+      break;
+    }
+
+    const move = data[i];
+  }
+
+  const dataToRender = [
+    ["1", "2", "3", "4"],
+    ["5", "6", "7", "8"],
+    ["9", "10", "11", "12"],
+  ];
+
+  // *********************************************************************************
+
+  return (
+    <div>
+      <Render
+        dataToRender={dataToRender}
+        emptyTileIndicator={""}
+        shouldRenderBinarily={false}
+        shouldInvertX={false}
+        shouldInvertY={false}
+        sizeX={"11px"}
+        sizeY={"15px"}
+        isCenterOrigin={false}
+      />
+      <div style={{ marginTop: "24px" }}>
+        <button
+          onClick={() => moveNr > 0 && setMoveNr(0)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 0 ? "black" : "lightGray",
+          }}
+        >
+          Beginning
+        </button>
+        <button
+          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 9 ? "black" : "lightGray",
+          }}
+        >
+          Prev 10
+        </button>
+        <button
+          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 0 ? "black" : "lightGray",
+          }}
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => startPlaying()}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          Play
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          Next
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
+          }}
+        >
+          Next 10
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          End
+        </button>
+      </div>
+      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
+    </div>
+  );
 };
