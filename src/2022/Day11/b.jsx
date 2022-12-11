@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import eData from "./exampleData";
+import eData from "./exampleDataB";
 import rData from "./realData";
 import Render from "../../Render";
 
 export default () => {
-  for (let k = 10000000000000; k < 100000000000000000; k += 10000000000000) {
+  for (let k = 1; k < 2; k += 1) {
     let row20correct = false;
     const data = eData
       .split("\n\n")
@@ -22,37 +22,58 @@ export default () => {
           items: line[1]
             .split(": ")[1]
             .split(", ")
-            .map((nr) => parseInt(nr)),
+            .map((item) => {
+              return {
+                worryLevel: parseInt(item.split(":")[0]),
+                index: parseInt(item.split(":")[1]),
+              };
+            }),
           operation: funcs[index],
           test: parseInt(line[3].split("by ")[1]),
           true: parseInt(line[4].split("monkey ")[1]),
           false: parseInt(line[5].split("monkey ")[1]),
           inspectedTimes: 0,
+          inspectedItems: [],
         };
       });
-    for (let j = 0; j < 1000; j++) {
+    for (let j = 0; j < 20; j++) {
       for (let i = 0; i < data.length; i++) {
         data[i].items.forEach((item) => {
-          let worryLevel = item;
-
+          let worryLevel = item.worryLevel;
+          let itemIndex = item.index;
           let initialWorryLevel = worryLevel;
 
+          // if (!data[i].inspectedItems.includes(itemIndex)) {
+          //   console.log(
+          //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                yo, j    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 53 \n",
+          //     "color: white; background: black; font-weight: bold",
+          //     "",
+          //     j
+          //   );
+          //   data[i].inspectedItems.push(itemIndex);
+          // }
           worryLevel = data[i].operation(worryLevel);
 
           //den här ger rätt på round 20, hyfsat rätt på 1000
           // if (worryLevel > k) {
           //   worryLevel = initialWorryLevel * 2;
           // }
-          if (worryLevel > k) {
-            worryLevel = Math.floor(initialWorryLevel);
-          }
+          // if (worryLevel > k) {
+          //   worryLevel = Math.floor(initialWorryLevel);
+          // }
 
           data[i].inspectedTimes = data[i].inspectedTimes + 1;
 
           if (worryLevel % data[i].test === 0) {
-            data[data[i].true].items.push(worryLevel);
+            data[data[i].true].items.push({
+              worryLevel: worryLevel,
+              index: itemIndex,
+            });
           } else {
-            data[data[i].false].items.push(worryLevel);
+            data[data[i].false].items.push({
+              worryLevel: worryLevel,
+              index: itemIndex,
+            });
           }
         });
         data[i].items = [];
@@ -88,6 +109,13 @@ export default () => {
         );
       } else {
         // console.log("nope");
+        console.log(
+          // sumInspectedTimes,
+          data[0].inspectedTimes,
+          data[1].inspectedTimes,
+          data[2].inspectedTimes,
+          data[3].inspectedTimes
+        );
       }
     }
   }
