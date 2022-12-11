@@ -91,13 +91,23 @@ export default () => {
       .map((monkeyChunk) => monkeyChunk.split("\n"))
       .map((line, index) => {
         const funcs = [
-          (old) => old.mult.push(19),
           (old) => {
-            old.add = old.add + 6;
+            const yo = old.reduce((a, b) => a + b);
+            for (let j = 0; j < 19 - 1; j++) {
+              old.push(yo);
+            }
           },
-          (old) => old.mult.push(...old.mult),
           (old) => {
-            old.add = old.add + 3;
+            old[old.length - 1] = old[old.length - 1] + 6;
+          },
+          (old) => {
+            const yo = old.reduce((a, b) => a + b);
+            for (let j = 0; j < yo - 1; j++) {
+              old.push(yo);
+            }
+          },
+          (old) => {
+            old[old.length - 1] = old[old.length - 1] + 3;
           },
         ];
 
@@ -107,7 +117,7 @@ export default () => {
             .split(": ")[1]
             .split(", ")
             .map((nr) => {
-              return { mult: [parseInt(nr)], add: 0 };
+              return [parseInt(nr)];
             }),
           operation: funcs[index],
           test: parseInt(line[3].split("by ")[1]),
@@ -117,52 +127,44 @@ export default () => {
         };
       });
 
-    const test = -1;
-    let trail;
-    let yo = 0;
-
-    for (let j = 0; j < 3; j++) {
+    for (let j = 0; j < 20; j++) {
       for (let i = 0; i < data.length; i++) {
         data[i].items.forEach((item) => {
           let worryLevel = item;
 
-          i === 0 &&
-            j === 1 &&
-            console.log(
-              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c     1           i 0 j 2    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 67 \n",
-              "color: white; background: black; font-weight: bold",
-              "",
-              "add",
-              worryLevel.add,
-              "mult",
-              worryLevel.mult,
-              "add + mult",
-              worryLevel.add + worryLevel.mult.reduce((a, b) => a * b)
-            );
+          // i === 0 &&
+          //   j === 1 &&
+          //   console.log(
+          //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c     1           i 0 j 2    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 67 \n",
+          //     "color: white; background: black; font-weight: bold",
+          //     "",
+          //     "add",
+          //     worryLevel.add,
+          //     "mult",
+          //     worryLevel.mult,
+          //     "add + mult",
+          //     worryLevel.add + worryLevel.mult.reduce((a, b) => a * b)
+          //   );
 
           data[i].operation(worryLevel);
 
-          i === 0 &&
-            j === 1 &&
-            console.log(
-              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c     1           i 0 j 2    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 67 \n",
-              "color: white; background: black; font-weight: bold",
-              "",
-              "add",
-              worryLevel.add,
-              "mult",
-              worryLevel.mult.reduce((a, b) => a * b),
-              "add + mult",
-              worryLevel.add + worryLevel.mult.reduce((a, b) => a * b)
-            );
+          // i === 0 &&
+          //   j === 1 &&
+          //   console.log(
+          //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c     1           i 0 j 2    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 67 \n",
+          //     "color: white; background: black; font-weight: bold",
+          //     "",
+          //     "add",
+          //     worryLevel.add,
+          //     "mult",
+          //     worryLevel.mult.reduce((a, b) => a * b),
+          //     "add + mult",
+          //     worryLevel.add + worryLevel.mult.reduce((a, b) => a * b)
+          //   );
 
           data[i].inspectedTimes = data[i].inspectedTimes + 1;
 
-          if (
-            (worryLevel.add + worryLevel.mult.reduce((a, b) => a * b)) %
-              data[i].test ===
-            0
-          ) {
+          if (worryLevel.reduce((a, b) => a + b) % data[i].test === 0) {
             data[data[i].true].items.push(worryLevel);
           } else {
             data[data[i].false].items.push(worryLevel);
@@ -171,13 +173,13 @@ export default () => {
         data[i].items = [];
       }
 
-      // console.log(
-      //   // sumInspectedTimes,
-      //   data[0].inspectedTimes,
-      //   data[1].inspectedTimes,
-      //   data[2].inspectedTimes,
-      //   data[3].inspectedTimes
-      // );
+      console.log(
+        // sumInspectedTimes,
+        data[0].inspectedTimes,
+        data[1].inspectedTimes,
+        data[2].inspectedTimes,
+        data[3].inspectedTimes
+      );
     }
   }
 
