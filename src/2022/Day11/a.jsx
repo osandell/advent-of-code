@@ -6,11 +6,41 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = eData.split(/\n/).map((row) =>
-  row.split(" ").map((item) => {
-    return parseInt(item) >= 0 ? parseInt(item) : item;
-  })
-);
+const data = eData
+  .split("\n\n")
+  .map((monkeyChunk) => monkeyChunk.split("\n"))
+  .map((line, index) => {
+    const funcs = [
+      (old) => old * 19,
+      (old) => old + 6,
+      (old) => old * old,
+      (old) => old + 3,
+    ];
+
+    // const funcs = [
+    //   (old) => old * 13,
+    //   (old) => old + 4,
+    //   (old) => old * 11,
+    //   (old) => old + 8,
+    //   (old) => old * old,
+    //   (old) => old + 5,
+    //   (old) => old + 1,
+    //   (old) => old + 3,
+    // ];
+
+    return {
+      monkeyNr: parseInt(line[0].split(" ")[1]),
+      items: line[1]
+        .split(": ")[1]
+        .split(", ")
+        .map((nr) => parseInt(nr)),
+      operation: funcs[index],
+      test: parseInt(line[3].split("by ")[1]),
+      true: parseInt(line[4].split("monkey ")[1]),
+      false: parseInt(line[5].split("monkey ")[1]),
+      inspectedTimes: 0,
+    };
+  });
 
 const isAdjecent = (part1, part2) =>
   (part1[0] === part2[0] ||
@@ -33,7 +63,7 @@ export default () => {
   // }
   const totalNrOfMoves = data.length;
 
-  const [moveNr, setMoveNr] = useState(0);
+  const [moveNr, setMoveNr] = useState(totalNrOfMoves);
   const moveNrRef = React.useRef(moveNr);
   moveNrRef.current = moveNr;
 
@@ -49,19 +79,86 @@ export default () => {
 
   // *********************************************************************************
 
-  for (let i = 0; i < data.length; i++) {
-    if (currMove === moveNr) {
-      break;
-    }
+  for (let j = 0; j < 20; j++) {
+    for (let i = 0; i < data.length; i++) {
+      if (currMove === moveNr) {
+        break;
+      }
 
-    const move = data[i];
+      data[i].items.forEach((item) => {
+        let worryLevel = item;
+
+        worryLevel = data[i].operation(worryLevel);
+        // i === 3 &&
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    worryLevel    \x1b[8m\x1b[40m\x1b[0m\n",
+        //     "color: white; background: black; font-weight: bold",
+        //     worryLevel
+        //   );
+        worryLevel = Math.floor(worryLevel / 3);
+        // i === 3 &&
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    worryLevel    \x1b[8m\x1b[40m\x1b[0m\n",
+        //     "color: white; background: black; font-weight: bold",
+        //     worryLevel
+        //   );
+
+        if (worryLevel % data[i].test === 0) {
+          data[data[i].true].items.push(worryLevel);
+        } else {
+          data[data[i].false].items.push(worryLevel);
+        }
+        data[i].items = [];
+        data[i].inspectedTimes = data[i].inspectedTimes + 1;
+      });
+
+      const move = data[i];
+    }
   }
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      data    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 103 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    data
+  );
+
+  let highest = 0;
+  let highMonkey;
+  let nextHighest = 0;
+  data.forEach((monkey) => {
+    if (monkey.inspectedTimes > highest) {
+      highest = monkey.inspectedTimes;
+      highMonkey = monkey.monkeyNr;
+    }
+  });
+  data.forEach((monkey) => {
+    if (monkey.inspectedTimes > nextHighest && monkey.monkeyNr !== highMonkey) {
+      nextHighest = monkey.inspectedTimes;
+    }
+  });
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      nextHighest    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 131 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    nextHighest
+  );
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highMonkey    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 126 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    highMonkey
+  );
 
   const dataToRender = [
     ["1", "2", "3", "4"],
     ["5", "6", "7", "8"],
     ["9", "10", "11", "12"],
   ];
+
+  let result = highest * nextHighest;
 
   // *********************************************************************************
 
@@ -143,6 +240,7 @@ export default () => {
         </button>
       </div>
       <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
+      <div style={{ marginTop: "24px" }}>Result: {result}</div>
     </div>
   );
 };
