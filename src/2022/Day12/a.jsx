@@ -6,7 +6,7 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = eData.split(/\n/).map((row) => row.split(""));
+const data = rData.split(/\n/).map((row) => row.split(""));
 
 const isAdjecent = (part1, part2) =>
   (part1[0] === part2[0] ||
@@ -46,9 +46,15 @@ export default () => {
   // *********************************************************************************
 
   let nextDoorValues = [];
+  let result = 0;
 
   const check = (y, x, rowIndex, tileIndex) => {
-    if (data[y] && data[y][x] && data[y][x] === "E") {
+    if (
+      data[y] &&
+      data[y][x] &&
+      data[y][x] === "E" &&
+      (data[rowIndex][tileIndex] === "y" || data[rowIndex][tileIndex] === "z")
+    ) {
       if (
         data[rowIndex][tileIndex] !== "E" &&
         data[rowIndex][tileIndex].length === 1
@@ -80,43 +86,37 @@ export default () => {
         nextDoorValues = [];
         let lowest = 99999999999999999;
         let lowestIndex = -1;
-        check(rowIndex - 1, tileIndex, rowIndex, tileIndex);
-        if (nextDoorValues.length === 0) {
-          debugger;
+        if (rowIndex === 3 && tileIndex === 4) {
+          // debugger;
         }
+        check(rowIndex - 1, tileIndex, rowIndex, tileIndex);
         check(rowIndex + 1, tileIndex, rowIndex, tileIndex);
         check(rowIndex, tileIndex - 1, rowIndex, tileIndex);
         check(rowIndex, tileIndex + 1, rowIndex, tileIndex);
 
-        if (nextDoorValues[0].value < lowest) {
-          lowest = nextDoorValues[0].value;
-          lowestIndex = 0;
-        }
-        if (nextDoorValues[1].value < lowest) {
-          lowest = nextDoorValues[1].value;
-          lowestIndex = 1;
-        }
-        if (nextDoorValues[2].value < lowest) {
-          lowest = nextDoorValues[2].value;
-          lowestIndex = 2;
-        }
-        if (nextDoorValues[3].value < lowest) {
-          lowest = nextDoorValues[3].value;
-          lowestIndex = 3;
+        const alphabet = "abcdefghijklmnopqrstuvwxyzE";
+        const thisHeight = alphabet.indexOf(data[rowIndex][tileIndex]);
+
+        for (let i = 0; i < nextDoorValues.length; i++) {
+          const targetHeight = alphabet.indexOf(nextDoorValues[i].letter);
+
+          if (
+            nextDoorValues[i].value < lowest &&
+            targetHeight <= thisHeight + 1
+          ) {
+            lowest = nextDoorValues[i].value;
+            lowestIndex = i;
+          }
         }
 
         if (lowestIndex !== -1) {
-          const alphabet = "abcdefghijklmnopqrstuvwxyzE";
-          const targetHeight = alphabet.indexOf(
-            nextDoorValues[lowestIndex].letter
-          );
-          const thisHeight = alphabet.indexOf(data[rowIndex][tileIndex]);
-
-          if (targetHeight <= thisHeight + 1) {
-            data[rowIndex][tileIndex] =
-              data[rowIndex][tileIndex] +
-              `:${(nextDoorValues[lowestIndex].value + 1).toString()}`;
+          if (data[rowIndex][tileIndex] === "S") {
+            result = nextDoorValues[lowestIndex].value + 1;
           }
+
+          data[rowIndex][tileIndex] =
+            data[rowIndex][tileIndex] +
+            `:${(nextDoorValues[lowestIndex].value + 1).toString()}`;
         }
       });
     });
@@ -132,8 +132,6 @@ export default () => {
     dataToRender.push(newRow);
   });
 
-  let result = 0;
-
   // *********************************************************************************
 
   return (
@@ -144,8 +142,8 @@ export default () => {
         shouldRenderBinarily={false}
         shouldInvertX={false}
         shouldInvertY={false}
-        sizeX={"11px"}
-        sizeY={"15px"}
+        sizeX={"22px"}
+        sizeY={"18px"}
         isCenterOrigin={false}
       />
       <div style={{ marginTop: "24px" }}>

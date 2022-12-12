@@ -19,6 +19,7 @@ const renderMapLine = (
     const styling = {
       display: "flex",
       width: sizeX,
+      minWidth: sizeX,
       height: sizeY,
       fontSize: isIndexRow ? "8px" : "10px",
       lineHeight: "10px",
