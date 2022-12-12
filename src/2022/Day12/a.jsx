@@ -107,17 +107,8 @@ export default () => {
     dataToRender.push(newRow);
   });
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        data[rowIndex][tileIndex]    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 62 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    data[position[0]][position[1] + 1]
-  );
-
-  let wayIsLegit = false;
   let triedPaths = [];
-  let path = "Start";
-  // while (!wayIsLegit) {
+  let path = "0:0=>";
   for (let i = 0; i < moveNr; i++) {
     // debugger;
     const move = data[i];
@@ -135,11 +126,18 @@ export default () => {
         )
       ) {
         foundOneUp = true;
-        if (
-          !triedPaths.includes(
-            path + (position[0] + 1).toString() + ":" + position[1].toString()
-          )
-        ) {
+        let alreadyTried = false;
+        triedPaths.forEach((triedPath) => {
+          if (
+            triedPath.includes(
+              path + (position[0] + 1).toString() + ":" + position[1].toString()
+            )
+          ) {
+            alreadyTried = true;
+          }
+        });
+
+        if (!alreadyTried) {
           nextPos = [position[0] + 1, position[1]];
           distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
         }
@@ -154,11 +152,21 @@ export default () => {
         foundOneUp = true;
         let thisDist = endPos[0] - position[0];
         if (thisDist > distance) {
-          if (
-            !triedPaths.includes(
-              path + (position[0] - 1).toString() + ":" + position[1].toString()
-            )
-          ) {
+          let alreadyTried = false;
+          triedPaths.forEach((triedPath) => {
+            if (
+              triedPath.includes(
+                path +
+                  (position[0] - 1).toString() +
+                  ":" +
+                  position[1].toString()
+              )
+            ) {
+              alreadyTried = true;
+            }
+          });
+
+          if (!alreadyTried) {
             nextPos = [position[0] - 1, position[1]];
             distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
           }
@@ -176,11 +184,21 @@ export default () => {
         foundOneUp = true;
         let thisDist = endPos[1] - position[1];
         if (thisDist > distance) {
-          if (
-            !triedPaths.includes(
-              path + position[0].toString() + ":" + (position[1] + 1).toString()
-            )
-          ) {
+          let alreadyTried = false;
+          triedPaths.forEach((triedPath) => {
+            if (
+              triedPath.includes(
+                path +
+                  position[0].toString() +
+                  ":" +
+                  (position[1] + 1).toString()
+              )
+            ) {
+              alreadyTried = true;
+            }
+          });
+
+          if (!alreadyTried) {
             nextPos = [position[0], position[1] + 1];
             distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
           }
@@ -196,11 +214,21 @@ export default () => {
         foundOneUp = true;
         let thisDist = endPos[1] - position[1];
         if (thisDist > distance) {
-          if (
-            !triedPaths.includes(
-              path + position[0].toString() + ":" + (position[1] - 1).toString()
-            )
-          ) {
+          let alreadyTried = false;
+          triedPaths.forEach((triedPath) => {
+            if (
+              triedPath.includes(
+                path +
+                  position[0].toString() +
+                  ":" +
+                  (position[1] - 1).toString()
+              )
+            ) {
+              alreadyTried = true;
+            }
+          });
+
+          if (!alreadyTried) {
             nextPos = [position[0], position[1] - 1];
             distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
           }
@@ -216,11 +244,21 @@ export default () => {
             data[position[0] + 1][position[1]]
           )
         ) {
-          if (
-            !triedPaths.includes(
-              path + (position[0] + 1).toString() + ":" + position[1].toString()
-            )
-          ) {
+          let alreadyTried = false;
+          triedPaths.forEach((triedPath) => {
+            if (
+              triedPath.includes(
+                path +
+                  (position[0] + 1).toString() +
+                  ":" +
+                  position[1].toString()
+              )
+            ) {
+              alreadyTried = true;
+            }
+          });
+
+          if (!alreadyTried) {
             nextPos = [position[0] + 1, position[1]];
             distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
           }
@@ -235,14 +273,21 @@ export default () => {
           ) {
             let thisDist = endPos[0] - position[0];
             if (thisDist > distance) {
-              if (
-                !triedPaths.includes(
-                  path +
-                    (position[0] - 1).toString() +
-                    ":" +
-                    position[1].toString()
-                )
-              ) {
+              let alreadyTried = false;
+              triedPaths.forEach((triedPath) => {
+                if (
+                  triedPath.includes(
+                    path +
+                      (position[0] - 1).toString() +
+                      ":" +
+                      position[1].toString()
+                  )
+                ) {
+                  alreadyTried = true;
+                }
+              });
+
+              if (!alreadyTried) {
                 nextPos = [position[0] - 1, position[1]];
                 distance =
                   (endPos[0] - position[0]) * (endPos[0] - position[0]);
@@ -261,14 +306,21 @@ export default () => {
         ) {
           let thisDist = endPos[1] - position[1];
           if (thisDist > distance) {
-            if (
-              !triedPaths.includes(
-                path +
-                  position[0].toString() +
-                  ":" +
-                  (position[1] + 1).toString()
-              )
-            ) {
+            let alreadyTried = false;
+            triedPaths.forEach((triedPath) => {
+              if (
+                triedPath.includes(
+                  path +
+                    position[0].toString() +
+                    ":" +
+                    (position[1] + 1).toString()
+                )
+              ) {
+                alreadyTried = true;
+              }
+            });
+
+            if (!alreadyTried) {
               nextPos = [position[0], position[1] + 1];
               distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
             }
@@ -283,14 +335,21 @@ export default () => {
           ) {
             let thisDist = endPos[1] - position[1];
             if (thisDist > distance) {
-              if (
-                !triedPaths.includes(
-                  path +
-                    position[0].toString() +
-                    ":" +
-                    (position[1] - 1).toString()
-                )
-              ) {
+              let alreadyTried = false;
+              triedPaths.forEach((triedPath) => {
+                if (
+                  triedPath.includes(
+                    path +
+                      position[0].toString() +
+                      ":" +
+                      (position[1] - 1).toString()
+                  )
+                ) {
+                  alreadyTried = true;
+                }
+              });
+
+              if (!alreadyTried) {
                 nextPos = [position[0], position[1] - 1];
                 distance =
                   (endPos[1] - position[1]) * (endPos[1] - position[1]);
@@ -303,15 +362,41 @@ export default () => {
     if (nextPos) {
       // debugger;
 
-      wayIsLegit = true;
       position = nextPos;
       path += position[0].toString() + ":" + position[1].toString() + "=>";
     } else {
       // debugger;
-      path += position[0].toString() + ":" + position[1].toString() + "=>";
       triedPaths.push(path);
-      position = startPos;
+
+      let prevPos = path.split("=>");
+      prevPos = prevPos[prevPos.length - 3];
+      prevPos = prevPos.split(":").map((str) => parseInt(str));
+
+      position = [...prevPos];
+      path = path.substring(0, path.length - 5);
+      let i = 8;
     }
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        path    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 387 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      path
+    );
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        position    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 393 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      position
+    );
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        triedPaths    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 395 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      triedPaths
+    );
 
     dataToRender = [];
     data.forEach((row, rowIndex) => {
