@@ -6,11 +6,7 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = eData.split(/\n/).map((row) =>
-  row.split(" ").map((item) => {
-    return parseInt(item) >= 0 ? parseInt(item) : item;
-  })
-);
+const data = eData.split(/\n/).map((row) => row.split(""));
 
 const isAdjecent = (part1, part2) =>
   (part1[0] === part2[0] ||
@@ -31,7 +27,7 @@ export default () => {
   //     totalNrOfMoves++;
   //   }
   // }
-  const totalNrOfMoves = data.length;
+  const totalNrOfMoves = 99999999999999999999999999;
 
   const [moveNr, setMoveNr] = useState(0);
   const moveNrRef = React.useRef(moveNr);
@@ -47,21 +43,248 @@ export default () => {
     }
   };
 
-  // *********************************************************************************
-
-  for (let i = 0; i < data.length; i++) {
-    if (currMove === moveNr) {
-      break;
+  const checkOneUp = (curLetter, checkLetter) => {
+    if (curLetter === "S") {
+      if (checkLetter === "b") {
+        return true;
+      } else {
+        return false;
+      }
     }
 
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    return alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter) + 1;
+  };
+
+  const checkSame = (curLetter, checkLetter) => {
+    if (curLetter === "S") {
+      if (checkLetter === "a") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    return alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter);
+  };
+
+  // *********************************************************************************
+
+  let position;
+  let startPos;
+  data.forEach((row, rowIndex) => {
+    row.forEach((tile, tileIndex) => {
+      if (tile === "S") {
+        position = [rowIndex, tileIndex];
+        startPos = [rowIndex, tileIndex];
+      }
+    });
+  });
+
+  let endPos;
+  data.forEach((row, rowIndex) => {
+    row.forEach((tile, tileIndex) => {
+      if (tile === "E") {
+        endPos = [rowIndex, tileIndex];
+      }
+    });
+  });
+
+  let dataToRender = [];
+  data.forEach((row, rowIndex) => {
+    let newRow = [];
+    row.forEach((tile, tileIndex) => {
+      if (tile === "E") {
+        // endPos = [rowIndex, tileIndex];
+      }
+
+      newRow.push(tile);
+    });
+
+    dataToRender.push(newRow);
+  });
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        data[rowIndex][tileIndex]    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 62 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    data[position[0]][position[1] + 1]
+  );
+
+  let wayIsLegit = false;
+  let triedPaths = [];
+  let path = [];
+  // while (!wayIsLegit) {
+  for (let i = 0; i < moveNr; i++) {
+    // debugger;
     const move = data[i];
+
+    let nextPos;
+
+    let distance = 0;
+    let foundOneUp = false;
+
+    if (position[0] < endPos[0]) {
+      if (
+        checkOneUp(
+          data[position[0]][position[1]],
+          data[position[0] + 1][position[1]]
+        )
+      ) {
+        foundOneUp = true;
+        nextPos = [position[0] + 1, position[1]];
+        distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
+      }
+    } else if (position[0] > endPos[0]) {
+      if (
+        checkOneUp(
+          data[position[0]][position[1]],
+          data[position[0] - 1][position[1]]
+        )
+      ) {
+        foundOneUp = true;
+        let thisDist = endPos[0] - position[0];
+        if (thisDist > distance) {
+          nextPos = [position[0] - 1, position[1]];
+          distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
+        }
+      }
+    }
+
+    if (position[1] < endPos[1]) {
+      if (
+        checkOneUp(
+          data[position[0]][position[1]],
+          data[position[0]][position[1] + 1]
+        )
+      ) {
+        foundOneUp = true;
+        let thisDist = endPos[1] - position[1];
+        if (thisDist > distance) {
+          nextPos = [position[0], position[1] + 1];
+          distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
+        }
+      }
+    } else if (position[1] > endPos[1]) {
+      if (
+        checkOneUp(
+          data[position[0]][position[1]],
+          data[position[0]][position[1] - 1]
+        )
+      ) {
+        foundOneUp = true;
+        let thisDist = endPos[1] - position[1];
+        if (thisDist > distance) {
+          nextPos = [position[0], position[1] - 1];
+          distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
+        }
+      }
+    }
+
+    if (!foundOneUp) {
+      if (position[0] < endPos[0]) {
+        if (
+          checkSame(
+            data[position[0]][position[1]],
+            data[position[0] + 1][position[1]]
+          )
+        ) {
+          nextPos = [position[0] + 1, position[1]];
+          distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
+        }
+
+        if (position[0] > endPos[0]) {
+          if (
+            checkSame(
+              data[position[0]][position[1]],
+              data[position[0] - 1][position[1]]
+            )
+          ) {
+            let thisDist = endPos[0] - position[0];
+            if (thisDist > distance) {
+              nextPos = [position[0] - 1, position[1]];
+              distance = (endPos[0] - position[0]) * (endPos[0] - position[0]);
+            }
+          }
+        }
+      }
+
+      if (position[1] < endPos[1]) {
+        if (
+          checkSame(
+            data[position[0]][position[1]],
+            data[position[0]][position[1] + 1]
+          )
+        ) {
+          let thisDist = endPos[1] - position[1];
+          if (thisDist > distance) {
+            nextPos = [position[0], position[1] + 1];
+            distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
+          }
+        }
+        if (position[0] > endPos[0]) {
+          if (
+            checkSame(
+              data[position[0]][position[1]],
+              data[position[0]][position[1] - 1]
+            )
+          ) {
+            let thisDist = endPos[1] - position[1];
+            if (thisDist > distance) {
+              nextPos = [position[0], position[1] - 1];
+              distance = (endPos[1] - position[1]) * (endPos[1] - position[1]);
+            }
+          }
+        }
+      }
+    }
+    if (nextPos) {
+      debugger;
+
+      wayIsLegit = true;
+      position = nextPos;
+      path.push([...nextPos]);
+    } else {
+      // debugger;
+      path.push(nextPos);
+      let pathCopy = [...path];
+      triedPaths.push(pathCopy);
+      position = startPos;
+    }
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        triedPaths    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 251 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      triedPaths
+    );
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        position    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 194 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      position
+    );
+
+    dataToRender = [];
+    data.forEach((row, rowIndex) => {
+      let newRow = [];
+      row.forEach((tile, tileIndex) => {
+        if (rowIndex === position[0] && tileIndex === position[1]) {
+          newRow.push("*");
+        } else {
+          newRow.push(tile);
+        }
+      });
+
+      dataToRender.push(newRow);
+    });
   }
 
-  const dataToRender = [
-    ["1", "2", "3", "4"],
-    ["5", "6", "7", "8"],
-    ["9", "10", "11", "12"],
-  ];
+  let result = 0;
 
   // *********************************************************************************
 
@@ -143,6 +366,7 @@ export default () => {
         </button>
       </div>
       <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
+      <div style={{ marginTop: "24px" }}>Result: {result}</div>
     </div>
   );
 };
