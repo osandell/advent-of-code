@@ -43,223 +43,94 @@ export default () => {
     }
   };
 
-  const checkOneUp = (curLetter, checkLetter) => {
-    if (curLetter === "S") {
-      if (checkLetter === "b") {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-    return alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter) + 1;
-  };
-
-  const checkSame = (curLetter, checkLetter) => {
-    if (curLetter === "S") {
-      if (checkLetter === "a") {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-    return alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter);
-  };
-
-  const checkOneUpOrSame = (curLetter, checkLetter) => {
-    if (curLetter === "S") {
-      if (checkLetter === "a") {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-    return (
-      alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter) ||
-      alphabet.indexOf(checkLetter) === alphabet.indexOf(curLetter) + 1
-    );
-  };
-
   // *********************************************************************************
 
-  let position;
-  let startPos;
-  data.forEach((row, rowIndex) => {
-    row.forEach((tile, tileIndex) => {
-      if (tile === "S") {
-        position = [rowIndex, tileIndex];
-        startPos = [rowIndex, tileIndex];
-      }
-    });
-  });
+  let nextDoorValues = [];
 
-  let endPos;
-  data.forEach((row, rowIndex) => {
-    row.forEach((tile, tileIndex) => {
-      if (tile === "E") {
-        endPos = [rowIndex, tileIndex];
+  const check = (y, x, rowIndex, tileIndex) => {
+    if (data[y] && data[y][x] && data[y][x] === "E") {
+      if (
+        data[rowIndex][tileIndex] !== "E" &&
+        data[rowIndex][tileIndex].length === 1
+      ) {
+        nextDoorValues.push({ letter: "E", value: 0 });
+      } else {
+        nextDoorValues.push({ letter: "", value: 99999999999999999 });
       }
+    } else if (data[y] && data[y][x] && data[y][x].length > 1) {
+      if (
+        data[rowIndex][tileIndex] !== "E" &&
+        data[rowIndex][tileIndex].length === 1
+      ) {
+        nextDoorValues.push({
+          letter: data[y][x].split(":")[0],
+          value: parseInt(data[y][x].split(":")[1]),
+        });
+      } else {
+        nextDoorValues.push({ letter: "", value: 99999999999999999 });
+      }
+    } else {
+      nextDoorValues.push({ letter: "", value: 99999999999999999 });
+    }
+  };
+
+  for (let i = 0; i < moveNr; i++) {
+    data.forEach((row, rowIndex) => {
+      row.forEach((tile, tileIndex) => {
+        nextDoorValues = [];
+        let lowest = 99999999999999999;
+        let lowestIndex = -1;
+        check(rowIndex - 1, tileIndex, rowIndex, tileIndex);
+        if (nextDoorValues.length === 0) {
+          debugger;
+        }
+        check(rowIndex + 1, tileIndex, rowIndex, tileIndex);
+        check(rowIndex, tileIndex - 1, rowIndex, tileIndex);
+        check(rowIndex, tileIndex + 1, rowIndex, tileIndex);
+
+        if (nextDoorValues[0].value < lowest) {
+          lowest = nextDoorValues[0].value;
+          lowestIndex = 0;
+        }
+        if (nextDoorValues[1].value < lowest) {
+          lowest = nextDoorValues[1].value;
+          lowestIndex = 1;
+        }
+        if (nextDoorValues[2].value < lowest) {
+          lowest = nextDoorValues[2].value;
+          lowestIndex = 2;
+        }
+        if (nextDoorValues[3].value < lowest) {
+          lowest = nextDoorValues[3].value;
+          lowestIndex = 3;
+        }
+
+        if (lowestIndex !== -1) {
+          const alphabet = "abcdefghijklmnopqrstuvwxyzE";
+          const targetHeight = alphabet.indexOf(
+            nextDoorValues[lowestIndex].letter
+          );
+          const thisHeight = alphabet.indexOf(data[rowIndex][tileIndex]);
+
+          if (targetHeight <= thisHeight + 1) {
+            data[rowIndex][tileIndex] =
+              data[rowIndex][tileIndex] +
+              `:${(nextDoorValues[lowestIndex].value + 1).toString()}`;
+          }
+        }
+      });
     });
-  });
+  }
 
   let dataToRender = [];
-  data.forEach((row, rowIndex) => {
+  data.forEach((row) => {
     let newRow = [];
-    row.forEach((tile, tileIndex) => {
-      if (tile === "E") {
-        // endPos = [rowIndex, tileIndex];
-      }
-
+    row.forEach((tile) => {
       newRow.push(tile);
     });
 
     dataToRender.push(newRow);
   });
-
-  let triedPaths = [];
-  let successfulPaths = [];
-  let path = "0:0=>";
-  let noGoSquares = {};
-  for (let i = 0; i < moveNr; i++) {
-    // debugger;
-    const move = data[i];
-
-    let nextPos;
-
-    let distance = 0;
-    let foundOneUp = false;
-    let foundEnd = false;
-
-    const calculateNextPos = (y, x) => {
-      if (y < 0 || x < 0 || y >= data.length || x >= data[0].length) {
-        return;
-      }
-      let prevPos;
-      if (path.length > 5) {
-        // debugger;
-        prevPos = path.split("=>");
-        prevPos = prevPos[prevPos.length - 3];
-        prevPos = prevPos.split(":").map((str) => parseInt(str));
-      }
-
-      if (prevPos && prevPos[0] === y && prevPos[1] === x) {
-        return;
-      }
-
-      if (data[y][x] === "E") {
-        foundEnd = true;
-      }
-
-      if (checkOneUpOrSame(data[position[0]][position[1]], data[y][x])) {
-        foundOneUp = true;
-        let alreadyTried = false;
-        triedPaths.forEach((triedPath) => {
-          if (triedPath.includes(path + y.toString() + ":" + x.toString())) {
-            alreadyTried = true;
-          }
-        });
-
-        if (!alreadyTried) {
-          nextPos = [y, x];
-        }
-      }
-    };
-
-    if (!nextPos) {
-      calculateNextPos(position[0] + 1, position[1]);
-    }
-    if (!nextPos) {
-      calculateNextPos(position[0] - 1, position[1]);
-    }
-    if (!nextPos) {
-      calculateNextPos(position[0], position[1] + 1);
-    }
-    if (!nextPos) {
-      calculateNextPos(position[0], position[1] - 1);
-    }
-
-    if (nextPos) {
-      // debugger;
-
-      position = nextPos;
-      path += position[0].toString() + ":" + position[1].toString() + "=>";
-    } else {
-      if (position[0] === 0 && position[1] === 0) {
-        alert("yo");
-      }
-
-      // debugger;
-      triedPaths.push(path);
-
-      if (foundEnd) {
-        successfulPaths.push(path);
-        foundEnd = false;
-      } else {
-        noGoSquares[position[0] + ":" + position[1]] = true;
-      }
-
-      let prevPos = path.split("=>");
-      prevPos = prevPos[prevPos.length - 3];
-      prevPos = prevPos.split(":").map((str) => parseInt(str));
-
-      position = [...prevPos];
-      path = path.substring(0, path.length - 5);
-      let i = 8;
-    }
-    i === moveNr - 1 &&
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        noGoSquares    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 227 \n",
-        "color: white; background: black; font-weight: bold",
-        "",
-        noGoSquares
-      );
-
-    // i === moveNr - 1 &&
-    //   console.log(
-    //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        path    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 387 \n",
-    //     "color: white; background: black; font-weight: bold",
-    //     "",
-    //     path
-    //   );
-
-    // i === moveNr - 1 &&
-    //   console.log(
-    //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        position    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 393 \n",
-    //     "color: white; background: black; font-weight: bold",
-    //     "",
-    //     position
-    //   );
-
-    // i === moveNr - 1 &&
-    //   console.log(
-    //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        triedPaths    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 395 \n",
-    //     "color: white; background: black; font-weight: bold",
-    //     "",
-    //     triedPaths
-    //   );
-
-    dataToRender = [];
-    data.forEach((row, rowIndex) => {
-      let newRow = [];
-      row.forEach((tile, tileIndex) => {
-        if (rowIndex === position[0] && tileIndex === position[1]) {
-          newRow.push("*");
-        } else {
-          newRow.push(tile);
-        }
-      });
-
-      dataToRender.push(newRow);
-    });
-  }
 
   let result = 0;
 
