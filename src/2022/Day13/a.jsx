@@ -6,27 +6,81 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = rData.split(/\n/).map((row) => row.split(""));
+const extractArr = (row) => {
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    row    \x1b[8m\x1b[40m\x1b[0m\n",
+    "color: white; background: black; font-weight: bold",
+    row
+  );
+  if (!row.includes("[")) {
+    return row.split(",").map((nr) => parseInt(nr));
+  }
 
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
+  let newArr = [];
+  row.split("],").forEach((part) => {
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    part    \x1b[8m\x1b[40m\x1b[0m\n",
+      "color: white; background: black; font-weight: bold",
+      part
+    );
+    if (part.includes("[")) {
+      const digits = part.split("[")[0].split(",");
+      console.log(
+        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    digits    \x1b[8m\x1b[40m\x1b[0m\n",
+        "color: white; background: black; font-weight: bold",
+        digits
+      );
+
+      digits.forEach((digit) => {
+        if (parseInt(digit) >= 0) {
+          newArr.push(parseInt(digit));
+        }
+      });
+      let rightSideArray = part.split("[")[1];
+      if (rightSideArray.includes("]")) {
+        rightSideArray = rightSideArray.split("]")[0];
+      }
+      rightSideArray = "[" + rightSideArray + "]";
+      console.log(
+        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    rightSideArray    \x1b[8m\x1b[40m\x1b[0m\n",
+        "color: white; background: black; font-weight: bold",
+        rightSideArray
+      );
+      // newArr.push(extractArr(rightSideArray));
+    }
+
+    //   if (part.length === 1) {
+    //     return parseInt(part);
+    //   }
+
+    //   return part.split(",").map((part) => parseInt(part));
+    // }
+  });
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArr    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 37 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    newArr
+  );
+
+  return newArr;
+};
+
+// *********************************************************************************
+// *********************************************************************************
+// *********************************************************************************
+const data = eData.split(/\n\n/).map((pair) =>
+  // *********************************************************************************
+  // *********************************************************************************
+  // *********************************************************************************
+  pair.split(/\n/).map((row) => {
+    const arr = extractArr(row.substring(1, row.length - 1));
+    return arr;
+  })
+);
 
 export default () => {
-  let currMove = 0;
-
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
   const totalNrOfMoves = 99999999999999999999999999;
 
   const [moveNr, setMoveNr] = useState(0);
@@ -52,6 +106,64 @@ export default () => {
       row.forEach((tile, tileIndex) => {});
     });
   }
+
+  const getIsOk = (arr1, arr2) => {
+    let comparisonLength;
+    if (arr1.length > arr2.length) {
+      comparisonLength = arr1.length;
+    } else {
+      comparisonLength = arr2.length;
+    }
+
+    for (let i = 0; i < comparisonLength; i++) {
+      const part1 = arr1[i];
+      const part2 = arr2[i];
+
+      if (typeof part1 === "object" && typeof part2 === "object") {
+        return getIsOk(part1, part2);
+      }
+      if (typeof part1 === "number" && typeof part2 === "object") {
+        if (part1 >= 0) {
+          // not NaN
+          return getIsOk([part1], part2);
+        } else {
+          return true;
+        }
+      }
+      if (typeof part1 === "object" && typeof part2 === "number") {
+        if (part2 >= 0) {
+          // not NaN
+          return getIsOk(part1, [part2]);
+        } else {
+          return false;
+        }
+      }
+
+      if (part1 > part2) {
+        return false;
+      }
+      if (part1 < part2) {
+        return true;
+      }
+    }
+
+    return true;
+  };
+
+  data.forEach((pair, index) => {
+    // debugger;
+    let isOk = getIsOk(pair[0], pair[1]);
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    isOk    \x1b[8m\x1b[40m\x1b[0m\n",
+      "color: white; background: black; font-weight: bold",
+      isOk
+    );
+
+    if (isOk) {
+      result += index + 1;
+    }
+  });
 
   let dataToRender = [];
   data.forEach((row) => {
