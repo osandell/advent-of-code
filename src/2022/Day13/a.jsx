@@ -39,7 +39,7 @@ export default () => {
 
   let result = 0;
 
-  const getIsOk = (arr1, arr2) => {
+  const compare = (arr1, arr2) => {
     let comparisonLength;
     if (arr1.length > arr2.length) {
       comparisonLength = arr1.length;
@@ -52,54 +52,53 @@ export default () => {
       const part2 = arr2[i];
 
       if (part2 === undefined) {
-        return false;
+        return "wrongOrder";
       }
       if (part1 === undefined) {
-        return true;
+        return "rightOrder";
       }
 
       if (typeof part1 === "object" && typeof part2 === "object") {
-        if (!getIsOk(part1, part2)) {
-          return false;
+        const res = compare(part1, part2);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
         }
       }
       if (typeof part1 === "number" && typeof part2 === "object") {
-        if (part1 >= 0) {
-          // not NaN
-          if (!getIsOk([part1], part2)) {
-            return false;
-          }
-        } else {
-          return true;
+        const res = compare([part1], part2);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
         }
       }
       if (typeof part1 === "object" && typeof part2 === "number") {
-        if (part2 >= 0) {
-          // not NaN
-          if (!getIsOk(part1, [part2])) {
-            return false;
-          }
-        } else {
-          return false;
+        const res = compare(part1, [part2]);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
         }
       }
 
       if (part1 > part2) {
-        return false;
+        return "wrongOrder";
       }
       if (part1 < part2) {
-        return true;
+        return "rightOrder";
       }
     }
 
-    return true;
+    return "equal";
   };
 
   data.forEach((pair, index) => {
-    debugger;
-    let isOk = getIsOk(pair[0], pair[1]);
+    // debugger;
 
-    if (isOk) {
+    const res = compare(pair[0], pair[1]);
+    if (res === "rightOrder") {
       result += index + 1;
     }
   });

@@ -1,32 +1,27 @@
 import React, { useState } from "react";
-import eData from "./exampleData";
-import rData from "./realData";
+import eData from "./exampleDataB";
+import rData from "./realDataB";
 import Render from "../../Render";
 
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+const data = rData
+  .replace(/^\s*\n/gm, "")
+  .split(/\n/)
+  .map((line) =>
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-const data = rData.split(/\n/).map((row) => row.split(""));
+    {
+      const arr = JSON.parse(line.replace(/\'/g, '"'));
 
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
+      return arr;
+    }
+  );
 
 export default () => {
-  let currMove = 0;
-
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
   const totalNrOfMoves = 99999999999999999999999999;
 
   const [moveNr, setMoveNr] = useState(0);
@@ -47,11 +42,127 @@ export default () => {
 
   let result = 0;
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
+  const compare = (arr1, arr2) => {
+    let comparisonLength;
+    if (arr1.length > arr2.length) {
+      comparisonLength = arr1.length;
+    } else {
+      comparisonLength = arr2.length;
+    }
+
+    for (let i = 0; i < comparisonLength; i++) {
+      const part1 = arr1[i];
+      const part2 = arr2[i];
+
+      if (part2 === undefined) {
+        return "wrongOrder";
+      }
+      if (part1 === undefined) {
+        return "rightOrder";
+      }
+
+      if (typeof part1 === "object" && typeof part2 === "object") {
+        const res = compare(part1, part2);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
+        }
+      }
+      if (typeof part1 === "number" && typeof part2 === "object") {
+        const res = compare([part1], part2);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
+        }
+      }
+      if (typeof part1 === "object" && typeof part2 === "number") {
+        const res = compare(part1, [part2]);
+        if (res === "wrongOrder") {
+          return "wrongOrder";
+        } else if (res === "rightOrder") {
+          return "rightOrder";
+        }
+      }
+
+      if (part1 > part2) {
+        return "wrongOrder";
+      }
+      if (part1 < part2) {
+        return "rightOrder";
+      }
+    }
+
+    return "equal";
+  };
+
+  let hasChangedOrder = true;
+  while (hasChangedOrder) {
+    hasChangedOrder = false;
+    for (let i = 0; i < data.length - 1; i++) {
+      // console.log(
+      //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        data[i]    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 102 \n",
+      //   "color: white; background: black; font-weight: bold",
+      //   "",
+      //   data[i],
+      //   data[i + 1]
+      // );
+
+      const res = compare(data[i], data[i + 1]);
+
+      if (res === "wrongOrder") {
+        const temp = data[i];
+        data[i] = data[i + 1];
+        data[i + 1] = temp;
+        hasChangedOrder = true;
+      }
+    }
   }
+
+  let firstDividerIndex;
+  let secondDividerIndex;
+  for (let i = 0; i < data.length - 1; i++) {
+    if (
+      data[i][0] &&
+      data[i][0][0] === 2 &&
+      data[i][0].length === 1 &&
+      data[i].length === 1
+    ) {
+      firstDividerIndex = i + 1;
+    }
+    if (
+      data[i][0] &&
+      data[i][0][0] === 6 &&
+      data[i][0].length === 1 &&
+      data[i].length === 1
+    ) {
+      secondDividerIndex = i + 1;
+    }
+  }
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      firstDividerIndex    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 118 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    firstDividerIndex * secondDividerIndex
+  );
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      secondDividerIndex    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 141 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    secondDividerIndex
+  );
+
+  // data.forEach((line, index) => {
+  //   // debugger;
+
+  //   const res = compare(pair[0], pair[1]);
+  //   if (res === "rightOrder") {
+  //     result += index + 1;
+  //   }
+  // });
 
   let dataToRender = [];
   data.forEach((row) => {
