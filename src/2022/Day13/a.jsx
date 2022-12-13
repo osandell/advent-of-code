@@ -3,79 +3,17 @@ import eData from "./exampleData";
 import rData from "./realData";
 import Render from "../../Render";
 
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
-
-const extractArr = (row) => {
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    row    \x1b[8m\x1b[40m\x1b[0m\n",
-    "color: white; background: black; font-weight: bold",
-    row
-  );
-  if (!row.includes("[")) {
-    return row.split(",").map((nr) => parseInt(nr));
-  }
-
-  let newArr = [];
-  row.split("],").forEach((part) => {
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    part    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      part
-    );
-    if (part.includes("[")) {
-      const digits = part.split("[")[0].split(",");
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    digits    \x1b[8m\x1b[40m\x1b[0m\n",
-        "color: white; background: black; font-weight: bold",
-        digits
-      );
-
-      digits.forEach((digit) => {
-        if (parseInt(digit) >= 0) {
-          newArr.push(parseInt(digit));
-        }
-      });
-      let rightSideArray = part.split("[")[1];
-      if (rightSideArray.includes("]")) {
-        rightSideArray = rightSideArray.split("]")[0];
-      }
-      rightSideArray = "[" + rightSideArray + "]";
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    rightSideArray    \x1b[8m\x1b[40m\x1b[0m\n",
-        "color: white; background: black; font-weight: bold",
-        rightSideArray
-      );
-      // newArr.push(extractArr(rightSideArray));
-    }
-
-    //   if (part.length === 1) {
-    //     return parseInt(part);
-    //   }
-
-    //   return part.split(",").map((part) => parseInt(part));
-    // }
-  });
-
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArr    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 37 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    newArr
-  );
-
-  return newArr;
-};
-
-// *********************************************************************************
-// *********************************************************************************
-// *********************************************************************************
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 const data = eData.split(/\n\n/).map((pair) =>
-  // *********************************************************************************
-  // *********************************************************************************
-  // *********************************************************************************
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   pair.split(/\n/).map((row) => {
-    const arr = extractArr(row.substring(1, row.length - 1));
+    // const arr = extractArr(row.substring(1, row.length - 1));
+    const arr = JSON.parse(row.replace(/\'/g, '"'));
+
     return arr;
   })
 );
@@ -101,12 +39,6 @@ export default () => {
 
   let result = 0;
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
-  }
-
   const getIsOk = (arr1, arr2) => {
     let comparisonLength;
     if (arr1.length > arr2.length) {
@@ -119,13 +51,24 @@ export default () => {
       const part1 = arr1[i];
       const part2 = arr2[i];
 
+      if (part2 === undefined) {
+        return false;
+      }
+      if (part1 === undefined) {
+        return true;
+      }
+
       if (typeof part1 === "object" && typeof part2 === "object") {
-        return getIsOk(part1, part2);
+        if (!getIsOk(part1, part2)) {
+          return false;
+        }
       }
       if (typeof part1 === "number" && typeof part2 === "object") {
         if (part1 >= 0) {
           // not NaN
-          return getIsOk([part1], part2);
+          if (!getIsOk([part1], part2)) {
+            return false;
+          }
         } else {
           return true;
         }
@@ -133,7 +76,9 @@ export default () => {
       if (typeof part1 === "object" && typeof part2 === "number") {
         if (part2 >= 0) {
           // not NaN
-          return getIsOk(part1, [part2]);
+          if (!getIsOk(part1, [part2])) {
+            return false;
+          }
         } else {
           return false;
         }
@@ -151,14 +96,8 @@ export default () => {
   };
 
   data.forEach((pair, index) => {
-    // debugger;
+    debugger;
     let isOk = getIsOk(pair[0], pair[1]);
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    isOk    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      isOk
-    );
 
     if (isOk) {
       result += index + 1;
