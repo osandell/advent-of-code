@@ -6,7 +6,7 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = eData
+const data = rData
   .split(/\n/)
   .map((row) =>
     row
@@ -35,7 +35,8 @@ export default () => {
   // }
   const totalNrOfMoves = 99999999999999999999999999;
 
-  const [moveNr, setMoveNr] = useState(0);
+  // const [moveNr, setMoveNr] = useState(570);
+  const [moveNr, setMoveNr] = useState(14450);
   const moveNrRef = React.useRef(moveNr);
   moveNrRef.current = moveNr;
 
@@ -65,26 +66,28 @@ export default () => {
   let walls = {};
 
   data.forEach((wall) => {
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    wall    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      wall
-    );
     // debugger;
     wall.forEach((coord, index) => {
+      // if (coord[1] === 105) {
+      //   debugger;
+      // }
       if (wall[index + 1] && coord[0] === wall[index + 1][0]) {
-        let length = wall[index + 1][1] - coord[1] + 1;
-        for (let i = coord[1]; i < coord[1] + length; i++) {
-          walls[coord[0] + "," + i] = true;
+        let length = wall[index + 1][1] - coord[1];
+        if (length > 0) {
+          for (let i = coord[1]; i < coord[1] + length; i++) {
+            walls[coord[0] + "," + i] = true;
+          }
+        } else {
+          // if (coord[1] === 105) {
+          //   debugger;
+          // }
+          for (let i = coord[1] + length; i < coord[1]; i++) {
+            walls[coord[0] + "," + i] = true;
+          }
         }
       }
       if (wall[index + 1] && coord[1] === wall[index + 1][1]) {
         let length = wall[index + 1][0] - coord[0];
-        console.log(
-          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    length    \x1b[8m\x1b[40m\x1b[0m\n",
-          "color: white; background: black; font-weight: bold",
-          length
-        );
         if (length < 0) {
           length = length - 1;
           // debugger;
@@ -101,15 +104,154 @@ export default () => {
     });
   });
 
-  for (let i = 0; i < 10; i++) {
+  // let startX = 493;
+  let startX = 485;
+  // let endX = 503;
+  let endX = 570;
+  let endY = 230;
+  // let endY = 10;
+
+  for (let i = 0; i < endY; i++) {
     let newRow = [];
-    for (let j = 494; j <= 503; j++) {
+    for (let j = startX; j <= endX; j++) {
       let coord = j.toString() + "," + i.toString();
       walls[coord] ? newRow.push("#") : newRow.push(".");
     }
 
     dataToRender.push(newRow);
   }
+
+  let restingSandPositons = {};
+  let orgSandPos = [500, 0];
+  let sandPos = [...orgSandPos];
+
+  let k = 0;
+
+  const checkDown = (j, i) => {
+    // if (k === moveNr - 1) {
+    //   debugger;
+    // }
+    let downLeftCoord = j.toString() + "," + (i + 1).toString();
+    if (!restingSandPositons[downLeftCoord] && !walls[downLeftCoord]) {
+      if (checkDown(j, i + 1)) {
+        return true;
+      } else if (checkDownLeft(j, i + 1)) {
+        return true;
+      } else if (checkDownRight(j, i + 1)) {
+        return true;
+      } else {
+        restingSandPositons[downLeftCoord] = true;
+        return true;
+      }
+    }
+  };
+
+  const checkDownLeft = (j, i) => {
+    // if (k === moveNr - 1) {
+    //   debugger;
+    // }
+
+    // if (i > endY - 1) {
+    //   console.log(
+    //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      yoyoyoyo    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 145 \n",
+    //     "color: white; background: black; font-weight: bold",
+    //     ""
+    //   );
+    //   return true;
+    // }
+
+    let downLeftCoord = (j - 1).toString() + "," + (i + 1).toString();
+    if (!restingSandPositons[downLeftCoord] && !walls[downLeftCoord]) {
+      if (checkDown(j - 1, i + 1)) {
+        return true;
+      } else if (checkDownLeft(j - 1, i + 1)) {
+        return true;
+      } else if (checkDownRight(j - 1, i + 1)) {
+        return true;
+      } else {
+        restingSandPositons[downLeftCoord] = true;
+        return true;
+      }
+    }
+  };
+
+  const checkDownRight = (j, i) => {
+    let downRightCoord = (j + 1).toString() + "," + (i + 1).toString();
+    if (!restingSandPositons[downRightCoord] && !walls[downRightCoord]) {
+      if (checkDown(j + 1, i + 1)) {
+        return true;
+      } else if (checkDownLeft(j + 1, i + 1)) {
+        return true;
+      } else if (checkDownRight(j + 1, i + 1)) {
+        return true;
+      } else {
+        restingSandPositons[downRightCoord] = true;
+        return true;
+      }
+    }
+  };
+
+  for (k = 0; k < moveNr; k++) {
+    // console.log(
+    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        k    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 178 \n",
+    //   "color: white; background: black; font-weight: bold",
+    //   "",
+    //   Object.keys(restingSandPositons).length
+    // );
+    sandPos[1]++;
+
+    for (let i = 0; i < endY; i++) {
+      for (let j = startX; j <= endX; j++) {
+        if (sandPos[1] === i && sandPos[0] === j) {
+          let coord = j.toString() + "," + (i + 1).toString();
+          if (restingSandPositons[coord] || walls[coord]) {
+            if (!checkDownLeft(j, i) && !checkDownRight(j, i)) {
+              restingSandPositons[j.toString() + "," + i.toString()] = true;
+            }
+
+            sandPos = [...orgSandPos];
+          }
+        }
+      }
+    }
+  }
+
+  moveNr === k &&
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      restingSandPositons    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 135 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      Object.keys(restingSandPositons).length
+    );
+
+  // for (let i = 0; i < endY; i++) {
+  //   for (let j = startX; j <= 503; j++) {
+  //     if (sandPos[1] === i && sandPos[0] === j) {
+  //       dataToRender[i][j - startX] = "+";
+  //     }
+  //     if (restingSandPositons[j.toString() + "," + i.toString()]) {
+  //       dataToRender[i][j - startX] = "o";
+  //     }
+  //   }
+  // }
+  for (let i = 0; i < 170; i++) {
+    for (let j = startX; j <= 570; j++) {
+      if (sandPos[1] === i && sandPos[0] === j) {
+        dataToRender[i][j - startX] = "+";
+      }
+      if (restingSandPositons[j.toString() + "," + i.toString()]) {
+        dataToRender[i][j - startX] = "o";
+      }
+    }
+  }
+
+  // console.log(
+  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      restingSandPositons    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 128 \n",
+  //   "color: white; background: black; font-weight: bold",
+  //   "",
+  //   restingSandPositons
+  // );
+
   // for (let i = 0; i < 170; i++) {
   //   let newRow = [];
   //   for (let j = 485; j <= 570; j++) {
@@ -124,16 +266,6 @@ export default () => {
 
   return (
     <div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={false}
-        sizeX={"30px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
       <div style={{ marginTop: "24px" }}>
         <button
           onClick={() => moveNr > 0 && setMoveNr(0)}
@@ -190,6 +322,15 @@ export default () => {
           Next 10
         </button>
         <button
+          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 100)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
+          }}
+        >
+          Next 100
+        </button>
+        <button
           onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
           style={{
             marginRight: "8px",
@@ -201,6 +342,16 @@ export default () => {
       </div>
       <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
       <div style={{ marginTop: "24px" }}>Result: {result}</div>
+      <Render
+        dataToRender={dataToRender}
+        emptyTileIndicator={""}
+        shouldRenderBinarily={false}
+        shouldInvertX={false}
+        shouldInvertY={false}
+        sizeX={"30px"}
+        sizeY={"15px"}
+        isCenterOrigin={false}
+      />
     </div>
   );
 };
