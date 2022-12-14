@@ -6,7 +6,13 @@ import Render from "../../Render";
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
-const data = rData.split(/\n/).map((row) => row.split(""));
+const data = eData
+  .split(/\n/)
+  .map((row) =>
+    row
+      .split("->")
+      .map((coord) => coord.split(",").map((Number) => parseInt(Number)))
+  );
 
 const isAdjecent = (part1, part2) =>
   (part1[0] === part2[0] ||
@@ -54,14 +60,65 @@ export default () => {
   }
 
   let dataToRender = [];
-  data.forEach((row) => {
-    let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
+  // data.forEach((row) => {
+
+  let walls = {};
+
+  data.forEach((wall) => {
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    wall    \x1b[8m\x1b[40m\x1b[0m\n",
+      "color: white; background: black; font-weight: bold",
+      wall
+    );
+    // debugger;
+    wall.forEach((coord, index) => {
+      if (wall[index + 1] && coord[0] === wall[index + 1][0]) {
+        let length = wall[index + 1][1] - coord[1] + 1;
+        for (let i = coord[1]; i < coord[1] + length; i++) {
+          walls[coord[0] + "," + i] = true;
+        }
+      }
+      if (wall[index + 1] && coord[1] === wall[index + 1][1]) {
+        let length = wall[index + 1][0] - coord[0];
+        console.log(
+          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    length    \x1b[8m\x1b[40m\x1b[0m\n",
+          "color: white; background: black; font-weight: bold",
+          length
+        );
+        if (length < 0) {
+          length = length - 1;
+          // debugger;
+          for (let i = coord[0]; i > coord[0] + length; i--) {
+            walls[i + "," + coord[1]] = true;
+          }
+        } else {
+          length = length + 1;
+          for (let i = coord[0]; i < coord[0] + length; i++) {
+            walls[i + "," + coord[1]] = true;
+          }
+        }
+      }
     });
+  });
+
+  for (let i = 0; i < 10; i++) {
+    let newRow = [];
+    for (let j = 494; j <= 503; j++) {
+      let coord = j.toString() + "," + i.toString();
+      walls[coord] ? newRow.push("#") : newRow.push(".");
+    }
 
     dataToRender.push(newRow);
-  });
+  }
+  // for (let i = 0; i < 170; i++) {
+  //   let newRow = [];
+  //   for (let j = 485; j <= 570; j++) {
+  //     let coord = j.toString() + "," + i.toString();
+  //     walls[coord] ? newRow.push("#") : newRow.push(".");
+  //   }
+
+  //   dataToRender.push(newRow);
+  // }
 
   // *********************************************************************************
 
@@ -73,7 +130,7 @@ export default () => {
         shouldRenderBinarily={false}
         shouldInvertX={false}
         shouldInvertY={false}
-        sizeX={"20px"}
+        sizeX={"30px"}
         sizeY={"15px"}
         isCenterOrigin={false}
       />

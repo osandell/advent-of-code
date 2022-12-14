@@ -54,14 +54,31 @@ export default () => {
   }
 
   let dataToRender = [];
-  data.forEach((row) => {
+  // data.forEach((row) => {
+
+  for (let i = 0; i < 200; i++) {
     let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
+    for (let j = 0; j < 200; j++) {
+      newRow.push(".");
+    }
 
     dataToRender.push(newRow);
-  });
+  }
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      dataToRender    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 68 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    dataToRender
+  );
+  // data.forEach((row) => {
+  //   let newRow = [];
+  //   row.forEach((tile) => {
+  //     newRow.push(tile);
+  //   });
+
+  //   dataToRender.push(newRow);
+  // });
 
   // *********************************************************************************
 
