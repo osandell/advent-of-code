@@ -166,6 +166,14 @@ export default () => {
       }
     });
 
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        nrOfCovPoints    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 169 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      nrOfCovPoints,
+      iY
+    );
+
     if (nrOfCovPoints > highest) {
       highest = nrOfCovPoints;
     }
