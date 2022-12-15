@@ -9,7 +9,7 @@ const ROPE_LENGTH = 10;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const sensors = eData.split(/\n/).map((sensor) => {
+const sensors = rData.split(/\n/).map((sensor) => {
   let test = sensor.split("=");
   return {
     sx: parseInt(test[1].split(",")[0]),
@@ -60,6 +60,7 @@ export default () => {
   // *********************************************************************************
 
   let highest = 0;
+  let highestSensor = 0;
   let drawnTile = {};
   let pointsByRow = {};
   let sensorSpans = [];
@@ -155,20 +156,16 @@ export default () => {
   const getXSpanForSensosRow = (sensor, rowNr) => {
     let sensorY = sensor.sy;
     let distance = sensorY - rowNr;
-    return [sensor.left[0] + distance, sensor.right[0] - distance];
+
+    if (distance > 0) {
+      return [sensor.left[0] + distance, sensor.right[0] - distance];
+    } else {
+      return [sensor.left[0] - distance, sensor.right[0] + distance];
+    }
   };
 
   sensors.forEach((sensor, sensorIndex) => {
     let sensorY = sensor.sy;
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    sensorY    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      sensorY
-    );
-
-    if (sensorY === 11) {
-      debugger;
-    }
 
     let spansForThisSensor = [[sensor.left[0], sensor.right[0]]];
 
@@ -184,36 +181,59 @@ export default () => {
       }
     });
 
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    spansForThisSensorwwww    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      spansForThisSensor
-    );
-
     let uniqueSpansForThisSensor = [];
 
     spansForThisSensor.forEach((span, index) => {
       if (index === 0) {
         uniqueSpansForThisSensor = [[...span]];
       } else {
-        uniqueSpansForThisSensor.forEach((uniqueSpan, index) => {
+        let isEncompassing = -1;
+        let isOverlappingLeft = -1;
+        let isOverlappingRight = -1;
+        let isOutside = -1;
+        let isInside = -1;
+        uniqueSpansForThisSensor.forEach((uniqueSpan, uniqueSpanIndex) => {
           if (span[0] < uniqueSpan[0] && span[1] > uniqueSpan[1]) {
+            isEncompassing = uniqueSpanIndex;
             // If the new span encompasses the unique span, replace the unique span
-            uniqueSpansForThisSensor[index] = span;
-          } else if (span[0] > uniqueSpan[0] && span[1] < uniqueSpan[1]) {
+          } else if (span[0] >= uniqueSpan[0] && span[1] <= uniqueSpan[1]) {
             // If the new span is inside the unique span, do nothing
-          } else if (span[0] < uniqueSpan[0] && span[1] < uniqueSpan[1]) {
+            isInside = uniqueSpanIndex;
+          } else if (
+            span[0] < uniqueSpan[0] &&
+            span[1] <= uniqueSpan[1] &&
+            span[1] >= uniqueSpan[0]
+          ) {
             // If the new spans left boundary is to the left of the unique spans
             // left boundary, and the new spans right boundary is to the left of
             // the unique spans right boundary, adjust the unique span
-            uniqueSpansForThisSensor[index][0] = span[0];
-          } else if (span[0] > uniqueSpan[0] && span[1] > uniqueSpan[1]) {
+            isOverlappingLeft = uniqueSpanIndex;
+          } else if (
+            span[0] >= uniqueSpan[0] &&
+            span[1] > uniqueSpan[1] &&
+            span[0] <= uniqueSpan[1]
+          ) {
             // If the new spans left boundary is to the right of the unique spans
             // left boundary, and the new spans right boundary is to the right of
             // the unique spans right boundary, adjust the unique span
-            uniqueSpansForThisSensor[index][1] = span[1];
+            isOverlappingRight = uniqueSpanIndex;
+          } else {
+            // If the new span is outside the unique span, add it to the list
+
+            isOutside = uniqueSpanIndex;
           }
         });
+
+        if (isInside > -1) {
+        } else if (isEncompassing > -1) {
+          uniqueSpansForThisSensor[isEncompassing] = span;
+        } else if (isOverlappingLeft > -1) {
+          uniqueSpansForThisSensor[isOverlappingLeft][0] = span[0];
+        } else if (isOverlappingRight > -1) {
+          uniqueSpansForThisSensor[isOverlappingRight][1] = span[1];
+        } else if (isOutside > -1) {
+          uniqueSpansForThisSensor.push(span);
+        }
       }
     });
 
@@ -223,15 +243,34 @@ export default () => {
       "",
       uniqueSpansForThisSensor
     );
-  });
 
-  Object.values(pointsByRow).forEach((val) => {
-    if (val > highest) {
-      highest = val;
+    let totalSpanLength = 0;
+    uniqueSpansForThisSensor.forEach((span) => {
+      let spanLength = span[1] - span[0];
+      totalSpanLength += Math.abs(spanLength);
+    });
+
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        totalSpanLengths    \x1b[8m\x1b[40m\x1b[0m%c aa.jsx 266 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      totalSpanLength
+    );
+
+    if (totalSpanLength > highest) {
+      highest = totalSpanLength;
+      highestSensor = sensorY;
     }
   });
 
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highestSensor    \x1b[8m\x1b[40m\x1b[0m%c aa.jsx 266 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    highestSensor
+  );
+
   // *********************************************************************************
 
-  return <div></div>;
+  return <div> {highest}</div>;
 };
