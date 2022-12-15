@@ -27,7 +27,7 @@ import Day13a from "./2022/Day13/a";
 import Day13b from "./2022/Day13/b";
 import Day14a from "./2022/Day14/a";
 import Day14b from "./2022/Day14/b";
-import Day15a from "./2022/Day15/a";
+import Day15a from "./2022/Day15/aa";
 import Day15b from "./2022/Day15/b";
 import Day16a from "./2022/Day16/a";
 import Day16b from "./2022/Day16/b";
