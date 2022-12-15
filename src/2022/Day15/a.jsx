@@ -9,7 +9,20 @@ const ROPE_LENGTH = 10;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = rData.split(/\n/).map((row) => row.split(""));
+const data = eData.split(/\n/).map((row) => {
+  let test = row.split("=");
+  return {
+    sx: parseInt(test[1].split(",")[0]),
+    sy: parseInt(test[2].split(":")[0]),
+    bx: parseInt(test[3].split(",")[0]),
+    by: parseInt(test[4]),
+  };
+});
+console.log(
+  "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    data    \x1b[8m\x1b[40m\x1b[0m\n",
+  "color: white; background: black; font-weight: bold",
+  data
+);
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -59,15 +72,113 @@ export default () => {
     });
   }
 
+  // let startX = 493;
+  let startX = -20;
+  let endX = 45;
+  let startY = -40;
+  let endY = 43;
+  // let endX = 503;
+
+  // let endY = 10;
+
+  const drawTile = (x1, y1, x2, y2) => {};
+
+  let highest = 0;
+
   let dataToRender = [];
-  data.forEach((row) => {
+  let drawnTile = {};
+  for (let iY = startY; iY < endY; iY++) {
     let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
+    for (let iX = startX; iX <= endX; iX++) {
+      let foundSomething = false;
+      data.forEach((row, rowIndex) => {
+        let distance = Math.abs(row.sx - row.bx) + Math.abs(row.sy - row.by);
+
+        for (let i = 0; i <= distance; i++) {
+          for (let j = 0; j <= distance; j++) {
+            if (row.sx === iX && row.sy === iY) {
+              if (!drawnTile[iX.toString() + ":" + iY.toString()]) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("S");
+                foundSomething = true;
+              }
+            }
+
+            if (row.bx === iX && row.by === iY) {
+              if (!drawnTile[iX.toString() + ":" + iY.toString()]) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("B");
+                foundSomething = true;
+              }
+            }
+
+            if (row.sx + i - j === iX && row.sy + j === iY) {
+              if (
+                !drawnTile[iX.toString() + ":" + iY.toString()] &&
+                i - j >= 0
+              ) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("#");
+                foundSomething = true;
+              }
+            }
+            if (row.sx - i + j === iX && row.sy + j === iY) {
+              if (
+                !drawnTile[iX.toString() + ":" + iY.toString()] &&
+                i - j >= 0
+              ) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("#");
+                foundSomething = true;
+              }
+            }
+            if (row.sx + i - j === iX && row.sy - j === iY) {
+              if (
+                !drawnTile[iX.toString() + ":" + iY.toString()] &&
+                i - j >= 0
+              ) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("#");
+                foundSomething = true;
+              }
+            }
+            if (row.sx - i + j === iX && row.sy - j === iY) {
+              if (
+                !drawnTile[iX.toString() + ":" + iY.toString()] &&
+                i - j >= 0
+              ) {
+                drawnTile[iX.toString() + ":" + iY.toString()] = true;
+                newRow.push("#");
+                foundSomething = true;
+              }
+            }
+          }
+        }
+      });
+
+      !foundSomething && newRow.push(".");
+    }
+
+    let nrOfCovPoints = 0;
+    newRow.forEach((tile) => {
+      if (tile === "#") {
+        nrOfCovPoints++;
+      }
     });
 
+    if (nrOfCovPoints > highest) {
+      highest = nrOfCovPoints;
+    }
+
     dataToRender.push(newRow);
-  });
+  }
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highest    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 190 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    highest
+  );
 
   // *********************************************************************************
 

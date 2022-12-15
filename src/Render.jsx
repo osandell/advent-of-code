@@ -95,7 +95,7 @@ const render = ({
   const xIndexRow = [];
   for (let x = 0; x < dataToRender[0].length; x++) {
     const nr = isCenterOrigin ? x - (dataToRender[0].length - 1) / 2 : x;
-    xIndexRow.push(nr.toString());
+    xIndexRow.push((nr - 2).toString());
   }
   map.push(
     <div key={"-1"} style={styling}>
