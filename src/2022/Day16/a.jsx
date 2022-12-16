@@ -30,7 +30,25 @@ console.log(
 );
 
 export default () => {
-  let result = 0;
+  const getMaximumPressureForMoveAmount = (valveName, nrOfForwardMoves) => {
+    let maximumPressureOpeningCurrent = 0;
+    const valve = valves.find((v) => v.valve === valveName);
+    valve.tunnels.forEach((tunnel) => {
+      const nextValve = valves.find((v) => v.valve === tunnel);
+
+      if (nrOfForwardMoves > 1) {
+        let nextValveTotalPressure = getMaximumPressureForMoveAmount(
+          nextValve.valve,
+          nrOfForwardMoves - 1
+        );
+        if (nextValveTotalPressure > maximumPressureOpeningCurrent) {
+          maximumPressureOpeningCurrent = nextValveTotalPressure;
+        }
+      }
+    });
+
+    return maximumPressureOpeningCurrent + valve.rate;
+  };
 
   let currentValveId = "AA";
   let hasOpenedCurrent = false;
@@ -78,27 +96,6 @@ export default () => {
   }
 
   return <div>{totalPressure}</div>;
-};
-
-const getMaximumPressureForMoveAmount = (valveName, nrOfForwardMoves) => {
-  let maximumPressureSkippingCurrent = 0;
-  let maximumPressureOpeningCurrent = 0;
-  const valve = valves.find((v) => v.valve === valveName);
-  valve.tunnels.forEach((tunnel) => {
-    const nextValve = valves.find((v) => v.valve === tunnel);
-
-    if (nrOfForwardMoves > 1) {
-      let nextValveTotalPressure = getMaximumPressureForMoveAmount(
-        nextValve.valve,
-        nrOfForwardMoves - 1
-      );
-      if (nextValveTotalPressure > maximumPressureOpeningCurrent) {
-        maximumPressureOpeningCurrent = nextValveTotalPressure;
-      }
-    }
-  });
-
-  return maximumPressureOpeningCurrent + valve.rate;
 };
 
 // result = getMaximumPressureForMoveAmount("AA", 20);
