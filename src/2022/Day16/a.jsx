@@ -80,42 +80,25 @@ export default () => {
   return <div>{totalPressure}</div>;
 };
 
-// const getTotalPressureFromValve = (valveName, minutesLeft) => {
-//   let maximumPressureSkippingCurrent = 0;
-//   let maximumPressureOpeningCurrent = 0;
-//   const valve = valves.find((v) => v.valve === valveName);
-//   valve.tunnels.forEach((tunnel) => {
-//     const nextValve = valves.find((v) => v.valve === tunnel);
-//     if (minutesLeft > 1) {
-//       let nextValveTotalPressure = getTotalPressureFromValve(
-//         nextValve.valve,
-//         minutesLeft - 1
-//       );
-//       if (nextValveTotalPressure > maximumPressureSkippingCurrent) {
-//         maximumPressureSkippingCurrent = nextValveTotalPressure;
-//       }
-//     } else if (minutesLeft === 1) {
-//       if (nextValve.rate > maximumPressureSkippingCurrent) {
-//         maximumPressureSkippingCurrent = nextValve.rate;
-//       }
-//     }
+const getMaximumPressureForMoveAmount = (valveName, nrOfForwardMoves) => {
+  let maximumPressureSkippingCurrent = 0;
+  let maximumPressureOpeningCurrent = 0;
+  const valve = valves.find((v) => v.valve === valveName);
+  valve.tunnels.forEach((tunnel) => {
+    const nextValve = valves.find((v) => v.valve === tunnel);
 
-//     if (minutesLeft > 2) {
-//       let nextValveTotalPressure = getTotalPressureFromValve(
-//         nextValve.valve,
-//         minutesLeft - 2
-//       );
-//       if (nextValveTotalPressure > maximumPressureOpeningCurrent) {
-//         maximumPressureOpeningCurrent = nextValveTotalPressure;
-//       }
-//     }
-//   });
+    if (nrOfForwardMoves > 1) {
+      let nextValveTotalPressure = getMaximumPressureForMoveAmount(
+        nextValve.valve,
+        nrOfForwardMoves - 1
+      );
+      if (nextValveTotalPressure > maximumPressureOpeningCurrent) {
+        maximumPressureOpeningCurrent = nextValveTotalPressure;
+      }
+    }
+  });
 
-//   if (maximumPressureOpeningCurrent > maximumPressureSkippingCurrent) {
-//     return maximumPressureOpeningCurrent + valve.rate;
-//   } else {
-//     return maximumPressureSkippingCurrent;
-//   }
-// };
+  return maximumPressureOpeningCurrent + valve.rate;
+};
 
-// result = getTotalPressureFromValve("AA", 20);
+// result = getMaximumPressureForMoveAmount("AA", 20);
