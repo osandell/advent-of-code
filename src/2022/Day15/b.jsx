@@ -9,7 +9,15 @@ const ROPE_LENGTH = 10;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = rData.split(/\n/).map((row) => row.split(""));
+const sensors = rData.split(/\n/).map((sensor) => {
+  let test = sensor.split("=");
+  return {
+    sx: parseInt(test[1].split(",")[0]),
+    sy: parseInt(test[2].split(":")[0]),
+    bx: parseInt(test[3].split(",")[0]),
+    by: parseInt(test[4]),
+  };
+});
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -26,8 +34,8 @@ export default () => {
   let currMove = 0;
 
   // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
+  // for (let i = 0; i < sensors.length; i++) {
+  //   const move = sensors[i];
   //   const nrOfMovesInCurrentDirection = move[1];
   //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
   //     totalNrOfMoves++;
@@ -51,105 +59,92 @@ export default () => {
 
   // *********************************************************************************
 
-  let result = 0;
+  let highest = 0;
+  let highestSensor = 0;
+  let drawnTile = {};
+  let pointsByRow = {};
+  let sensorSpans = [];
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
+  sensors.forEach((sensor, sensorIndex) => {
+    let distance =
+      Math.abs(sensor.sx - sensor.bx) + Math.abs(sensor.sy - sensor.by);
+    sensors[sensorIndex].top = [sensor.sx, sensor.sy - distance];
+    sensors[sensorIndex].bottom = [sensor.sx, sensor.sy + distance];
+    sensors[sensorIndex].left = [sensor.sx - distance, sensor.sy];
+    sensors[sensorIndex].right = [sensor.sx + distance, sensor.sy];
+
+    sensorSpans.push([sensor.sy - distance, sensor.sy + distance]);
+  });
+
+  const getXSpanForSensorRow = (sensor, rowNr) => {
+    let sensorY = sensor.sy;
+    let distance = sensorY - rowNr;
+
+    if (distance > 0) {
+      return [sensor.left[0] + distance, sensor.right[0] - distance];
+    } else {
+      return [sensor.left[0] - distance, sensor.right[0] + distance];
+    }
+  };
+
+  const iterationStart = 0;
+  const iterationFinish = 4000000;
+
+  for (let rowNr = iterationStart; rowNr <= iterationFinish; rowNr++) {
+    let spansForThisRowNr = [];
+
+    sensors.forEach((sensor, sensor2Index) => {
+      // Row is within the Y span of sensor
+      if (rowNr >= sensor.top[1] && rowNr <= sensor.bottom[1]) {
+        // Get the span of sensor for this particular row
+        let sensorXSpanForThisRow = getXSpanForSensorRow(sensor, rowNr);
+        spansForThisRowNr.push(sensorXSpanForThisRow);
+      }
+    });
+
+    let lastDigit = -99999999999999;
+    spansForThisRowNr.forEach((span, spanIndex) => {
+      let potentialNr;
+      spansForThisRowNr.forEach((spannn) => {
+        if (spannn[0] - 2 === lastDigit) {
+          potentialNr = spannn[0] - 1;
+        }
+      });
+
+      if (potentialNr) {
+        // console.log(
+        //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      yo    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 115 \n",
+        //   "color: white; background: black; font-weight: bold",
+        //   "",
+        //   potentialNr,
+        //   spansForThisRowNr,
+        //   (span[0] - 1) * 4000000 + rowNr
+        // );
+
+        let foundIt = true;
+
+        spansForThisRowNr.forEach((span2) => {
+          if (potentialNr >= span2[0] && potentialNr <= span2[1]) {
+            foundIt = false;
+          }
+        });
+
+        if (foundIt) {
+          console.log(
+            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              found it    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 126 \n",
+            "color: white; background: black; font-weight: bold",
+            "",
+            potentialNr * 4000000 + rowNr
+          );
+        }
+      }
+      lastDigit = span[1];
     });
   }
 
-  let dataToRender = [];
-  data.forEach((row) => {
-    let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
-
-    dataToRender.push(newRow);
-  });
+  7652362337769;
 
   // *********************************************************************************
 
-  return (
-    <div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={false}
-        sizeX={"20px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(0)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Beginning
-        </button>
-        <button
-          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 9 ? "black" : "lightGray",
-          }}
-        >
-          Prev 10
-        </button>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => startPlaying()}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
-          }}
-        >
-          Next 10
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          End
-        </button>
-      </div>
-      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
-      <div style={{ marginTop: "24px" }}>Result: {result}</div>
-    </div>
-  );
+  return <div> {highest}</div>;
 };
