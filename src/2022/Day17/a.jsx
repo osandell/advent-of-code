@@ -5,7 +5,7 @@ import Render from "../../Render";
 
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
-const INITIAL_MOVE_NR = 50;
+const INITIAL_MOVE_NR = 14000;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -410,12 +410,20 @@ export default () => {
       }
 
       if (Object.keys(yPositions).length === 7) {
-        currMove === moveNr &&
-          console.log(
-            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    yo    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 413 \n",
-            "color: white; background: black; font-weight: bold",
-            ""
-          );
+        // currMove === moveNr &&
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    yo    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 413 \n",
+        //     "color: white; background: black; font-weight: bold",
+        //     ""
+        //   );
+
+        let newFilledTiles = {};
+        Object.keys(filledTiles).forEach((key) => {
+          if (key.split(",")[1] > currentShapeYPos - shapeHeight - 10) {
+            newFilledTiles[key] = true;
+          }
+        });
+        filledTiles = newFilledTiles;
       }
 
       currentShape = getNextShape(currentShape);
