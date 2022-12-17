@@ -1,76 +1,12 @@
-import React, { useState } from "react";
-import eData from "./exampleData";
-import rData from "./realData";
-import Render from "../../Render";
-import test2 from "./test2";
-
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
-const INITIAL_MOVE_NR = 0;
-// const INITIAL_MOVE_NR = 0;
-
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = eData.split("").map((direction) => {
-  switch (direction) {
-    case "<":
-      return false;
-    case ">":
-      return true;
-  }
-});
-
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
-
-export default () => {
-  let currMove = 0;
-
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
-  const totalNrOfMoves = 99999999999999999999999999;
-
-  const [moveNr, setMoveNr] = useState(INITIAL_MOVE_NR);
-  const moveNrRef = React.useRef(moveNr);
-  moveNrRef.current = moveNr;
-
-  const startPlaying = () => {
-    if (moveNr < totalNrOfMoves) {
-      const timer = setInterval(() => {
-        moveNrRef.current < totalNrOfMoves
-          ? setMoveNr(moveNrRef.current + 1)
-          : clearInterval(timer);
-      }, 30);
-    }
-  };
-
-  // *********************************************************************************
-
-  // test2(data);
-
-  let result = 0;
+export default (data) => {
   let pileHeight = 0;
   let totalTruncatedHeight = 0;
   let currentShape = "horBar";
   let currentShapeYPos = 3;
   let currentShapeXPos = 2;
   let nrOfSettledShapes = 0;
+
+  let currMove = 0;
 
   let filledTiles = [];
   for (let i = -12; i < 10; i++) {
@@ -349,6 +285,7 @@ export default () => {
     }
   };
 
+  let moveNr = 20;
   let dataToRender = [];
   let moveCounter = 0;
   for (let m = 0; m <= moveNr; m++) {
@@ -364,29 +301,6 @@ export default () => {
         pileHeight + totalTruncatedHeight
       );
     }
-
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      nrOfSettledShapes    \x1b[8m\x1b[40m\x1b[0m%c test.js 316 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   currMove,
-    //   currentShapeYPos,
-    //   currentShapeXPos
-    // );
-
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        pileHeight    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 366 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   pileHeight + totalTruncatedHeight
-    // );
-
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nrOfSettledShapes    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 366 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   nrOfSettledShapes
-    // );
 
     if (currMove === 380) {
       // debugger;
@@ -406,54 +320,54 @@ export default () => {
     }
     moveCounter++;
 
-    dataToRender = [];
-    for (let i = 0; i <= currentShapeYPos; i++) {
-      let newRow = [];
-      for (let j = 0; j < 7; j++) {
-        if (checkIsPartOfGround(j, i)) {
-          newRow.push("#");
-        } else if (checkIsPartOfShape(j, i)) {
-          newRow.push("@");
-        } else {
-          newRow.push(".");
-        }
-      }
-      dataToRender.push(newRow);
-    }
+    // dataToRender = [];
+    // for (let i = 0; i <= currentShapeYPos; i++) {
+    //   let newRow = [];
+    //   for (let j = 0; j < 7; j++) {
+    //     if (checkIsPartOfGround(j, i)) {
+    //       newRow.push("#");
+    //     } else if (checkIsPartOfShape(j, i)) {
+    //       newRow.push("@");
+    //     } else {
+    //       newRow.push(".");
+    //     }
+    //   }
+    //   dataToRender.push(newRow);
+    // }
 
     if (!checkWillCollide()) {
       currentShapeYPos--;
     } else {
       fillTiles();
 
-      let yPositions = {};
       let shapeHeight = getShapeHeight(currentShape);
-      if (currMove === moveNr) {
-        // debugger;
-      }
-      for (
-        let i = currentShapeYPos - shapeHeight - 6;
-        i <= currentShapeYPos - shapeHeight + 6;
-        i++
-      ) {
-        for (let j = 0; j < 7; j++) {
-          if (i > 10 && filledTiles[i][j]) {
-            yPositions[j.toString()] = true;
-          }
-        }
-      }
 
+      let truncAmount = 10;
       let hasTruncated = false;
       let truncatedHeight = 0;
-      if (Object.keys(yPositions).length === 7) {
+      if (nrOfSettledShapes === 40) {
         let oldHeight = filledTiles.length;
+        console.log(
+          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    oldHeight    \x1b[8m\x1b[40m\x1b[0m\n",
+          "color: white; background: black; font-weight: bold",
+          oldHeight,
+          currentShapeYPos
+        );
         filledTiles = filledTiles.filter((row, index) => {
-          return index > currentShapeYPos - shapeHeight - 10;
+          return index > currentShapeYPos - shapeHeight - truncAmount;
         });
+        debugger;
+        let newHeight = filledTiles.length;
+        console.log(
+          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    newHeight    \x1b[8m\x1b[40m\x1b[0m\n",
+          "color: white; background: black; font-weight: bold",
+          newHeight
+        );
         truncatedHeight = oldHeight - filledTiles.length;
 
         hasTruncated = true;
-        totalTruncatedHeight += currentShapeYPos - shapeHeight - 10 + 1;
+        totalTruncatedHeight +=
+          currentShapeYPos - shapeHeight - truncAmount + 1;
       }
 
       currentShape = getNextShape(currentShape);
@@ -465,7 +379,7 @@ export default () => {
           pileHeight +
           2 +
           getShapeHeight(currentShape) -
-          (currentShapeYPos - shapeHeight - 10 + 1);
+          (currentShapeYPos - shapeHeight - truncAmount + 1);
 
         // pileHeight = pileHeight - (currentShapeYPos - shapeHeight - 10 + 2);
         pileHeight = pileHeight - truncatedHeight;
@@ -485,88 +399,4 @@ export default () => {
 
     currMove++;
   }
-
-  // *********************************************************************************
-
-  return (
-    <div style={{ height: "100vh" }}>
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(0)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Beginning
-        </button>
-        <button
-          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 9 ? "black" : "lightGray",
-          }}
-        >
-          Prev 10
-        </button>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => startPlaying()}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
-          }}
-        >
-          Next 10
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          End
-        </button>
-      </div>
-      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
-      <div style={{ marginTop: "24px" }}>Result: {result}</div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={true}
-        sizeX={"20px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
-    </div>
-  );
 };
