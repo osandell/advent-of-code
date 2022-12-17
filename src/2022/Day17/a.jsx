@@ -372,20 +372,20 @@ export default () => {
     }
     moveCounter++;
 
-    dataToRender = [];
-    for (let i = 0; i <= currentShapeYPos; i++) {
-      let newRow = [];
-      for (let j = 0; j < 7; j++) {
-        if (checkIsPartOfGround(j, i)) {
-          newRow.push("#");
-        } else if (checkIsPartOfShape(j, i)) {
-          newRow.push("@");
-        } else {
-          newRow.push(".");
-        }
-      }
-      dataToRender.push(newRow);
-    }
+    // dataToRender = [];
+    // for (let i = 0; i <= currentShapeYPos; i++) {
+    //   let newRow = [];
+    //   for (let j = 0; j < 7; j++) {
+    //     if (checkIsPartOfGround(j, i)) {
+    //       newRow.push("#");
+    //     } else if (checkIsPartOfShape(j, i)) {
+    //       newRow.push("@");
+    //     } else {
+    //       newRow.push(".");
+    //     }
+    //   }
+    //   dataToRender.push(newRow);
+    // }
 
     if (!checkWillCollide()) {
       currentShapeYPos--;
@@ -442,7 +442,7 @@ export default () => {
 
   return (
     <div style={{ height: "100vh" }}>
-      <div style={{ marginTop: "24px" }}>
+      {/* <div style={{ marginTop: "24px" }}>
         <button
           onClick={() => moveNr > 0 && setMoveNr(0)}
           style={{
@@ -518,7 +518,7 @@ export default () => {
         sizeX={"20px"}
         sizeY={"15px"}
         isCenterOrigin={false}
-      />
+      /> */}
     </div>
   );
 };
