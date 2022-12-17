@@ -69,9 +69,7 @@ export default () => {
     dataToRender.push(newRow);
   });
 
-
-
-  Äh!!! fick bli med hjälp av old school (e)-papper och penna haha... la en pdf här i foldern
+  // Äh!!! fick bli med hjälp av old school (e)-papper och penna haha... la en pdf här i foldern
 
   // *********************************************************************************
 

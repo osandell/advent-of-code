@@ -116,13 +116,6 @@ export default () => {
     }
   }
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      data    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 103 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    data
-  );
-
   let highest = 0;
   let highMonkey;
   let nextHighest = 0;

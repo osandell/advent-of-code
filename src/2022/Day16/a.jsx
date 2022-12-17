@@ -22,13 +22,6 @@ const valves = eData.split(/\n/).map((row) => {
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-console.log(
-  "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    data    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 17 \n",
-  "color: white; background: black; font-weight: bold",
-  "",
-  valves
-);
-
 export default () => {
   const getMaximumPressureForMoveAmount = (valveName, nrOfForwardMoves) => {
     let maximumPressureOpeningCurrent = 0;
