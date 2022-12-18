@@ -12,6 +12,7 @@ const ROPE_LENGTH = 10;
 const data = rData
   .split(/\n/)
   .map((row) => row.split(",").map((nr) => parseInt(nr)));
+const dataStrings = rData.split(/\n/);
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -70,7 +71,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = front + 1;
+    ] = { type: "front", amount: front + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -96,7 +97,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = 0;
+    ] = { type: "front", amount: 0, cube: cube };
   }
 
   let left =
@@ -151,7 +152,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = left + 1;
+    ] = { type: "left", amount: left + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -177,7 +178,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = 0;
+    ] = { type: "left", amount: 0, cube: cube };
   }
 
   let right =
@@ -234,7 +235,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = right + 1;
+    ] = { type: "right", amount: right + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -261,7 +262,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         cube[2]
-    ] = 0;
+    ] = { type: "right", amount: 0, cube: cube };
   }
 
   let back =
@@ -316,7 +317,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         (cube[2] + 1)
-    ] = back + 1;
+    ] = { type: "back", amount: back + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -342,7 +343,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         (cube[2] + 1)
-    ] = 0;
+    ] = { type: "back", amount: 0, cube: cube };
   }
 
   let top =
@@ -397,7 +398,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         (cube[2] + 1)
-    ] = top + 1;
+    ] = { type: "top", amount: top + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -423,7 +424,7 @@ data.forEach((cube, rowIndex) => {
         (cube[1] + 1) +
         ":" +
         (cube[2] + 1)
-    ] = 0;
+    ] = { type: "top", amount: 0, cube: cube };
   }
 
   let bottom =
@@ -478,7 +479,7 @@ data.forEach((cube, rowIndex) => {
         cube[1] +
         ":" +
         (cube[2] + 1)
-    ] = bottom + 1;
+    ] = { type: "bottom", amount: bottom + 1, cube: cube };
   } else {
     sides[
       cube[0] +
@@ -504,166 +505,128 @@ data.forEach((cube, rowIndex) => {
         cube[1] +
         ":" +
         (cube[2] + 1)
-    ] = 0;
+    ] = { type: "bottom", amount: 0, cube: cube };
   }
 });
 
-const checkIsFrontOrBack = (coords) => {
-  let lastZ;
-  coords.forEach((coord) => {
-    let z = coord.split(":")[2];
+let cubesWithSurface = [];
 
-    if (lastZ && lastZ !== z) {
-      return false;
+let checkAnyObstacleRight = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        (cube[0] + i).toString() + "," + cube[1] + "," + cube[2]
+      )
+    ) {
+      return [cube[0] + i - 1, cube[1], cube[2]];
     }
-
-    lastZ = z;
-  });
-  return true;
-};
-const checkIsLeftOrRight = (coords) => {
-  let lastX;
-  let isLorR = true;
-  coords.forEach((coord) => {
-    let x = coord.split(":")[0];
-
-    if (lastX && lastX !== x) {
-      isLorR = false;
-    }
-
-    lastX = x;
-  });
-  return isLorR;
-};
-const checkIsTopOrBottom = (coords) => {
-  let lastY;
-  coords.forEach((coord) => {
-    let y = coord.split(":")[0];
-
-    if (lastY && lastY !== y) {
-      return false;
-    }
-
-    lastY = y;
-  });
-  return true;
-};
-
-let total = 0;
-Object.keys(sides).forEach((value, index) => {
-  if (sides[value] === 0) {
-    total++;
   }
-
-  let coords = value.split(",");
-  let isFrontOrBack = checkIsFrontOrBack(coords);
-
-  if (isFrontOrBack && index === 0) {
-    let coords = value
-      .split(",")
-      .map((nr) => nr.split(":").map((nr) => parseInt(nr)));
-
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        coords    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 566 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   coords
-    // );
-
-    let opposite1 =
-      coords[0][0] +
-      ":" +
-      coords[0][1] +
-      ":" +
-      (coords[0][2] + 1) +
-      "," +
-      coords[1][0] +
-      ":" +
-      coords[1][1] +
-      ":" +
-      (coords[1][2] + 1) +
-      "," +
-      coords[2][0] +
-      ":" +
-      coords[2][1] +
-      ":" +
-      (coords[2][2] + 1) +
-      "," +
-      coords[3][0] +
-      ":" +
-      coords[3][1] +
-      ":" +
-      (coords[3][2] + 1);
-
-    let opposite2 =
-      coords[0][0] +
-      ":" +
-      coords[0][1] +
-      ":" +
-      (coords[0][2] - 1) +
-      "," +
-      coords[1][0] +
-      ":" +
-      coords[1][1] +
-      ":" +
-      (coords[1][2] - 1) +
-      "," +
-      coords[2][0] +
-      ":" +
-      coords[2][1] +
-      ":" +
-      (coords[2][2] - 1) +
-      "," +
-      coords[3][0] +
-      ":" +
-      coords[3][1] +
-      ":" +
-      (coords[3][2] - 1);
-
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          opposite1    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 617 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   opposite1
-    // );
-
-    // //opposite
-    // if (sides[opposite1] || sides[opposite2]) {
-    //   console.log(
-    //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    hasopp    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 625 \n",
-    //     "color: white; background: black; font-weight: bold",
-    //     ""
-    //   );
-    // }
+};
+let checkAnyObstacleLeft = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        (cube[0] - i).toString() + "," + cube[1] + "," + cube[2]
+      )
+    ) {
+      return [cube[0] - i + 1, cube[1], cube[2]];
+    }
   }
-});
+};
+let checkAnyObstacleTop = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        cube[0].toString() + "," + cube[1] + i + "," + cube[2]
+      )
+    ) {
+      return [cube[0], cube[1] + i - 1, cube[2]];
+    }
+  }
+};
+let checkAnyObstacleBottom = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        cube[0].toString() + "," + cube[1] - i + "," + cube[2]
+      )
+    ) {
+      return [cube[0], cube[1] - i + 1, cube[2]];
+    }
+  }
+};
+let checkAnyObstacleFront = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        cube[0].toString() + "," + cube[1] + "," + cube[2] - i
+      )
+    ) {
+      return [cube[0], cube[1], cube[2] - i + 1];
+    }
+  }
+};
+let checkAnyObstacleBack = (cube) => {
+  for (let i = 1; i < 30; i++) {
+    if (
+      dataStrings.includes(
+        cube[0].toString() + "," + cube[1] + "," + cube[2] + i
+      )
+    ) {
+      return [cube[0], cube[1], cube[2] + i - 1];
+    }
+  }
+};
 
-// console.log(
-//   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    total    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 643 \n",
-//   "color: white; background: black; font-weight: bold",
-//   "",
-//   total
-// );
-
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
+const checkIsSurficeSide = (type, value, cube) => {
+  // debugger;
+  switch (type) {
+    case "right":
+      if (!checkAnyObstacleRight(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+    case "left":
+      if (!checkAnyObstacleLeft(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+    case "top":
+      if (!checkAnyObstacleTop(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+    case "bottom":
+      if (!checkAnyObstacleBottom(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+    case "front":
+      if (!checkAnyObstacleFront(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+    case "back":
+      if (!checkAnyObstacleBack(cube)) {
+        if (!cubesWithSurface.includes(cube.join(","))) {
+          cubesWithSurface.push(cube.join(","));
+        }
+      }
+      return true;
+  }
+};
 
 export default () => {
-  let currMove = 0;
-
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
   const totalNrOfMoves = 99999999999999999999999999;
 
   const [moveNr, setMoveNr] = useState(0);
@@ -680,25 +643,44 @@ export default () => {
     }
   };
 
+  let total = 0;
+  Object.keys(sides).forEach((value, index) => {
+    if (sides[value].amount === 0) {
+      total++;
+
+      // if (parseInt(value.split(",")[0].split(":")[2]) === 0) {
+      let type = sides[value].type;
+      let cube = sides[value].cube;
+
+      if (moveNr === 1 && cube[0] === 6 && cube[1] === 10 && cube[2] === 1) {
+        let isSurficeSide = checkIsSurficeSide(type, value, cube);
+        console.log(
+          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    isSurficeSide    \x1b[8m\x1b[40m\x1b[0m\n",
+          "color: white; background: black; font-weight: bold",
+          isSurficeSide
+        );
+      }
+    }
+  });
+
   // *********************************************************************************
 
   let result = 0;
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
-  }
-
+  let k = moveNr;
   let dataToRender = [];
-  data.forEach((row) => {
+  for (let i = 0; i < 30; i++) {
     let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
-
+    for (let j = 0; j < 30; j++) {
+      let test = [i, j, 0].join(",");
+      if (cubesWithSurface.includes([i, j, k].join(","))) {
+        newRow.push("#");
+      } else {
+        newRow.push(".");
+      }
+    }
     dataToRender.push(newRow);
-  });
+  }
 
   // *********************************************************************************
 
