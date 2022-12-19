@@ -3,7 +3,7 @@ import eData from "./exampleData";
 import rData from "./realData";
 import Render from "../../Render";
 
-const INITIAL_MOVE_NR = 0;
+const INITIAL_MOVE_NR = 24;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -163,9 +163,9 @@ export default () => {
     let newObsidianRobots = obsidianRobots;
     let newHasBuiltClayRobot = false;
     while (newTimeLeft > 0) {
-      if (newOres >= blueprints[bpNr].oreRobot.ore && !newHasBuiltClayRobot) {
+      if (newOres >= blueprints[bpNr].clayRobot.ore && !newHasBuiltClayRobot) {
         newIsBuildingClayRobot = true;
-        newOres -= blueprints[bpNr].obsidianRobot.ore;
+        newOres -= blueprints[bpNr].clayRobot.ore;
         newHasBuiltClayRobot = true;
       } else if (
         newOres >= blueprints[bpNr].obsidianRobot.ore &&
@@ -360,56 +360,84 @@ export default () => {
     return false;
   };
 
-  let specificBlueprint = 1;
+  let shouldBuildObsidianRobotNext = false;
+  let shouldBuildGeodeRobotNext = false;
+
+  let specificBlueprint = 0;
   // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
   for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
-    minToBuildOreRobot = blueprints[bpNr].oreRobot.ore / oreRobots;
-    minToBuildClayRobot = blueprints[bpNr].clayRobot.ore / oreRobots;
-
     minLeft = 24 - moveNr;
 
     for (let i = 0; i < moveNr; i++) {
       // debugger;
+      //
+      // console.log(
+      //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          checkShouldBuildClayRobotNext()    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 171 \n",
+      //   "color: white; background: black; font-weight: bold",
+      //   "",
+      //   checkShouldBuildOreRobotNext(i, bpNr),
+      //   i
+      // );
 
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          checkShouldBuildClayRobotNext()    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 171 \n",
-        "color: white; background: black; font-weight: bold",
-        "",
-        checkShouldBuildOreRobotNext(i, bpNr),
-        i
-      );
+      // debugger;
 
       // Geode Robot
+      if (obsidians >= blueprints[bpNr].geodeRobot.obsidian) {
+        shouldBuildGeodeRobotNext = true;
+      }
+
       if (
         ores >= blueprints[bpNr].geodeRobot.ore &&
         obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
-        !checkShouldBuildObsidianRobotNext(i, bpNr)
+        shouldBuildGeodeRobotNext
       ) {
         isBuildingGeodeRobot = true;
+        shouldBuildGeodeRobotNext = false;
         ores -= blueprints[bpNr].geodeRobot.ore;
+        obsidians -= blueprints[bpNr].geodeRobot.obsidian;
       }
 
       // Obsidian Robot
+      if (clays >= blueprints[bpNr].obsidianRobot.clay) {
+        shouldBuildObsidianRobotNext = true;
+
+        console.log(
+          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c            yo    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 403 \n",
+          "color: white; background: black; font-weight: bold",
+          ""
+        );
+      }
+
       if (
         ores >= blueprints[bpNr].obsidianRobot.ore &&
         clays >= blueprints[bpNr].obsidianRobot.clay &&
-        !checkShouldBuildClayRobotNext(i, bpNr)
+        shouldBuildObsidianRobotNext === true &&
+        !shouldBuildGeodeRobotNext === true
       ) {
         isBuildingObsidianRobot = true;
-        ores -= blueprints[bpNr].clayRobot.ore;
+        shouldBuildObsidianRobotNext = false;
+        ores -= blueprints[bpNr].obsidianRobot.ore;
+        clays -= blueprints[bpNr].obsidianRobot.clay;
       }
 
       // Clay Robot
       if (
         ores >= blueprints[bpNr].clayRobot.ore &&
-        !checkShouldBuildOreRobotNext(i, bpNr)
+        blueprints[bpNr].clayRobot.ore < blueprints[bpNr].oreRobot.ore &&
+        // !checkShouldBuildOreRobotNext(i, bpNr) &&
+        !shouldBuildGeodeRobotNext === true &&
+        !shouldBuildObsidianRobotNext === true
       ) {
         isBuildingClayRobot = true;
         ores -= blueprints[bpNr].clayRobot.ore;
       }
 
       // Ore Robot
-      if (ores >= blueprints[bpNr].oreRobot.ore) {
+      if (
+        ores >= blueprints[bpNr].oreRobot.ore &&
+        !shouldBuildGeodeRobotNext === true &&
+        !shouldBuildObsidianRobotNext === true
+      ) {
         isBuildingOreRobot = true;
         ores -= blueprints[bpNr].oreRobot.ore;
       }
