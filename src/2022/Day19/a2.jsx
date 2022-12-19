@@ -7,7 +7,7 @@ const INITIAL_MOVE_NR = 24;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const blueprints = eData.split(/\n/).map((row) => {
+const blueprints = rData.split(/\n/).map((row) => {
   return {
     oreRobot: { ore: parseInt(row.split(" ")[6]) },
     clayRobot: { ore: parseInt(row.split(" ")[12]) },
@@ -362,117 +362,185 @@ export default () => {
 
   let shouldBuildObsidianRobotNext = false;
   let shouldBuildGeodeRobotNext = false;
+  let shouldBuildClayRobotNext = false;
 
   let specificBlueprint = 0;
-  // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-  for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
-    minLeft = 24 - moveNr;
 
-    for (let i = 0; i < moveNr; i++) {
-      // debugger;
-      //
-      // console.log(
-      //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          checkShouldBuildClayRobotNext()    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 171 \n",
-      //   "color: white; background: black; font-weight: bold",
-      //   "",
-      //   checkShouldBuildOreRobotNext(i, bpNr),
-      //   i
-      // );
+  function randomIntFromInterval(min, max) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
-      // debugger;
+  let highscores = [];
 
-      // Geode Robot
-      if (obsidians >= blueprints[bpNr].geodeRobot.obsidian) {
-        shouldBuildGeodeRobotNext = true;
+  for (let i = 0; i < 1000; i++) {
+    let random1 = randomIntFromInterval(0, 3);
+    let random2 = randomIntFromInterval(0, 3);
+    for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
+      oreRobots = 1;
+      clayRobots = 0;
+      obsidianRobots = 0;
+      geodeRobots = 0;
+      ores = 0;
+      clays = 0;
+      obsidians = 0;
+      geodes = 0;
+      shouldBuildObsidianRobotNext = false;
+      shouldBuildGeodeRobotNext = false;
+      shouldBuildClayRobotNext = false;
+
+      // for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
+      minLeft = 24 - moveNr;
+
+      for (let i = 0; i < moveNr; i++) {
+        // debugger;
+        //
+        // console.log(
+        //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          checkShouldBuildClayRobotNext()    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 171 \n",
+        //   "color: white; background: black; font-weight: bold",
+        //   "",
+        //   checkShouldBuildOreRobotNext(i, bpNr),
+        //   i
+        // );
+
+        // debugger;
+
+        // Geode Robot
+        if (
+          obsidians >=
+          blueprints[bpNr].geodeRobot.obsidian - geodeRobots * random1
+        ) {
+          shouldBuildGeodeRobotNext = true;
+        }
+
+        if (
+          ores >= blueprints[bpNr].geodeRobot.ore &&
+          obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
+          shouldBuildGeodeRobotNext
+        ) {
+          isBuildingGeodeRobot = true;
+          shouldBuildGeodeRobotNext = false;
+          ores -= blueprints[bpNr].geodeRobot.ore;
+          obsidians -= blueprints[bpNr].geodeRobot.obsidian;
+        }
+
+        // Obsidian Robot
+        if (
+          clays >=
+          blueprints[bpNr].obsidianRobot.clay - clayRobots * random2
+        ) {
+          shouldBuildObsidianRobotNext = true;
+        }
+
+        if (
+          ores >= blueprints[bpNr].obsidianRobot.ore &&
+          clays >= blueprints[bpNr].obsidianRobot.clay &&
+          shouldBuildObsidianRobotNext === true &&
+          !shouldBuildGeodeRobotNext === true
+        ) {
+          isBuildingObsidianRobot = true;
+          shouldBuildObsidianRobotNext = false;
+          ores -= blueprints[bpNr].obsidianRobot.ore;
+          clays -= blueprints[bpNr].obsidianRobot.clay;
+        }
+
+        // Clay Robot
+        if (blueprints[bpNr].clayRobot.ore < blueprints[bpNr].oreRobot.ore) {
+          shouldBuildClayRobotNext = true;
+        } else {
+          shouldBuildClayRobotNext = false;
+        }
+
+        if (
+          ores >= blueprints[bpNr].clayRobot.ore &&
+          (shouldBuildClayRobotNext ||
+            !checkShouldBuildOreRobotNext(i, bpNr) ||
+            random1 === 1) &&
+          !shouldBuildGeodeRobotNext === true &&
+          !shouldBuildObsidianRobotNext === true
+        ) {
+          shouldBuildClayRobotNext = false;
+          isBuildingClayRobot = true;
+          ores -= blueprints[bpNr].clayRobot.ore;
+        }
+
+        // Ore Robot
+
+        if (random1 === 1) {
+          if (oreRobots < clayRobots) {
+            isBuildingOreRobot = true;
+            ores -= blueprints[bpNr].oreRobot.ore;
+          }
+        } else {
+          if (
+            ores >= blueprints[bpNr].oreRobot.ore &&
+            !shouldBuildGeodeRobotNext === true &&
+            !shouldBuildObsidianRobotNext === true
+          ) {
+            isBuildingOreRobot = true;
+            ores -= blueprints[bpNr].oreRobot.ore;
+          }
+        }
+
+        for (let i = 0; i < oreRobots; i++) {
+          ores++;
+        }
+        for (let i = 0; i < clayRobots; i++) {
+          clays++;
+        }
+        for (let i = 0; i < obsidianRobots; i++) {
+          obsidians++;
+        }
+        for (let i = 0; i < geodeRobots; i++) {
+          geodes++;
+        }
+
+        if (isBuildingOreRobot) {
+          oreRobots++;
+          isBuildingOreRobot = false;
+        }
+        if (isBuildingClayRobot) {
+          clayRobots++;
+          isBuildingClayRobot = false;
+        }
+        if (isBuildingObsidianRobot) {
+          obsidianRobots++;
+          isBuildingObsidianRobot = false;
+        }
+        if (isBuildingGeodeRobot) {
+          geodeRobots++;
+          isBuildingGeodeRobot = false;
+        }
       }
 
-      if (
-        ores >= blueprints[bpNr].geodeRobot.ore &&
-        obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
-        shouldBuildGeodeRobotNext
-      ) {
-        isBuildingGeodeRobot = true;
-        shouldBuildGeodeRobotNext = false;
-        ores -= blueprints[bpNr].geodeRobot.ore;
-        obsidians -= blueprints[bpNr].geodeRobot.obsidian;
-      }
-
-      // Obsidian Robot
-      if (clays >= blueprints[bpNr].obsidianRobot.clay) {
-        shouldBuildObsidianRobotNext = true;
-
-        console.log(
-          "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c            yo    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 403 \n",
-          "color: white; background: black; font-weight: bold",
-          ""
-        );
-      }
-
-      if (
-        ores >= blueprints[bpNr].obsidianRobot.ore &&
-        clays >= blueprints[bpNr].obsidianRobot.clay &&
-        shouldBuildObsidianRobotNext === true &&
-        !shouldBuildGeodeRobotNext === true
-      ) {
-        isBuildingObsidianRobot = true;
-        shouldBuildObsidianRobotNext = false;
-        ores -= blueprints[bpNr].obsidianRobot.ore;
-        clays -= blueprints[bpNr].obsidianRobot.clay;
-      }
-
-      // Clay Robot
-      if (
-        ores >= blueprints[bpNr].clayRobot.ore &&
-        blueprints[bpNr].clayRobot.ore < blueprints[bpNr].oreRobot.ore &&
-        // !checkShouldBuildOreRobotNext(i, bpNr) &&
-        !shouldBuildGeodeRobotNext === true &&
-        !shouldBuildObsidianRobotNext === true
-      ) {
-        isBuildingClayRobot = true;
-        ores -= blueprints[bpNr].clayRobot.ore;
-      }
-
-      // Ore Robot
-      if (
-        ores >= blueprints[bpNr].oreRobot.ore &&
-        !shouldBuildGeodeRobotNext === true &&
-        !shouldBuildObsidianRobotNext === true
-      ) {
-        isBuildingOreRobot = true;
-        ores -= blueprints[bpNr].oreRobot.ore;
-      }
-
-      for (let i = 0; i < oreRobots; i++) {
-        ores++;
-      }
-      for (let i = 0; i < clayRobots; i++) {
-        clays++;
-      }
-      for (let i = 0; i < obsidianRobots; i++) {
-        obsidians++;
-      }
-      for (let i = 0; i < geodeRobots; i++) {
-        geodes++;
-      }
-
-      if (isBuildingOreRobot) {
-        oreRobots++;
-        isBuildingOreRobot = false;
-      }
-      if (isBuildingClayRobot) {
-        clayRobots++;
-        isBuildingClayRobot = false;
-      }
-      if (isBuildingObsidianRobot) {
-        obsidianRobots++;
-        isBuildingObsidianRobot = false;
-      }
-      if (isBuildingGeodeRobot) {
-        geodeRobots++;
-        isBuildingGeodeRobot = false;
+      if (highscores[bpNr] !== undefined) {
+        if (geodes > highscores[bpNr]) {
+          highscores[bpNr] = geodes;
+        }
+      } else {
+        highscores[bpNr] = geodes;
       }
     }
   }
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highscores    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 517 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    highscores
+  );
+
+  let results = [];
+
+  highscores.forEach((highscore, i) => {
+    results.push(highscore * (i + 1));
+  });
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      results    \x1b[8m\x1b[40m\x1b[0m%c a2.jsx 530 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    results.reduce((a, b) => a + b, 0)
+  );
 
   // *********************************************************************************
 
