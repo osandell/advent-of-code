@@ -47,7 +47,7 @@ export default () => {
   // *********************************************************************************
 
   const runSimulation = ({
-    minLeft = 0,
+    minLeft = 24,
     oreRobots = 1,
     clayRobots = 0,
     obsidianRobots = 0,
@@ -56,6 +56,8 @@ export default () => {
     clays = 0,
     obsidians = 0,
     geodes = 0,
+    isTest = false,
+    runDuration = 24,
   }) => {
     let isBuildingOreRobot = false;
     let isBuildingClayRobot = false;
@@ -137,52 +139,49 @@ export default () => {
       return true;
     };
 
-    let specificBlueprint = 0;
+    let specificBlueprint = 1;
     // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
     for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
       minToBuildOreRobot = blueprints[bpNr].oreRobot.ore / oreRobots;
       minToBuildClayRobot = blueprints[bpNr].clayRobot.ore / oreRobots;
       minToBuildObsidianRobot = blueprints[bpNr].obsidianRobot.ore / oreRobots;
 
-      // debugger;
+      // Build ore or clay robot?
+      if (ores >= blueprints[bpNr].oreRobot.ore && !isTest) {
+        const buildAnOreRobotResult = runSimulation({
+          minLeft: minLeft - 1,
+          oreRobots: oreRobots + 1,
+          ores,
+          isTest: true,
+        });
 
-      // // Geode Robot
-      // if (
-      //   obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
-      //   ores >= blueprints[bpNr].geodeRobot.ore
-      // ) {
-      //   isBuildingGeodeRobot = true;
-      //   ores -= blueprints[bpNr].geodeRobot.ore;
-      //   obsidians -= blueprints[bpNr].geodeRobot.obsidian;
-      // }
+        let buildTimeDiff;
+        if (ores < blueprints[bpNr].clayRobot.ore && !isTest) {
+          buildTimeDiff =
+            blueprints[bpNr].clayRobot.ore - blueprints[bpNr].oreRobot.ore;
+        }
 
-      // // Obsidian Robot
-      // if (
-      //   clays >= blueprints[bpNr].obsidianRobot.clay &&
-      //   ores >= blueprints[bpNr].obsidianRobot.ore
-      // ) {
-      //   isBuildingObsidianRobot = true;
-      //   ores -= blueprints[bpNr].obsidianRobot.ore;
-      //   clays -= blueprints[bpNr].obsidianRobot.clay;
-      // }
+        const buildAClayRobotResult = runSimulation({
+          minLeft: minLeft - 1 - buildTimeDiff,
+          oreRobots: oreRobots,
+          ores,
 
-      // Ore Robot
-      // if (checkShouldBuildOreRobot(bpNr)) {
-      //   isBuildingOreRobot = true;
-      //   ores -= blueprints[bpNr].oreRobot.ore;
-      // }
-      // Clay Robot
-      // if (checkShouldBuildClayRobot(bpNr)) {
-      //   isBuildingClayRobot = true;
-      //   ores -= blueprints[bpNr].clayRobot.ore;
-      // }
+          clayRobots: clayRobots + 1,
+          isTest: true,
+        });
 
-      //TEST!!!
-      // if (ores < blueprints[bpNr].clayRobot.ore) {
-      // } else {
-      //   isBuildingClayRobot = true;
-      //   ores -= blueprints[bpNr].clayRobot.ore;
-      // }
+        debugger;
+
+        if (buildAnOreRobotResult.clays > buildAClayRobotResult.clays) {
+          isBuildingOreRobot = true;
+          ores -= blueprints[bpNr].oreRobot.ore;
+        } else {
+          isBuildingClayRobot = true;
+          ores -= blueprints[bpNr].clayRobot.ore;
+        }
+
+        isTest = false;
+      }
 
       for (let i = 0; i < oreRobots; i++) {
         ores++;
@@ -216,8 +215,9 @@ export default () => {
     }
 
     minLeft = minLeft - 1;
+    runDuration = runDuration - 1;
 
-    if (minLeft === 0) {
+    if (minLeft === 0 || runDuration === 0) {
       return {
         oreRobots,
         clayRobots,
@@ -225,6 +225,7 @@ export default () => {
         geodeRobots,
         ores,
         clays,
+        isTest,
         obsidians,
         geodes,
         minToBuildOreRobot,
@@ -238,23 +239,40 @@ export default () => {
         geodeRobots,
         ores,
         clays,
+        isTest,
         obsidians,
         geodes,
         minLeft,
         minToBuildOreRobot,
         minToBuildClayRobot,
+        runDuration,
       });
     }
   };
 
-  const result = runSimulation({ minLeft: 24 });
+  let minLeft = 24;
+  let oreRobots = 1;
+  let clayRobots = 0;
+  let obsidianRobots = 0;
+  let geodeRobots = 0;
+  let ores = 0;
+  let clays = 0;
+  let obsidians = 0;
+  let geodes = 0;
+  let isTest = false;
+  let runDuration = 24;
+  let minToBuildOreRobot;
+  let minToBuildClayRobot;
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c     result    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 253 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    result
-  );
+  if (moveNr !== undefined) {
+    let result = runSimulation({ runDuration: moveNr });
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    result    \x1b[8m\x1b[40m\x1b[0m\n",
+      "color: white; background: black; font-weight: bold",
+      result
+    );
+    ores = result.ores;
+  }
 
   // *********************************************************************************
 
