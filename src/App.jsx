@@ -39,6 +39,7 @@ import Day18c from "./2022/Day18/c";
 import Day18d from "./2022/Day18/d";
 import Day18e from "./2022/Day18/e";
 import Day19a from "./2022/Day19/a";
+import Day19a2 from "./2022/Day19/a2";
 import Day19b from "./2022/Day19/b";
 import Day20a from "./2022/Day20/a";
 import Day20b from "./2022/Day20/b";
@@ -56,7 +57,7 @@ import Day25b from "./2022/Day25/b";
 function App() {
   return (
     <div className="App">
-      <Day19a />
+      <Day19a2 />
     </div>
   );
 }
