@@ -64,42 +64,60 @@ export default () => {
   let isBuildingObsidianRobot = false;
   let isBuildingGeodeRobot = false;
 
+  let oreRobotBuildingSpeed;
+  let clayRobotBuildingSpeed;
+  let minLeft;
+  let maxClay;
+  let maxClayIfBuildingOreRobot;
+
   let specificBlueprint = 1;
   // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
   for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
-    let oreClayRatio =
-      blueprints[bpNr].obsidianRobot.clay / blueprints[bpNr].obsidianRobot.ore;
+    oreRobotBuildingSpeed = blueprints[bpNr].oreRobot.ore / oreRobots;
+    clayRobotBuildingSpeed = blueprints[bpNr].clayRobot.ore / oreRobots;
+
+    minLeft = 24 - moveNr;
+
+    maxClay = minLeft / clayRobotBuildingSpeed;
+
+    let clayBuildingSpeedIfBuildingOreRobot =
+      blueprints[bpNr].clayRobot.ore / (oreRobots + 1);
+    maxClayIfBuildingOreRobot =
+      (minLeft - oreRobotBuildingSpeed) / clayBuildingSpeedIfBuildingOreRobot;
 
     for (let i = 0; i < moveNr; i++) {
       // debugger;
 
-      // Geode Robot
-      if (
-        obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
-        ores >= blueprints[bpNr].geodeRobot.ore
-      ) {
-        isBuildingGeodeRobot = true;
-        ores -= blueprints[bpNr].geodeRobot.ore;
-        obsidians -= blueprints[bpNr].geodeRobot.obsidian;
-      }
+      // // Geode Robot
+      // if (
+      //   obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
+      //   ores >= blueprints[bpNr].geodeRobot.ore
+      // ) {
+      //   isBuildingGeodeRobot = true;
+      //   ores -= blueprints[bpNr].geodeRobot.ore;
+      //   obsidians -= blueprints[bpNr].geodeRobot.obsidian;
+      // }
 
-      // Obsidian Robot
+      // // Obsidian Robot
       if (
         clays >= blueprints[bpNr].obsidianRobot.clay &&
-        ores >= blueprints[bpNr].obsidianRobot.ore &&
-        obsidians < blueprints[bpNr].geodeRobot.obsidian - geodeRobots * 2
+        ores >= blueprints[bpNr].obsidianRobot.ore
       ) {
         isBuildingObsidianRobot = true;
         ores -= blueprints[bpNr].obsidianRobot.ore;
         clays -= blueprints[bpNr].obsidianRobot.clay;
       }
 
-      // Clay Robot
+      // Ore Robot
       if (
-        ores >= blueprints[bpNr].clayRobot.ore &&
-        clays < blueprints[bpNr].obsidianRobot.clay - clayRobots * 2 &&
-        obsidians < blueprints[bpNr].geodeRobot.obsidian - geodeRobots * 3
+        ores >= blueprints[bpNr].oreRobot.ore &&
+        maxClayIfBuildingOreRobot > maxClay
       ) {
+        isBuildingOreRobot = true;
+        ores -= blueprints[bpNr].oreRobot.ore;
+      }
+      // Clay Robot
+      if (ores >= blueprints[bpNr].clayRobot.ore) {
         isBuildingClayRobot = true;
         ores -= blueprints[bpNr].clayRobot.ore;
       }
@@ -117,6 +135,10 @@ export default () => {
         geodes++;
       }
 
+      if (isBuildingOreRobot) {
+        oreRobots++;
+        isBuildingOreRobot = false;
+      }
       if (isBuildingClayRobot) {
         clayRobots++;
         isBuildingClayRobot = false;
@@ -211,6 +233,17 @@ export default () => {
       <div style={{ marginTop: "24px" }}>Clays: {clays}</div>
       <div style={{ marginTop: "24px" }}>Obsidians: {obsidians}</div>
       <div style={{ marginTop: "24px" }}>Geodes: {geodes}</div>
+      <div style={{ marginTop: "24px" }}>
+        oreRobotBuildingSpeed: {oreRobotBuildingSpeed}
+      </div>
+      <div style={{ marginTop: "24px" }}>
+        clayRobotBuildingSpeed: {clayRobotBuildingSpeed}
+      </div>
+      <div style={{ marginTop: "24px" }}>
+        maxClayIfBuildingOreRobot: {maxClayIfBuildingOreRobot}
+      </div>
+      <div style={{ marginTop: "24px" }}>maxClay: {maxClay}</div>
+      <div style={{ marginTop: "24px" }}>minLeft: {minLeft}</div>
     </div>
   );
 };
