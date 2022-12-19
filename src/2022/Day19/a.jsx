@@ -64,26 +64,97 @@ export default () => {
   let isBuildingObsidianRobot = false;
   let isBuildingGeodeRobot = false;
 
-  let oreRobotBuildingSpeed;
-  let clayRobotBuildingSpeed;
+  let minToBuildOreRobot;
+  let minToBuildClayRobot;
+  let minToBuildObsidianRobot;
   let minLeft;
   let maxClay;
   let maxClayIfBuildingOreRobot;
+  let maxClayIfBuildingClayRobot;
 
-  let specificBlueprint = 1;
+  const checkShouldBuildObsidianRobot = (bpNr) => {
+    let minLeftToGetEnoughClay =
+      minToBuildClayRobot * blueprints[bpNr].obsidianRobot.clay;
+
+    if (
+      ores +
+        minToBuildOreRobot * minLeftToGetEnoughClay -
+        blueprints[bpNr].clayRobot.ore <
+      blueprints[bpNr].oreRobot.ore
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const checkShouldBuildGeodeRobot = (bpNr) => {
+    let minLeftToGetEnoughObsidian =
+      minToBuildObsidianRobot * blueprints[bpNr].geodeRobot.obsidian;
+
+    if (
+      ores +
+        minToBuildOreRobot * minLeftToGetEnoughObsidian -
+        blueprints[bpNr].obsidianRobot.ore <
+      blueprints[bpNr].oreRobot.ore
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const checkShouldBuildOreRobot = (bpNr) => {
+    if (ores < blueprints[bpNr].oreRobot.ore) {
+      return false;
+    }
+
+    if (checkShouldBuildObsidianRobot(bpNr)) {
+      return false;
+    }
+
+    if (checkShouldBuildGeodeRobot(bpNr)) {
+      return false;
+    }
+
+    // If we get more clay by building another clay robot we should do that intstead
+    if (maxClayIfBuildingClayRobot > maxClayIfBuildingOreRobot) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const checkShouldBuildClayRobot = (bpNr) => {
+    if (checkShouldBuildObsidianRobot(bpNr)) {
+      return false;
+    }
+
+    if (checkShouldBuildGeodeRobot(bpNr)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  let specificBlueprint = 0;
   // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
   for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
-    oreRobotBuildingSpeed = blueprints[bpNr].oreRobot.ore / oreRobots;
-    clayRobotBuildingSpeed = blueprints[bpNr].clayRobot.ore / oreRobots;
+    minToBuildOreRobot = blueprints[bpNr].oreRobot.ore / oreRobots;
+    minToBuildClayRobot = blueprints[bpNr].clayRobot.ore / oreRobots;
+    minToBuildObsidianRobot = blueprints[bpNr].obsidianRobot.ore / oreRobots;
 
     minLeft = 24 - moveNr;
 
-    maxClay = minLeft / clayRobotBuildingSpeed;
+    // debugger;
 
-    let clayBuildingSpeedIfBuildingOreRobot =
+    // !!! nåt stämmer inte här
+    let minToBuildClayRobotIfBuildingOreRobot =
       blueprints[bpNr].clayRobot.ore / (oreRobots + 1);
     maxClayIfBuildingOreRobot =
-      (minLeft - oreRobotBuildingSpeed) / clayBuildingSpeedIfBuildingOreRobot;
+      (minLeft - minToBuildOreRobot) / minToBuildClayRobotIfBuildingOreRobot;
+
+    maxClayIfBuildingClayRobot = minLeft / minToBuildClayRobot;
 
     for (let i = 0; i < moveNr; i++) {
       // debugger;
@@ -109,15 +180,12 @@ export default () => {
       }
 
       // Ore Robot
-      if (
-        ores >= blueprints[bpNr].oreRobot.ore &&
-        maxClayIfBuildingOreRobot > maxClay
-      ) {
+      if (checkShouldBuildOreRobot(bpNr)) {
         isBuildingOreRobot = true;
         ores -= blueprints[bpNr].oreRobot.ore;
       }
       // Clay Robot
-      if (ores >= blueprints[bpNr].clayRobot.ore) {
+      if (checkShouldBuildClayRobot(bpNr)) {
         isBuildingClayRobot = true;
         ores -= blueprints[bpNr].clayRobot.ore;
       }
@@ -234,15 +302,17 @@ export default () => {
       <div style={{ marginTop: "24px" }}>Obsidians: {obsidians}</div>
       <div style={{ marginTop: "24px" }}>Geodes: {geodes}</div>
       <div style={{ marginTop: "24px" }}>
-        oreRobotBuildingSpeed: {oreRobotBuildingSpeed}
+        minToBuildOreRobot: {minToBuildOreRobot}
       </div>
       <div style={{ marginTop: "24px" }}>
-        clayRobotBuildingSpeed: {clayRobotBuildingSpeed}
+        minToBuildClayRobot: {minToBuildClayRobot}
       </div>
       <div style={{ marginTop: "24px" }}>
         maxClayIfBuildingOreRobot: {maxClayIfBuildingOreRobot}
       </div>
-      <div style={{ marginTop: "24px" }}>maxClay: {maxClay}</div>
+      <div style={{ marginTop: "24px" }}>
+        maxClayIfBuildingClayRobot: {maxClayIfBuildingClayRobot}
+      </div>
       <div style={{ marginTop: "24px" }}>minLeft: {minLeft}</div>
     </div>
   );
