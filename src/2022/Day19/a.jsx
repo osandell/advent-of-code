@@ -126,6 +126,10 @@ export default () => {
   };
 
   const checkShouldBuildClayRobot = (bpNr) => {
+    if (ores < blueprints[bpNr].clayRobot.ore) {
+      return false;
+    }
+
     if (checkShouldBuildObsidianRobot(bpNr)) {
       return false;
     }
@@ -146,11 +150,46 @@ export default () => {
 
     minLeft = 24 - moveNr;
 
-    // debugger;
+    // // debugger;
 
-    // !!! nåt stämmer inte här
+    // // !!! nåt stämmer inte här
+
+    // // Max amount of clay if building clay robots
+    // let newClayExtractedClaySize = 0;
+    // let minLeftForWhileLoop = minLeft - 1;
+    // let clayRobotsForWhileLoop = clayRobots;
+    // debugger;
+    // while (minLeftForWhileLoop > minToBuildClayRobot) {
+    //   newClayExtractedClaySize += minToBuildClayRobot * clayRobotsForWhileLoop;
+    //   let minLeftWhenClayRobotIsDone =
+    //     minLeftForWhileLoop - minToBuildClayRobot;
+    //   minLeftForWhileLoop = minLeftWhenClayRobotIsDone;
+    //   clayRobotsForWhileLoop++;
+    // }
+    // newClayExtractedClaySize += minLeftForWhileLoop * clayRobotsForWhileLoop;
+
+    // console.log(
+    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        newClayExtractedClaySize    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 164 \n",
+    //   "color: white; background: black; font-weight: bold",
+    //   "",
+    //   newClayExtractedClaySize
+    // );
+
+    let clayAmountGatheredWhileBuildingClayRobot =
+      minToBuildClayRobot * clayRobots;
+
     let minToBuildClayRobotIfBuildingOreRobot =
       blueprints[bpNr].clayRobot.ore / (oreRobots + 1);
+
+    let minToBuildClayRobotAfterOreRobotIsDone =
+      blueprints[bpNr].clayRobot.ore / (oreRobots + 1);
+
+    let minLeftWhenOreRobotIsDone = minLeft - minToBuildOreRobot;
+
+    let clayMinedBeforeOreRobotIsDone = minToBuildOreRobot * clayRobots;
+
+    // let clayMinedAfterOreRobotIsDone = (minLeft - minToBuildOreRobot) *
+
     maxClayIfBuildingOreRobot =
       (minLeft - minToBuildOreRobot) / minToBuildClayRobotIfBuildingOreRobot;
 
@@ -170,25 +209,32 @@ export default () => {
       // }
 
       // // Obsidian Robot
-      if (
-        clays >= blueprints[bpNr].obsidianRobot.clay &&
-        ores >= blueprints[bpNr].obsidianRobot.ore
-      ) {
-        isBuildingObsidianRobot = true;
-        ores -= blueprints[bpNr].obsidianRobot.ore;
-        clays -= blueprints[bpNr].obsidianRobot.clay;
-      }
+      // if (
+      //   clays >= blueprints[bpNr].obsidianRobot.clay &&
+      //   ores >= blueprints[bpNr].obsidianRobot.ore
+      // ) {
+      //   isBuildingObsidianRobot = true;
+      //   ores -= blueprints[bpNr].obsidianRobot.ore;
+      //   clays -= blueprints[bpNr].obsidianRobot.clay;
+      // }
 
       // Ore Robot
-      if (checkShouldBuildOreRobot(bpNr)) {
-        isBuildingOreRobot = true;
-        ores -= blueprints[bpNr].oreRobot.ore;
-      }
+      // if (checkShouldBuildOreRobot(bpNr)) {
+      //   isBuildingOreRobot = true;
+      //   ores -= blueprints[bpNr].oreRobot.ore;
+      // }
       // Clay Robot
-      if (checkShouldBuildClayRobot(bpNr)) {
-        isBuildingClayRobot = true;
-        ores -= blueprints[bpNr].clayRobot.ore;
-      }
+      // if (checkShouldBuildClayRobot(bpNr)) {
+      //   isBuildingClayRobot = true;
+      //   ores -= blueprints[bpNr].clayRobot.ore;
+      // }
+
+      //TEST!!!
+      // if (ores < blueprints[bpNr].clayRobot.ore) {
+      // } else {
+      //   isBuildingClayRobot = true;
+      //   ores -= blueprints[bpNr].clayRobot.ore;
+      // }
 
       for (let i = 0; i < oreRobots; i++) {
         ores++;
