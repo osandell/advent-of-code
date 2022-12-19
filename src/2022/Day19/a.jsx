@@ -3,39 +3,34 @@ import eData from "./exampleData";
 import rData from "./realData";
 import Render from "../../Render";
 
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
-
+const INITIAL_MOVE_NR = 0;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = rData.split(/\n/).map((row) => row.split(""));
+const blueprints = eData.split(/\n/).map((row) => {
+  return {
+    oreRobot: { ore: parseInt(row.split(" ")[6]) },
+    clayRobot: { ore: parseInt(row.split(" ")[12]) },
+    obsidianRobot: {
+      ore: parseInt(row.split(" ")[18]),
+      clay: parseInt(row.split(" ")[21]),
+    },
+    geodeRobot: {
+      ore: parseInt(row.split(" ")[27]),
+      obsidian: parseInt(row.split(" ")[30]),
+    },
+  };
+});
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
 
 export default () => {
   let currMove = 0;
 
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
   const totalNrOfMoves = 99999999999999999999999999;
 
-  const [moveNr, setMoveNr] = useState(0);
+  const [moveNr, setMoveNr] = useState(INITIAL_MOVE_NR);
   const moveNrRef = React.useRef(moveNr);
   moveNrRef.current = moveNr;
 
@@ -53,36 +48,94 @@ export default () => {
 
   let result = 0;
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
+  let blueprint1 = blueprints[0];
+
+  let oreRobots = 1;
+  let clayRobots = 0;
+  let obsidianRobots = 0;
+  let geodeRobots = 0;
+  let ores = 0;
+  let clays = 0;
+  let obsidians = 0;
+  let geodes = 0;
+
+  let isBuildingOreRobot = false;
+  let isBuildingClayRobot = false;
+  let isBuildingObsidianRobot = false;
+  let isBuildingGeodeRobot = false;
+
+  let specificBlueprint = 1;
+  // for(let bpNr = 0; bpNr < blueprints.length; bpNr++) {
+  for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
+    let oreClayRatio =
+      blueprints[bpNr].obsidianRobot.clay / blueprints[bpNr].obsidianRobot.ore;
+
+    for (let i = 0; i < moveNr; i++) {
+      // debugger;
+
+      // Geode Robot
+      if (
+        obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
+        ores >= blueprints[bpNr].geodeRobot.ore
+      ) {
+        isBuildingGeodeRobot = true;
+        ores -= blueprints[bpNr].geodeRobot.ore;
+        obsidians -= blueprints[bpNr].geodeRobot.obsidian;
+      }
+
+      // Obsidian Robot
+      if (
+        clays >= blueprints[bpNr].obsidianRobot.clay &&
+        ores >= blueprints[bpNr].obsidianRobot.ore &&
+        obsidians < blueprints[bpNr].geodeRobot.obsidian - geodeRobots * 2
+      ) {
+        isBuildingObsidianRobot = true;
+        ores -= blueprints[bpNr].obsidianRobot.ore;
+        clays -= blueprints[bpNr].obsidianRobot.clay;
+      }
+
+      // Clay Robot
+      if (
+        ores >= blueprints[bpNr].clayRobot.ore &&
+        clays < blueprints[bpNr].obsidianRobot.clay - clayRobots * 2 &&
+        obsidians < blueprints[bpNr].geodeRobot.obsidian - geodeRobots * 3
+      ) {
+        isBuildingClayRobot = true;
+        ores -= blueprints[bpNr].clayRobot.ore;
+      }
+
+      for (let i = 0; i < oreRobots; i++) {
+        ores++;
+      }
+      for (let i = 0; i < clayRobots; i++) {
+        clays++;
+      }
+      for (let i = 0; i < obsidianRobots; i++) {
+        obsidians++;
+      }
+      for (let i = 0; i < geodeRobots; i++) {
+        geodes++;
+      }
+
+      if (isBuildingClayRobot) {
+        clayRobots++;
+        isBuildingClayRobot = false;
+      }
+      if (isBuildingObsidianRobot) {
+        obsidianRobots++;
+        isBuildingObsidianRobot = false;
+      }
+      if (isBuildingGeodeRobot) {
+        geodeRobots++;
+        isBuildingGeodeRobot = false;
+      }
+    }
   }
-
-  let dataToRender = [];
-  data.forEach((row) => {
-    let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
-
-    dataToRender.push(newRow);
-  });
 
   // *********************************************************************************
 
   return (
     <div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={false}
-        sizeX={"20px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
       <div style={{ marginTop: "24px" }}>
         <button
           onClick={() => moveNr > 0 && setMoveNr(0)}
@@ -148,8 +201,16 @@ export default () => {
           End
         </button>
       </div>
-      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
+      <div style={{ marginTop: "24px" }}>Minute: {moveNr}</div>
       <div style={{ marginTop: "24px" }}>Result: {result}</div>
+      <div style={{ marginTop: "24px" }}>OreRobots: {oreRobots}</div>
+      <div style={{ marginTop: "24px" }}>ClayRobots: {clayRobots}</div>
+      <div style={{ marginTop: "24px" }}>ObsidianRobots: {obsidianRobots}</div>
+      <div style={{ marginTop: "24px" }}>GeodeRobots: {geodeRobots}</div>
+      <div style={{ marginTop: "24px" }}>Ores: {ores}</div>
+      <div style={{ marginTop: "24px" }}>Clays: {clays}</div>
+      <div style={{ marginTop: "24px" }}>Obsidians: {obsidians}</div>
+      <div style={{ marginTop: "24px" }}>Geodes: {geodes}</div>
     </div>
   );
 };
