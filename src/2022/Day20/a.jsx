@@ -23,34 +23,40 @@ const arrMove = (arr, old_index, new_index) => {
 
 export default () => {
   let newArray = [...data];
-  data.forEach((nr) => {
+  data.forEach((nr, index) => {
+    if (index === 4) {
+      // debugger;
+    }
     let currPos = newArray.indexOf(nr);
     let newPos = currPos + nr;
 
     let hasMoved = false;
     while (newPos > data.length - 1) {
-      // debugger;
       hasMoved = true;
-      if (newPos === data.length) {
-        newPos = 0;
-      } else {
-        newPos = newPos - data.length + 1;
-      }
+      newPos = newPos - data.length + 1;
     }
 
     if (!hasMoved) {
-      while (newPos <= 0) {
+      while (newPos < 0) {
         newPos = data.length + newPos - 1;
       }
     }
 
+    if (newPos === 0) {
+      newPos = data.length - 1;
+    }
+
+    // if (newPos === data.length) {
+    //   newPos = 0;
+    // }
+
     newArray = [...arrMove(newArray, currPos, newPos)];
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
-    //   "color: white; background: black; font-weight: bold",
-    //   "",
-    //   newArray
-    // );
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      newArray
+    );
   });
 
   let posOfZero = newArray.indexOf(0);
@@ -81,21 +87,21 @@ export default () => {
   }
   let nr3 = newArray[posOfNumber];
 
-  // console.log(
-  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1, nr2, nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 67 \n",
-  //   "color: white; background: black; font-weight: bold",
-  //   "",
-  //   nr1,
-  //   nr2,
-  //   nr3
-  // );
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1, nr2, nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 67 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    nr1,
+    nr2,
+    nr3
+  );
 
-  // console.log(
-  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1 + nr2 + nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 77 \n",
-  //   "color: white; background: black; font-weight: bold",
-  //   "",
-  //   nr1 + nr2 + nr3
-  // );
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1 + nr2 + nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 77 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    nr1 + nr2 + nr3
+  );
 
   return <div></div>;
 };
