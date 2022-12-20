@@ -5,7 +5,7 @@ import rData from "./realData";
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-let data = eData.split(/\n/).map((row) => parseInt(row));
+let data = rData.split(/\n/).map((row) => parseInt(row));
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -21,43 +21,69 @@ const arrMove = (arr, old_index, new_index) => {
   return [...arr];
 };
 
+const move = function (arr, from, to) {
+  arr.splice(to, 0, arr.splice(from, 1)[0]);
+  return arr;
+};
+
 export default () => {
   let newArray = [...data];
   data.forEach((nr, index) => {
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    index    \x1b[8m\x1b[40m\x1b[0m\n",
+      "color: white; background: black; font-weight: bold",
+      index
+    );
     if (index === 4) {
       // debugger;
     }
-    let currPos = newArray.indexOf(nr);
-    let newPos = currPos + nr;
+    // let newPos = currPos + nr;
 
-    let hasMoved = false;
-    while (newPos > data.length - 1) {
-      hasMoved = true;
-      newPos = newPos - data.length + 1;
-    }
+    // while (newPos > data.length - 1) {
+    //   newPos = newPos - data.length + 1;
+    // }
 
-    if (!hasMoved) {
-      while (newPos < 0) {
-        newPos = data.length + newPos - 1;
-      }
-    }
+    // while (newPos < 0) {
+    //   newPos = data.length + newPos - 1;
+    // }
 
-    if (newPos === 0) {
-      newPos = data.length - 1;
-    }
+    // if (newPos === 0) {
+    //   newPos = data.length - 1;
+    // }
 
     // if (newPos === data.length) {
     //   newPos = 0;
     // }
-
-    newArray = [...arrMove(newArray, currPos, newPos)];
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      newArray
-    );
+    // debugger;
+    let currPos = newArray.indexOf(nr);
+    if (nr < 0) {
+      for (let i = nr; i < 0; i++) {
+        if (currPos - 1 === 0) {
+          newArray = [...move(newArray, currPos, newArray.length - 1)];
+          currPos = newArray.length - 1;
+        } else {
+          newArray = [...move(newArray, currPos, currPos - 1)];
+          currPos = currPos - 1;
+        }
+      }
+    } else if (nr > 0) {
+      for (let i = nr; i > 0; i--) {
+        if (currPos + 1 === newArray.length - 1) {
+          newArray = [...move(newArray, currPos, 0)];
+          currPos = 0;
+        } else {
+          newArray = [...move(newArray, currPos, currPos + 1)];
+          currPos = currPos + 1;
+        }
+      }
+    }
   });
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    newArray
+  );
 
   let posOfZero = newArray.indexOf(0);
   let posOfNumber = posOfZero;

@@ -1,7 +1,4 @@
-export default `8
-0
-0
-0
+export default `-64
 0
 0
 0`;
