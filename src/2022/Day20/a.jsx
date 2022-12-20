@@ -1,155 +1,101 @@
 import React, { useState } from "react";
 import eData from "./exampleData";
 import rData from "./realData";
-import Render from "../../Render";
-
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = rData.split(/\n/).map((row) => row.split(""));
+let data = eData.split(/\n/).map((row) => parseInt(row));
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-const isAdjecent = (part1, part2) =>
-  (part1[0] === part2[0] ||
-    part1[0] === part2[0] - 1 ||
-    part1[0] === part2[0] + 1) &&
-  (part1[1] === part2[1] ||
-    part1[1] === part2[1] - 1 ||
-    part1[1] === part2[1] + 1);
+const arrMove = (arr, old_index, new_index) => {
+  if (new_index >= arr.length) {
+    var k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+  return [...arr];
+};
 
 export default () => {
-  let currMove = 0;
+  let newArray = [...data];
+  data.forEach((nr) => {
+    let currPos = newArray.indexOf(nr);
+    let newPos = currPos + nr;
 
-  // let totalNrOfMoves = 0;
-  // for (let i = 0; i < data.length; i++) {
-  //   const move = data[i];
-  //   const nrOfMovesInCurrentDirection = move[1];
-  //   for (let i = 0; i < nrOfMovesInCurrentDirection; i++) {
-  //     totalNrOfMoves++;
-  //   }
-  // }
-  const totalNrOfMoves = 99999999999999999999999999;
-
-  const [moveNr, setMoveNr] = useState(0);
-  const moveNrRef = React.useRef(moveNr);
-  moveNrRef.current = moveNr;
-
-  const startPlaying = () => {
-    if (moveNr < totalNrOfMoves) {
-      const timer = setInterval(() => {
-        moveNrRef.current < totalNrOfMoves
-          ? setMoveNr(moveNrRef.current + 1)
-          : clearInterval(timer);
-      }, 30);
+    let hasMoved = false;
+    while (newPos > data.length - 1) {
+      // debugger;
+      hasMoved = true;
+      if (newPos === data.length) {
+        newPos = 0;
+      } else {
+        newPos = newPos - data.length + 1;
+      }
     }
-  };
 
-  // *********************************************************************************
+    if (!hasMoved) {
+      while (newPos <= 0) {
+        newPos = data.length + newPos - 1;
+      }
+    }
 
-  let result = 0;
-
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
-  }
-
-  let dataToRender = [];
-  data.forEach((row) => {
-    let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
-
-    dataToRender.push(newRow);
+    newArray = [...arrMove(newArray, currPos, newPos)];
+    // console.log(
+    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
+    //   "color: white; background: black; font-weight: bold",
+    //   "",
+    //   newArray
+    // );
   });
 
-  // *********************************************************************************
+  let posOfZero = newArray.indexOf(0);
+  let posOfNumber = posOfZero;
+  for (let i = 0; i < 1000; i++) {
+    posOfNumber = posOfNumber + 1;
+    if (posOfNumber > newArray.length - 1) {
+      posOfNumber = 0;
+    }
+  }
+  let nr1 = newArray[posOfNumber];
 
-  return (
-    <div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={false}
-        sizeX={"20px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(0)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Beginning
-        </button>
-        <button
-          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 9 ? "black" : "lightGray",
-          }}
-        >
-          Prev 10
-        </button>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => startPlaying()}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
-          }}
-        >
-          Next 10
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          End
-        </button>
-      </div>
-      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
-      <div style={{ marginTop: "24px" }}>Result: {result}</div>
-    </div>
-  );
+  posOfNumber = posOfZero;
+  for (let i = 0; i < 2000; i++) {
+    posOfNumber = posOfNumber + 1;
+    if (posOfNumber > newArray.length - 1) {
+      posOfNumber = 0;
+    }
+  }
+  let nr2 = newArray[posOfNumber];
+
+  posOfNumber = posOfZero;
+  for (let i = 0; i < 3000; i++) {
+    posOfNumber = posOfNumber + 1;
+    if (posOfNumber > newArray.length - 1) {
+      posOfNumber = 0;
+    }
+  }
+  let nr3 = newArray[posOfNumber];
+
+  // console.log(
+  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1, nr2, nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 67 \n",
+  //   "color: white; background: black; font-weight: bold",
+  //   "",
+  //   nr1,
+  //   nr2,
+  //   nr3
+  // );
+
+  // console.log(
+  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1 + nr2 + nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 77 \n",
+  //   "color: white; background: black; font-weight: bold",
+  //   "",
+  //   nr1 + nr2 + nr3
+  // );
+
+  return <div></div>;
 };
