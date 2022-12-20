@@ -29,63 +29,64 @@ const move = function (arr, from, to) {
 export default () => {
   let newArray = [...data];
   data.forEach((nr, index) => {
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    index    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      index
-    );
+    // console.log(
+    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    index    \x1b[8m\x1b[40m\x1b[0m\n",
+    //   "color: white; background: black; font-weight: bold",
+    //   index
+    // );
     if (index === 4) {
       // debugger;
     }
-    // let newPos = currPos + nr;
 
-    // while (newPos > data.length - 1) {
-    //   newPos = newPos - data.length + 1;
-    // }
+    // debugger;
 
-    // while (newPos < 0) {
-    //   newPos = data.length + newPos - 1;
-    // }
+    let currPos = newArray.indexOf(nr);
+    let newPos = currPos + nr;
+    let movingForward = nr > 0;
+    let movingBackward = nr < 0;
 
-    // if (newPos === 0) {
+    while (newPos > data.length - 1) {
+      newPos = newPos - (data.length - 1);
+    }
+
+    while (newPos < 0) {
+      newPos = newPos + (data.length - 1);
+    }
+
+    // if (newPos === 0 && movingBackward) {
     //   newPos = data.length - 1;
     // }
 
-    // if (newPos === data.length) {
+    // if (newPos === data.length - 1 && movingForward) {
     //   newPos = 0;
     // }
-    // debugger;
-    let currPos = newArray.indexOf(nr);
-    if (nr < 0) {
-      for (let i = nr; i < 0; i++) {
-        if (currPos - 1 === 0) {
-          newArray = [...move(newArray, currPos, newArray.length - 1)];
-          currPos = newArray.length - 1;
-        } else {
-          newArray = [...move(newArray, currPos, currPos - 1)];
-          currPos = currPos - 1;
-        }
-      }
-    } else if (nr > 0) {
-      for (let i = nr; i > 0; i--) {
-        if (currPos + 1 === newArray.length - 1) {
-          newArray = [...move(newArray, currPos, 0)];
-          currPos = 0;
-        } else {
-          newArray = [...move(newArray, currPos, currPos + 1)];
-          currPos = currPos + 1;
-        }
-      }
-    }
-  });
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 40 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    newArray
-  );
 
-  let posOfZero = newArray.indexOf(0);
+    newArray = [...arrMove(newArray, currPos, newPos)];
+
+    // debugger;
+    // let currPos = newArray.indexOf(nr);
+    // if (nr < 0) {
+    //   for (let i = nr; i < 0; i++) {
+    //     if (currPos - 1 === 0) {
+    //       newArray = [...move(newArray, currPos, newArray.length - 1)];
+    //       currPos = newArray.length - 1;
+    //     } else {
+    //       newArray = [...move(newArray, currPos, currPos - 1)];
+    //       currPos = currPos - 1;
+    //     }
+    //   }
+    // } else if (nr > 0) {
+    //   for (let i = nr; i > 0; i--) {
+    //     if (currPos + 1 === newArray.length - 1) {
+    //       newArray = [...move(newArray, currPos, 0)];
+    //       currPos = 0;
+    //     } else {
+    //       newArray = [...move(newArray, currPos, currPos + 1)];
+    //       currPos = currPos + 1;
+    //     }
+    //   }
+    // }
+  });
   let posOfNumber = posOfZero;
   for (let i = 0; i < 1000; i++) {
     posOfNumber = posOfNumber + 1;
@@ -108,6 +109,11 @@ export default () => {
   for (let i = 0; i < 3000; i++) {
     posOfNumber = posOfNumber + 1;
     if (posOfNumber > newArray.length - 1) {
+      console.log(
+        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          yo3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 130 \n",
+        "color: white; background: black; font-weight: bold",
+        ""
+      );
       posOfNumber = 0;
     }
   }

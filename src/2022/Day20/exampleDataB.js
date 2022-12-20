@@ -1,4 +1,4 @@
-export default `-64
+export default `-12
 0
 0
 0`;
