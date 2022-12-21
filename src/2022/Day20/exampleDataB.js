@@ -1,4 +1,4 @@
-export default `-12
+export default `4
 0
 0
 0`;

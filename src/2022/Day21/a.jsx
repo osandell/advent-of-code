@@ -9,7 +9,84 @@ const ROPE_LENGTH = 10;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = rData.split(/\n/).map((row) => row.split(""));
+const data = rData.split(/\n/);
+
+let monkeys = {};
+for (let i = 0; i < 5000; i++) {
+  monkeys = {};
+  data.forEach((row, rowIndex) => {
+    let number = row.split(":")[0] === "humn" ? i : parseInt(row.split(" ")[1]);
+
+    let operation = null;
+    let otherMonkeys = [];
+    if (number > -1) {
+    } else {
+      operation = row.split(":")[0] === "root" ? "=" : row.split(" ")[2];
+      otherMonkeys = [row.split(" ")[1], row.split(" ")[3]];
+    }
+
+    monkeys[row.split(":")[0]] = {
+      operation: operation,
+      result: number > -1 ? number : null,
+      otherMonkeys: otherMonkeys,
+      resultDone: number > -1,
+    };
+  });
+
+  let done = false;
+  // debugger;
+  while (!done) {
+    Object.keys(monkeys).forEach((monkeyId) => {
+      if (monkeys[monkeyId].resultDone) {
+        return;
+      }
+
+      let operation = monkeys[monkeyId].operation;
+      let monkey1 = monkeys[monkeys[monkeyId].otherMonkeys[0]];
+      let monkey2 = monkeys[monkeys[monkeyId].otherMonkeys[1]];
+      if (monkey1.resultDone && monkey2.resultDone) {
+        if (operation === "+") {
+          monkeys[monkeyId].result = monkey1.result + monkey2.result;
+          monkeys[monkeyId].resultDone = true;
+        }
+        if (operation === "-") {
+          monkeys[monkeyId].result = monkey1.result - monkey2.result;
+          monkeys[monkeyId].resultDone = true;
+        }
+        if (operation === "*") {
+          monkeys[monkeyId].result = monkey1.result * monkey2.result;
+          monkeys[monkeyId].resultDone = true;
+        }
+        if (operation === "/") {
+          monkeys[monkeyId].result = monkey1.result / monkey2.result;
+          monkeys[monkeyId].resultDone = true;
+        }
+        if (operation === "=") {
+          monkeys[monkeyId].result =
+            monkey1.result === monkey2.result ? -111 : -222;
+          monkeys[monkeyId].resultDone = true;
+        }
+      }
+    });
+
+    done = true;
+    Object.keys(monkeys).forEach((monkeyId) => {
+      if (!monkeys[monkeyId].resultDone) {
+        done = false;
+      }
+    });
+  }
+
+  if (monkeys["root"].result === -111) {
+    console.log(
+      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    monkeys    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 70 \n",
+      "color: white; background: black; font-weight: bold",
+      "",
+      monkeys["humn"].result
+    );
+  }
+}
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -53,103 +130,7 @@ export default () => {
 
   let result = 0;
 
-  for (let i = 0; i < moveNr; i++) {
-    data.forEach((row, rowIndex) => {
-      row.forEach((tile, tileIndex) => {});
-    });
-  }
-
-  let dataToRender = [];
-  data.forEach((row) => {
-    let newRow = [];
-    row.forEach((tile) => {
-      newRow.push(tile);
-    });
-
-    dataToRender.push(newRow);
-  });
-
   // *********************************************************************************
 
-  return (
-    <div>
-      <Render
-        dataToRender={dataToRender}
-        emptyTileIndicator={""}
-        shouldRenderBinarily={false}
-        shouldInvertX={false}
-        shouldInvertY={false}
-        sizeX={"20px"}
-        sizeY={"15px"}
-        isCenterOrigin={false}
-      />
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(0)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Beginning
-        </button>
-        <button
-          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 9 ? "black" : "lightGray",
-          }}
-        >
-          Prev 10
-        </button>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => startPlaying()}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
-          }}
-        >
-          Next 10
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          End
-        </button>
-      </div>
-      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
-      <div style={{ marginTop: "24px" }}>Result: {result}</div>
-    </div>
-  );
+  return <div></div>;
 };
