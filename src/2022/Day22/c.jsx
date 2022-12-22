@@ -3,15 +3,15 @@ import eData from "./exampleData";
 import rData from "./realData";
 import Render from "../../Render";
 
-// const MAP_SIZE = 200;
-const MAP_SIZE = 30;
+const MAP_SIZE = 200;
+// const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 let initialX;
-const board = eData
+const board = rData
   .split(/\n\n/)[0]
   .split("\n")
   .map((row) => {
@@ -34,50 +34,34 @@ const board = eData
 
 let sides = [{}, {}, {}, {}, {}, {}];
 
-/// 1
-for (let i = 0; i < MAP_SIZE; i++) {
-  if (board[0][i] === "." || board[0][i] === "#") {
-    sides[0].topLeft = [0, i];
-    break;
-  }
-}
-for (let i = MAP_SIZE; i > 0; i--) {
-  if (board[0][i] === "." || board[0][i] === "#") {
-    sides[0].topRight = [0, i];
-    break;
-  }
-}
-for (let i = 0; i < board.length; i++) {
-  if (board[i][0] === "." || board[i][0] === "#") {
-    sides[0].bottomLeft = [i - 1, sides[0].topLeft[1]];
-    sides[0].bottomRight = [i - 1, sides[0].topRight[1]];
-    sides[1].topLeft = [i, 0];
-    sides[1].topRight = [i, i - 1];
-    sides[1].bottomLeft = [i + i - 1, 0];
-    sides[1].bottomRight = [i + i - 1, i - 1];
-    sides[2].topLeft = [i, 0 + i];
-    sides[2].topRight = [i, i - 1 + i];
-    sides[2].bottomLeft = [i + i - 1, 0 + i];
-    sides[2].bottomRight = [i + i - 1, i - 1 + i];
-    sides[3].topLeft = [i, 0 + i * 2];
-    sides[3].topRight = [i, i - 1 + i * 2];
-    sides[3].bottomLeft = [i + i - 1, 0 + i * 2];
-    sides[3].bottomRight = [i + i - 1, i - 1 + i * 2];
-    sides[4].topLeft = [i * 2, 0 + i * 2];
-    sides[4].topRight = [i * 2, i - 1 + i * 2];
-    sides[4].bottomLeft = [i * 2 + i - 1, 0 + i * 2];
-    sides[4].bottomRight = [i * 2 + i - 1, i - 1 + i * 2];
-    sides[5].topLeft = [i * 2, 0 + i * 3];
-    sides[5].topRight = [i * 2, i - 1 + i * 3];
-    sides[5].bottomLeft = [i * 2 + i - 1, 0 + i * 3];
-    sides[5].bottomRight = [i * 2 + i - 1, i - 1 + i * 3];
-    break;
-  }
-}
+sides[0].topLeft = [0, 50];
+sides[0].topRight = [0, 99];
+sides[0].bottomLeft = [49, 50];
+sides[0].bottomRight = [49, 99];
+sides[2].topLeft = [100, 0];
+sides[2].topRight = [100, 49];
+sides[2].bottomLeft = [149, 0];
+sides[2].bottomRight = [149, 49];
+sides[1].topLeft = [150, 0];
+sides[1].topRight = [150, 49];
+sides[1].bottomLeft = [199, 0];
+sides[1].bottomRight = [199, 49];
+sides[3].topLeft = [50, 50];
+sides[3].topRight = [50, 99];
+sides[3].bottomLeft = [99, 50];
+sides[3].bottomRight = [99, 99];
+sides[4].topLeft = [100, 50];
+sides[4].topRight = [100, 99];
+sides[4].bottomLeft = [149, 50];
+sides[4].bottomRight = [149, 99];
+sides[5].topLeft = [0, 100];
+sides[5].topRight = [0, 149];
+sides[5].bottomLeft = [49, 100];
+sides[5].bottomRight = [49, 149];
 
 let cubeSize = sides[1].bottomLeft[0] - sides[1].topLeft[0] + 1;
 
-const pathString = eData.split(/\n\n/)[1].split("");
+const pathString = rData.split(/\n\n/)[1].split("");
 
 const path = [];
 
@@ -128,7 +112,7 @@ export default () => {
   // }
   const totalNrOfMoves = 99999999999999999999999999;
 
-  const [moveNr, setMoveNr] = useState(0);
+  const [moveNr, setMoveNr] = useState(380);
   // *********************************************************************************
   // *********************************************************************************
   // *********************************************************************************
@@ -152,8 +136,11 @@ export default () => {
 
   let result = 0;
   let currSide;
+  let visited = {};
 
   const setCurrSide = () => {
+    visited[`${pos[0]}:${pos[1]}`] = true;
+
     if (
       pos[0] >= sides[0].topLeft[0] &&
       pos[0] <= sides[0].bottomLeft[0] &&
@@ -199,18 +186,11 @@ export default () => {
     }
   };
 
-  for (let i = 0; i < moveNr; i++) {
+  for (let ii = 0; ii < moveNr; ii++) {
     setCurrSide();
 
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      currSide    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 164 \n",
-      "color: white; background: black; font-weight: bold",
-      "",
-      currSide
-    );
-
-    // if (i === 8) debugger;
-    let move = path[i];
+    // if (ii === 196) debugger;
+    let move = path[ii];
     if (!isNaN(move)) {
       let stepsLeft = move;
       while (stepsLeft > 0) {
@@ -227,54 +207,103 @@ export default () => {
                 pos[1]--;
                 break;
               } else if (pos[1] > sides[currSide].topRight[1]) {
-                // debugger;
+                //debugger;
                 let switchedSide = false;
                 let relativePos;
                 switch (currSide) {
-                  case 0:
-                    relativePos = pos[0] - cubeSize;
+                  case 1:
+                    // Up on 4
+                    // debugger;
+
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0] - cubeSize * 3;
                     if (
-                      board[sides[5].topRight[0]][
-                        sides[5].topRight[1] - relativePos
+                      board[sides[4].bottomRight[0]][
+                        sides[4].bottomLeft[1] + relativePos
                       ] === "#"
                     ) {
                       pos[1]--;
                       break;
                     } else {
-                      pos[0] = sides[5].topRight[0];
-                      pos[1] = sides[5].topRight[1] - relativePos;
+                      pos[0] = sides[4].bottomRight[0];
+                      pos[1] = sides[4].bottomLeft[1] + relativePos;
+                      facing = "up";
+                      switchedSide = true;
+                      break;
+                    }
+                  case 4:
+                    // debugger;
+                    //left on 5
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0] - cubeSize * 2;
+                    if (
+                      board[sides[5].bottomRight[0] - relativePos][
+                        sides[5].topRight[1]
+                      ] === "#"
+                    ) {
+                      pos[1]--;
+                      break;
+                    } else {
+                      pos[0] = sides[5].bottomRight[0] - relativePos;
+                      pos[1] = sides[5].topRight[1];
                       facing = "left";
                       switchedSide = true;
                       break;
                     }
                   case 3:
+                    // debugger;
+                    // up on 5
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     relativePos = pos[0] - cubeSize;
                     if (
-                      board[sides[5].topRight[0]][
-                        sides[5].topRight[1] - relativePos
+                      board[sides[5].bottomRight[0]][
+                        sides[5].bottomLeft[1] + relativePos
                       ] === "#"
                     ) {
                       pos[1]--;
                       break;
                     } else {
-                      pos[0] = sides[5].topRight[0];
-                      pos[1] = sides[5].topRight[1] - relativePos;
-                      facing = "down";
+                      pos[0] = sides[5].bottomRight[0];
+                      pos[1] = sides[5].bottomLeft[1] + relativePos;
+                      facing = "up";
                       switchedSide = true;
                       break;
                     }
                   case 5:
-                    relativePos = pos[0] - cubeSize * 2;
+                    // debugger;
+                    // left on 4
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0];
                     if (
-                      board[sides[0].bottomRight[0] - relativePos][
-                        sides[0].topRight[1]
+                      board[sides[4].bottomRight[0] - relativePos][
+                        sides[4].topRight[1]
                       ] === "#"
                     ) {
                       pos[1]--;
                       break;
                     } else {
-                      pos[0] = sides[0].bottomRight[0] - relativePos;
-                      pos[1] = sides[0].topRight[1];
+                      pos[0] = sides[4].bottomRight[0] - relativePos;
+                      pos[1] = sides[4].topRight[1];
                       facing = "left";
                       switchedSide = true;
                       break;
@@ -298,50 +327,98 @@ export default () => {
                 let relativePos;
                 switch (currSide) {
                   case 0:
+                    // debugger;
+                    //right on 2
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     relativePos = pos[0];
                     if (
+                      board[sides[2].bottomLeft[0] - relativePos][
+                        sides[2].topLeft[1]
+                      ] === "#"
+                    ) {
+                      pos[1]++;
+                      break;
+                    } else {
+                      pos[0] = sides[2].bottomLeft[0] - relativePos;
+                      pos[1] = sides[2].topLeft[1];
+                      facing = "right";
+                      switchedSide = true;
+                      break;
+                    }
+                  case 1:
+                    // down on 0
+                    // debugger;
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0] - cubeSize * 3;
+                    if (
+                      board[sides[0].topRight[0]][
+                        sides[0].topLeft[1] + relativePos
+                      ] === "#"
+                    ) {
+                      pos[1]++;
+                      break;
+                    } else {
+                      pos[0] = sides[0].topRight[0];
+                      pos[1] = sides[0].topLeft[1] + relativePos;
+                      facing = "down";
+                      switchedSide = true;
+                      break;
+                    }
+                  case 2:
+                    // debugger;
+                    // right on 0 !!
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0] - cubeSize * 2;
+                    if (
+                      board[sides[0].bottomLeft[0] - relativePos][
+                        sides[0].bottomLeft[1]
+                      ] === "#"
+                    ) {
+                      pos[1]++;
+                      break;
+                    } else {
+                      pos[0] = sides[0].bottomLeft[0] - relativePos;
+                      pos[1] = sides[0].bottomLeft[1];
+                      facing = "right";
+                      switchedSide = true;
+                      break;
+                    }
+                  case 3:
+                    // debugger;
+                    // down on 2
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
+                    relativePos = pos[0] - cubeSize;
+                    if (
                       board[sides[2].topRight[0]][
-                        sides[2].topRight[1] - relativePos
+                        sides[2].topLeft[1] + relativePos
                       ] === "#"
                     ) {
                       pos[1]++;
                       break;
                     } else {
                       pos[0] = sides[2].topRight[0];
-                      pos[1] = sides[2].topRight[1] - relativePos;
+                      pos[1] = sides[2].topLeft[1] + relativePos;
                       facing = "down";
-                      switchedSide = true;
-                      break;
-                    }
-                  case 1:
-                    relativePos = pos[0] - cubeSize;
-                    if (
-                      board[sides[5].bottomRight[0]][
-                        sides[5].topRight[1] - relativePos
-                      ] === "#"
-                    ) {
-                      pos[1]++;
-                      break;
-                    } else {
-                      pos[0] = sides[5].bottomRight[0];
-                      pos[1] = sides[5].topRight[1] - relativePos;
-                      facing = "up";
-                      switchedSide = true;
-                      break;
-                    }
-                  case 4:
-                    relativePos = pos[0] - cubeSize * 2;
-                    if (
-                      board[sides[2].bottomRight[0]][
-                        sides[2].bottomRight[1] - relativePos
-                      ] === "#"
-                    ) {
-                      pos[1]++;
-                      break;
-                    } else {
-                      pos[0] = sides[2].bottomRight[0];
-                      pos[1] = sides[2].bottomRight[1] - relativePos;
-                      facing = "up";
                       switchedSide = true;
                       break;
                     }
@@ -368,70 +445,73 @@ export default () => {
                 let relativePos;
                 switch (currSide) {
                   case 0:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
-                    relativePos = pos[1] - cubeSize * 2;
+                    relativePos = pos[1] - cubeSize;
                     if (
-                      board[sides[1].topRight[0]][
-                        sides[1].topRight[1] - relativePos
+                      board[sides[1].topLeft[0] + relativePos][
+                        sides[1].topLeft[1]
                       ] === "#"
                     ) {
                       pos[0]++;
                       break;
                     } else {
-                      pos[0] = sides[1].topRight[0];
-                      pos[1] = sides[1].topRight[1] - relativePos;
-                      facing = "down";
-                      switchedSide = true;
-                      break;
-                    }
-                  case 1:
-                    // debugger;
-                    relativePos = pos[1];
-                    if (
-                      board[sides[0].topRight[0]][
-                        sides[0].topRight[1] - relativePos
-                      ] === "#"
-                    ) {
-                      pos[0]++;
-                      break;
-                    } else {
-                      pos[0] = sides[0].topRight[0];
-                      pos[1] = sides[0].topRight[1] - relativePos;
-                      facing = "down";
+                      pos[0] = sides[1].topLeft[0] + relativePos;
+                      pos[1] = sides[1].topLeft[1];
+                      facing = "right";
                       switchedSide = true;
                       break;
                     }
                   case 2:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
-                    relativePos = pos[1] - cubeSize;
+                    // right on 3
+                    relativePos = pos[1];
                     if (
-                      board[sides[0].topRight[0] + relativePos][
-                        sides[0].topLeft[1]
+                      board[sides[3].topLeft[0] + relativePos][
+                        sides[3].topLeft[1]
                       ] === "#"
                     ) {
                       pos[0]++;
                       break;
                     } else {
-                      pos[0] = sides[0].topRight[0] + relativePos;
-                      pos[1] = sides[0].topLeft[1];
+                      pos[0] = sides[3].topLeft[0] + relativePos;
+                      pos[1] = sides[3].topLeft[1];
                       facing = "right";
                       switchedSide = true;
                       break;
                     }
                   case 5:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
-                    relativePos = pos[1] - cubeSize * 3;
+                    // up on 1
+                    relativePos = pos[1] - cubeSize * 2;
                     if (
-                      board[sides[3].bottomRight[0] - relativePos][
-                        sides[3].topRight[1]
+                      board[sides[1].bottomLeft[0]][
+                        sides[1].bottomLeft[1] + relativePos
                       ] === "#"
                     ) {
                       pos[0]++;
                       break;
                     } else {
-                      pos[0] = sides[3].bottomRight[0] - relativePos;
-                      pos[1] = sides[3].topRight[1];
-                      facing = "left";
+                      pos[0] = sides[1].bottomLeft[0];
+                      pos[1] = sides[1].bottomLeft[1] + relativePos;
+                      facing = "up";
                       switchedSide = true;
                       break;
                     }
@@ -458,70 +538,74 @@ export default () => {
                 let relativePos;
                 switch (currSide) {
                   case 1:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
+                    // down on 5
                     relativePos = pos[1];
                     if (
-                      board[sides[4].bottomRight[0]][
-                        sides[4].bottomRight[1] - relativePos
+                      board[sides[5].topRight[0]][
+                        sides[5].topLeft[1] + relativePos
                       ] === "#"
                     ) {
                       pos[0]--;
                       break;
                     } else {
-                      pos[0] = sides[4].bottomRight[0];
-                      pos[1] = sides[4].bottomRight[1] - relativePos;
-                      facing = "up";
-                      switchedSide = true;
-                      break;
-                    }
-                  case 2:
-                    // debugger;
-                    relativePos = pos[1];
-                    if (
-                      board[sides[4].bottomLeft[0] - relativePos][
-                        sides[4].bottomLeft[1]
-                      ] === "#"
-                    ) {
-                      pos[0]--;
-                      break;
-                    } else {
-                      pos[0] = sides[4].bottomLeft[0] - relativePos;
-                      pos[1] = sides[4].bottomLeft[1];
-                      facing = "right";
+                      pos[0] = sides[5].topRight[0];
+                      pos[1] = sides[5].topLeft[1] + relativePos;
+                      facing = "down";
                       switchedSide = true;
                       break;
                     }
                   case 4:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
-                    relativePos = pos[1] - cubeSize * 2;
+                    // left on 1
+                    relativePos = pos[1] - cubeSize;
                     if (
-                      board[sides[1].bottomRight[0]][
-                        sides[1].bottomRight[1] - relativePos
+                      board[sides[1].topRight[0] + relativePos][
+                        sides[1].bottomRight[1]
                       ] === "#"
                     ) {
                       pos[0]--;
                       break;
                     } else {
-                      pos[0] = sides[1].bottomRight[0];
-                      pos[1] = sides[1].bottomRight[1] - relativePos;
-                      facing = "up";
+                      pos[0] = sides[1].topRight[0] + relativePos;
+                      pos[1] = sides[1].bottomRight[1];
+                      facing = "left";
                       switchedSide = true;
                       break;
                     }
                   case 5:
+                    console.log(
+                      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                        i    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 219 \n",
+                      "color: white; background: black; font-weight: bold",
+                      "",
+                      ii
+                    );
                     // debugger;
-                    relativePos = pos[1] - cubeSize * 3;
+                    // left on 3
+                    relativePos = pos[1] - cubeSize * 2;
                     if (
-                      board[sides[1].bottomLeft[0] + 1][
-                        sides[1].bottomLeft[1] + relativePos
+                      board[sides[3].topRight[0] + relativePos][
+                        sides[3].bottomRight[1]
                       ] === "#"
                     ) {
                       pos[0]--;
                       break;
                     } else {
-                      pos[0] = sides[1].bottomLeft[0];
-                      pos[1] = sides[1].bottomLeft[1] + relativePos;
-                      facing = "right";
+                      pos[0] = sides[3].topRight[0] + relativePos;
+                      pos[1] = sides[3].bottomRight[1];
+                      facing = "left";
                       switchedSide = true;
                       break;
                     }
@@ -607,6 +691,7 @@ export default () => {
   board.forEach((row, y) => {
     let newRow = [];
     row.forEach((tile, x) => {
+      if (visited[`${y}:${x}`]) tile = "X";
       if (y === pos[0] && x === pos[1]) {
         switch (facing) {
           case "right":

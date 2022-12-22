@@ -42,6 +42,11 @@ const renderMapLine = (
               ? "black"
               : isIndexRow
               ? "transparent"
+              : lineToRenderData[tileNr] === ">" ||
+                lineToRenderData[tileNr] === "<" ||
+                lineToRenderData[tileNr] === "^" ||
+                lineToRenderData[tileNr] === "v"
+              ? "tomato"
               : "beige",
         }}
         key={key}
