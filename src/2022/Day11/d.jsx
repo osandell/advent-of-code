@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import eData from "./exampleDataTest";
 import rData from "./realData";
 import Render from "../../Render";
-import { evaluate } from "mathjs";
+import { bignumber, evaluate, mod } from "mathjs";
 
 export default () => {
   const data = [
@@ -309,40 +309,41 @@ export default () => {
         let stringy = worryLevel + ` % ${dataMath[i].test}`;
         if (evaluate(worryLevel + ` % ${dataMath[i].test}`) === 0) {
           if (j === nrOfRounds - 1 && i === 2 && index === 0) {
-            // let num1 = evaluate(
-            //   "((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19)"
-            // );
-
-            // let num2 = evaluate(
-            //   "((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19)"
-            // );
             // console.log(
             //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              stringy   \x1b[8m\x1b[40m\x1b[0m%c d.jsx 303 \n",
             //   "color: white; background: black; font-weight: bold",
             //   "",
-            //   evaluate(` (${num1} ) % 13 `),
-            //   num1
-
-            //   // evaluate("18 % 13")
-            // );
-            // console.log(
-            //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                evaluate('(((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19)')    \x1b[8m\x1b[40m\x1b[0m%c d.jsx 323 \n",
-            //   "color: white; background: black; font-weight: bold",
-            //   "",
             //   evaluate(
-            //     "((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19)"
+            //     " (((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) * ((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19))  "
             //   )
             // );
-            console.log(
-              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                yo normal  \x1b[8m\x1b[40m\x1b[0m%c d.jsx 303 \n",
-              "color: white; background: black; font-weight: bold",
-              "",
-              // 13988703546165100900n % 13n
-              // 3740147530n % 13n
+
+            let myBigNum = bignumber(
               evaluate(
-                "((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) * ((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) %1"
+                "(((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) * ((((((((((((((((79 * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19) + 3) + 6) * 19)) "
               )
             );
+
+            console.log(
+              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                myBigNum    \x1b[8m\x1b[40m\x1b[0m%c d.jsx 327 \n",
+              "color: white; background: black; font-weight: bold",
+              "",
+              myBigNum.toString()
+            );
+
+            console.log(
+              "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                mod(13, 13)    \x1b[8m\x1b[40m\x1b[0m%c d.jsx 321 \n",
+              "color: white; background: black; font-weight: bold",
+              "",
+              mod(myBigNum, 13)
+            );
+
+            // console.log(
+            //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c                yo normal  \x1b[8m\x1b[40m\x1b[0m%c d.jsx 303 \n",
+            //   "color: white; background: black; font-weight: bold",
+            //   "",
+            //   13988703546165100900n % 13n
+            // );
           }
           // logger(index, worryLevel, i, j, dataMath, type);
           // if (worryLevel % dataMath[i].test === 0) {

@@ -11,6 +11,8 @@ export default () => {
       items: [79n, 98n],
       monkeyNr: 0,
       operation: (old) => old * 19n,
+      operator: "*",
+      operand: "19",
       test: 23n,
       true: 2,
     },
@@ -20,6 +22,8 @@ export default () => {
       items: [54n, 65n, 75n, 74n],
       monkeyNr: 1,
       operation: (old) => old + 6n,
+      operator: "+",
+      operand: "6",
       test: 19n,
       true: 2,
     },
@@ -29,6 +33,8 @@ export default () => {
       items: [79n, 60n, 97n],
       monkeyNr: 2,
       operation: (old) => old * old,
+      operator: "^",
+      operand: "2",
       test: 13n,
       true: 1,
     },
@@ -38,12 +44,14 @@ export default () => {
       items: [74n],
       monkeyNr: 3,
       operation: (old) => old + 3n,
+      operator: "+",
+      operand: "3",
       test: 17n,
       true: 0,
     },
   ];
 
-  for (let j = 0; j < 10; j++) {
+  for (let j = 0; j < 6; j++) {
     for (let i = 0; i < data.length; i++) {
       data[i].items.forEach((item) => {
         let worryLevel = item;
@@ -53,9 +61,21 @@ export default () => {
         data[i].inspectedTimes = data[i].inspectedTimes + 1;
 
         if (worryLevel % data[i].test === 0n) {
-          data[data[i].true].items.push(worryLevel);
+          // data[data[i].true].items.push(worryLevel);
+          data[data[i].true].items.push(
+            (worryLevel % data[data[i].true].test) + data[data[i].true].test
+          );
         } else {
-          data[data[i].false].items.push(worryLevel);
+          console.log(
+            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              data[data[i].true].test    \x1b[8m\x1b[40m\x1b[0m%c f.jsx 56 \n",
+            "color: white; background: black; font-weight: bold",
+            "",
+            worryLevel % data[data[i].true].test
+          );
+          // data[data[i].false].items.push(worryLevel);
+          data[data[i].false].items.push(
+            (worryLevel % data[data[i].false].test) + data[data[i].false].test
+          );
         }
       });
       data[i].items = [];
@@ -68,30 +88,6 @@ export default () => {
     data[1].inspectedTimes,
     data[2].inspectedTimes,
     data[3].inspectedTimes
-  );
-
-  // Javascript implementation of the above approach
-
-  // Function to find the largest number
-  // smaller than or equal to N
-  // that is divisible by k
-  function findNum(N, K) {
-    var rem = N % K;
-
-    if (rem == 0) return N;
-    else return N - rem;
-  }
-
-  // Driver code
-  var N = 170495,
-    K = 666;
-  document.write(
-    "Largest number smaller than or equal to " +
-      N +
-      "<br>that is divisible by " +
-      K +
-      " is " +
-      findNum(N, K)
   );
 
   return <div></div>;
