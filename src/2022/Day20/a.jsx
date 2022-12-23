@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import eData from "./exampleDataB";
+import eData from "./exampleData";
 import rData from "./realData";
+import Render from "../../Render";
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-let data = eData.split(/\n/).map((row) => parseInt(row));
+let data = rData.split(/\n/).map((row) => parseInt(row));
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -27,25 +28,18 @@ const move = function (arr, from, to) {
 };
 
 export default () => {
+  const totalNrOfMoves = 99999999999999999999999999;
+  const [moveNr, setMoveNr] = useState(0);
+  let result = 0;
+
   let newArray = [...data];
-  data.forEach((nr, index) => {
-    // console.log(
-    //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    index    \x1b[8m\x1b[40m\x1b[0m\n",
-    //   "color: white; background: black; font-weight: bold",
-    //   index
-    // );
-    if (index === 4) {
-      // debugger;
-    }
+  // data.forEach((nr, index) => {
 
-    // debugger;
-
-    let currPos = newArray.indexOf(nr);
-    let newPos = currPos + nr;
-    let movingForward = nr > 0;
-    let movingBackward = nr < 0;
-
-    debugger;
+  // debugger;
+  // for (let i = 0; i < newArray.length; i++) {
+  for (let i = 0; i < 4; i++) {
+    let currPos = newArray.indexOf(data[i]);
+    let newPos = currPos + data[i];
 
     while (newPos > data.length - 1) {
       newPos = newPos - (data.length - 1);
@@ -55,40 +49,19 @@ export default () => {
       newPos = newPos + (data.length - 1);
     }
 
-    // if (newPos === 0 && movingBackward) {
-    //   newPos = data.length - 1;
-    // }
-
-    // if (newPos === data.length - 1 && movingForward) {
-    //   newPos = 0;
-    // }
-
     newArray = [...arrMove(newArray, currPos, newPos)];
+  }
+  // });
 
-    // debugger;
-    // let currPos = newArray.indexOf(nr);
-    // if (nr < 0) {
-    //   for (let i = nr; i < 0; i++) {
-    //     if (currPos - 1 === 0) {
-    //       newArray = [...move(newArray, currPos, newArray.length - 1)];
-    //       currPos = newArray.length - 1;
-    //     } else {
-    //       newArray = [...move(newArray, currPos, currPos - 1)];
-    //       currPos = currPos - 1;
-    //     }
-    //   }
-    // } else if (nr > 0) {
-    //   for (let i = nr; i > 0; i--) {
-    //     if (currPos + 1 === newArray.length - 1) {
-    //       newArray = [...move(newArray, currPos, 0)];
-    //       currPos = 0;
-    //     } else {
-    //       newArray = [...move(newArray, currPos, currPos + 1)];
-    //       currPos = currPos + 1;
-    //     }
-    //   }
-    // }
-  });
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 46 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    newArray
+  );
+
+  let posOfZero = newArray.indexOf(0);
+
   let posOfNumber = posOfZero;
   for (let i = 0; i < 1000; i++) {
     posOfNumber = posOfNumber + 1;
@@ -111,31 +84,97 @@ export default () => {
   for (let i = 0; i < 3000; i++) {
     posOfNumber = posOfNumber + 1;
     if (posOfNumber > newArray.length - 1) {
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          yo3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 130 \n",
-        "color: white; background: black; font-weight: bold",
-        ""
-      );
       posOfNumber = 0;
     }
   }
   let nr3 = newArray[posOfNumber];
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1, nr2, nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 67 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    nr1,
-    nr2,
-    nr3
-  );
+  let dataToRender = [];
+  newArray.forEach((row) => {
+    dataToRender.push([row]);
+  });
 
-  console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    nr1 + nr2 + nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 77 \n",
-    "color: white; background: black; font-weight: bold",
-    "",
-    nr1 + nr2 + nr3
-  );
+  // *********************************************************************************
 
-  return <div></div>;
+  return (
+    <div>
+      <Render
+        dataToRender={dataToRender}
+        emptyTileIndicator={""}
+        shouldRenderBinarily={false}
+        shouldInvertX={false}
+        shouldInvertY={false}
+        sizeX={"20px"}
+        sizeY={"15px"}
+        isCenterOrigin={false}
+      />
+      <div style={{ marginTop: "24px" }}>
+        <button
+          onClick={() => moveNr > 0 && setMoveNr(0)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 0 ? "black" : "lightGray",
+          }}
+        >
+          Beginning
+        </button>
+        <button
+          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 9 ? "black" : "lightGray",
+          }}
+        >
+          Prev 10
+        </button>
+        <button
+          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
+          style={{
+            marginRight: "8px",
+            color: moveNr > 0 ? "black" : "lightGray",
+          }}
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => startPlaying()}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          Play
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          Next
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
+          }}
+        >
+          Next 10
+        </button>
+        <button
+          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
+          style={{
+            marginRight: "8px",
+            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
+          }}
+        >
+          End
+        </button>
+      </div>
+      <div style={{ marginTop: "24px" }}>Move nr: {moveNr}</div>
+      <div style={{ marginTop: "24px" }}>Result: {result}</div>
+    </div>
+  );
 };
