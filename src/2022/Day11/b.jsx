@@ -43,7 +43,7 @@ export default () => {
     },
   ];
 
-  for (let j = 0; j < 10000; j++) {
+  for (let j = 0; j < 20; j++) {
     for (let i = 0; i < data.length; i++) {
       data[i].items.forEach((item) => {
         let worryLevel = item;
