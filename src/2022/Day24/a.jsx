@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import eData from "./exampleData";
 import rData from "./realData";
+import fiftyData from "./fifty";
 import Render from "../../Render";
 
 export default () => {
   let data = rData.split(/\n/).map((row) => row.split(""));
+  // let data = JSON.parse(fiftyData);
 
   data.forEach((row, rowIndex) => {
     row.forEach((tile, tileIndex) => {
@@ -27,7 +29,7 @@ export default () => {
   // *********************************************************************************
   // *********************************************************************************
   // const [moveNr, setMoveNr] = useState(7005625); mer än 10 min tror jag, men går.. högsta typ 145
-  const [moveNr, setMoveNr] = useState(3300);
+  const [moveNr, setMoveNr] = useState(427);
   // *********************************************************************************
   // *********************************************************************************
   // *********************************************************************************
@@ -45,6 +47,7 @@ export default () => {
     }
   };
 
+  let lowestTo40 = 999999999;
   let highestX = 0;
   let result = 0;
   let currData = [];
@@ -62,7 +65,7 @@ export default () => {
   let highestPosX = 0;
 
   for (let currMove = 0; currMove < moveNr; currMove++) {
-    // if (currMove === 1689) debugger;
+    // if (currMove === 127) debugger;
 
     if (!isPlayerMove) {
       prevData = [];
@@ -193,7 +196,7 @@ export default () => {
       isPlayerMove = true;
     } else {
       // Move player
-      // if (currMove === 1689) debugger; //!!!!!!!!!!!!!!!!!!!!!
+      // if (currMove === 427) debugger; //!!!!!!!!!!!!!!!!!!!!!
 
       // obs! we make sure to make a local copy of the position array
       let position = [
@@ -226,7 +229,7 @@ export default () => {
           ].replace("E", "");
           position[0] = position[0] + 1;
         }
-      } else if (longestToGoalAxis === "x") {
+      } else if (longestToGoalAxis === "x" || true) {
         // try ----move right----
         if (
           position[0] >= 1 &&
@@ -353,25 +356,27 @@ export default () => {
             position[1]
           ].replace("E", "");
           position[0] = position[0] - 1;
-        } //else if (
-        //   // cant go up, try left
-        //   (data[position[0]][position[1]].includes("<") ||
-        //     data[position[0]][position[1]].includes(">") ||
-        //     data[position[0]][position[1]].includes("v") ||
-        //     data[position[0]][position[1]].includes("^")) &&
-        //   !ispositionBusted([position[0], position[1] - 1]) &&
-        //   !data[position[0]][position[1] - 1].includes("<") &&
-        //   !data[position[0]][position[1] - 1].includes(">") &&
-        //   !data[position[0]][position[1] - 1].includes("v") &&
-        //   !data[position[0]][position[1] - 1].includes("^")
-        // ) {
-        //   // debugger;
-        //   data[position[0]][position[1]] = data[position[0]][
-        //     position[1]
-        //   ].replace("E", "");
-        //   position[1] = position[1] - 1;
-        // }
-        // // nothing works - busted
+        } else if (
+          // cant go up, try left
+          (data[position[0]][position[1]].includes("<") ||
+            data[position[0]][position[1]].includes(">") ||
+            data[position[0]][position[1]].includes("v") ||
+            data[position[0]][position[1]].includes("^")) &&
+          !bustedMoves.includes(
+            `${moves.length}:${position[0]},${position[1] - 1}`
+          ) &&
+          !data[position[0]][position[1] - 1].includes("<") &&
+          !data[position[0]][position[1] - 1].includes(">") &&
+          !data[position[0]][position[1] - 1].includes("v") &&
+          !data[position[0]][position[1] - 1].includes("^")
+        ) {
+          // debugger;
+          data[position[0]][position[1]] = data[position[0]][
+            position[1]
+          ].replace("E", "");
+          position[1] = position[1] - 1;
+        }
+        // nothing works - busted
         else {
           isBusted = true;
         }
@@ -502,28 +507,72 @@ export default () => {
             position[1]
           ].replace("E", "");
           position[1] = position[1] - 1;
-        } //else if (
-        //   // cant go up, try left
-        //   (data[position[0]][position[1]].includes("<") ||
-        //     data[position[0]][position[1]].includes(">") ||
-        //     data[position[0]][position[1]].includes("v") ||
-        //     data[position[0]][position[1]].includes("^")) &&
-        //   !ispositionBusted([position[0], position[1] - 1]) &&
-        //   !data[position[0]][position[1] - 1].includes("<") &&
-        //   !data[position[0]][position[1] - 1].includes(">") &&
-        //   !data[position[0]][position[1] - 1].includes("v") &&
-        //   !data[position[0]][position[1] - 1].includes("^")
-        // ) {
-        //   // debugger;
-        //   data[position[0]][position[1]] = data[position[0]][
-        //     position[1]
-        //   ].replace("E", "");
-        //   position[1] = position[1] - 1;
-        // }
-        // // nothing works - busted
+        } else if (
+          // cant go up, try left
+          (data[position[0]][position[1]].includes("<") ||
+            data[position[0]][position[1]].includes(">") ||
+            data[position[0]][position[1]].includes("v") ||
+            data[position[0]][position[1]].includes("^")) &&
+          !ispositionBusted([position[0], position[1] - 1]) &&
+          !data[position[0]][position[1] - 1].includes("<") &&
+          !data[position[0]][position[1] - 1].includes(">") &&
+          !data[position[0]][position[1] - 1].includes("v") &&
+          !data[position[0]][position[1] - 1].includes("^")
+        ) {
+          // debugger;
+          data[position[0]][position[1]] = data[position[0]][
+            position[1]
+          ].replace("E", "");
+          position[1] = position[1] - 1;
+        }
+        // nothing works - busted
         else {
           isBusted = true;
         }
+      }
+
+      if (position[1] === 48) {
+        // if (moves.length < lowestTo40 && position[0] > 15) {
+        if (moves.length < lowestTo40) {
+          console.log(
+            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    position    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 534 \n",
+            "color: white; background: black; font-weight: bold",
+            "",
+            position
+          );
+
+          console.log(
+            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              currMove    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 541 \n",
+            "color: white; background: black; font-weight: bold",
+            "",
+            currMove
+          );
+          lowestTo40 = moves.length;
+        }
+        isBusted = true;
+
+        let dataString = "";
+
+        data.forEach((row) => {
+          dataString += row.join("") + "\n";
+        });
+
+        // if (moves.length === 138) {
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c            JSON.stringify(data)    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 534 \n",
+        //     "color: white; background: black; font-weight: bold",
+        //     "",
+        //     dataString
+        //   );
+        // }
+        // if (moves.length === 411) {
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              position    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 552 \n",
+        //     "color: white; background: black; font-weight: bold",
+        //     "",
+        //     position
+        //   );
+        // }
       }
 
       if (isBusted) {
@@ -604,7 +653,16 @@ export default () => {
         sizeY={"15px"}
         isCenterOrigin={false}
       />
-      <div style={{ marginLeft: "3000px", marginTop: "24px", display: "flex" }}>
+      <div
+        style={{
+          position: "fixed",
+          left: "0",
+          bottom: "0",
+          marginLeft: "0px",
+          marginTop: "24px",
+          display: "flex",
+        }}
+      >
         <button
           onClick={() => moveNr > 0 && setMoveNr(0)}
           style={{
@@ -677,6 +735,7 @@ export default () => {
         </div>
         <div style={{ marginTop: "24px" }}>currPlayerMove: {moves.length}</div>
         <div style={{ marginTop: "24px" }}>highest pos x: {highestPosX}</div>
+        <div style={{ marginTop: "24px" }}>lowest to 40: {lowestTo40}</div>
       </div>
     </div>
   );
