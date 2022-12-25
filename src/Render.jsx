@@ -42,10 +42,10 @@ const renderMapLine = (
               ? "black"
               : isIndexRow
               ? "transparent"
-              : lineToRenderData[tileNr].includes("E") ||
-                // lineToRenderData[tileNr] === "<" ||
-                // lineToRenderData[tileNr] === "^" ||
-                lineToRenderData[tileNr] === "E"
+              : //SlineToRenderData[tileNr].includes("E") ||
+              // lineToRenderData[tileNr] === "<" ||
+              // lineToRenderData[tileNr] === "^" ||
+              lineToRenderData[tileNr] === "E"
               ? "tomato"
               : "beige",
         }}

@@ -1,8 +1,6 @@
-// export default `5000
-// export default `9038
-export default `0
-0
-0
+export default `9038
+7675
+-2761
 -5405
 7871
 9909

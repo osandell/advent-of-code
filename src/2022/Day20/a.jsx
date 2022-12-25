@@ -6,7 +6,7 @@ import Render from "../../Render";
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-let data = rData.split(/\n/).map((row) => parseInt(row));
+let data = eData.split(/\n/).map((row) => parseInt(row));
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -32,67 +32,108 @@ export default () => {
   const [moveNr, setMoveNr] = useState(0);
   let result = 0;
 
-  let newArray = [...data];
-  // data.forEach((nr, index) => {
+  let newArray = [];
+  let test = {};
 
-  // debugger;
-  // for (let i = 0; i < newArray.length; i++) {
-  for (let i = 0; i < 4; i++) {
-    let currPos = newArray.indexOf(data[i]);
-    let newPos = currPos + data[i];
-
-    while (newPos > data.length - 1) {
-      newPos = newPos - (data.length - 1);
+  data.forEach((nr, index) => {
+    if (nr !== 0) {
+      newArray.push((nr * 811589153).toString() + ":" + index.toString());
+    } else {
+      newArray.push("nr" + nr.toString() + ":" + index.toString());
     }
+  });
 
-    while (newPos < 0) {
-      newPos = newPos + (data.length - 1);
-    }
+  newArray.forEach((nr, index) => {
+    if (!test[nr]) test[nr] = 0;
+    else test[nr] = test[nr] + 1;
+  });
 
-    newArray = [...arrMove(newArray, currPos, newPos)];
-  }
-  // });
+  let newArray2 = [...newArray];
 
   console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      newArray    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 46 \n",
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      test    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 44 \n",
     "color: white; background: black; font-weight: bold",
     "",
-    newArray
+    Object.keys(test).length
   );
 
-  let posOfZero = newArray.indexOf(0);
+  // debugger;
 
-  let posOfNumber = posOfZero;
-  for (let i = 0; i < 1000; i++) {
-    posOfNumber = posOfNumber + 1;
-    if (posOfNumber > newArray.length - 1) {
-      posOfNumber = 0;
-    }
-  }
-  let nr1 = newArray[posOfNumber];
+  // for (let j = 0; j < 10; j++) {
+  //   for (let i = 0; i < newArray.length; i++) {
+  //     let currPos = newArray2.indexOf(newArray[i]);
+  //     let newPos = currPos + parseInt(newArray[i].split(":")[0]);
+  //     if (newArray[i].split(":")[0] === "nr0") {
+  //       newPos = currPos;
+  //     }
 
-  posOfNumber = posOfZero;
-  for (let i = 0; i < 2000; i++) {
-    posOfNumber = posOfNumber + 1;
-    if (posOfNumber > newArray.length - 1) {
-      posOfNumber = 0;
-    }
-  }
-  let nr2 = newArray[posOfNumber];
+  //     while (newPos > newArray.length - 1) {
+  //       newPos = newPos - (newArray.length - 1);
+  //     }
 
-  posOfNumber = posOfZero;
-  for (let i = 0; i < 3000; i++) {
-    posOfNumber = posOfNumber + 1;
-    if (posOfNumber > newArray.length - 1) {
-      posOfNumber = 0;
-    }
-  }
-  let nr3 = newArray[posOfNumber];
+  //     while (newPos < 0) {
+  //       newPos = newPos + (newArray.length - 1);
+  //     }
 
-  let dataToRender = [];
-  newArray.forEach((row) => {
-    dataToRender.push([row]);
-  });
+  //     newArray2 = [...arrMove(newArray2, currPos, newPos)];
+  //   }
+  // }
+
+  // let posOfZero;
+
+  // newArray2.forEach((nr, index) => {
+  //   if (nr.includes("nr0:")) {
+  //     posOfZero = index;
+  //   }
+  // });
+
+  // let posOfNumber = posOfZero;
+  // for (let i = 0; i < 1000; i++) {
+  //   posOfNumber = posOfNumber + 1;
+  //   if (posOfNumber > newArray2.length - 1) {
+  //     posOfNumber = 0;
+  //   }
+  // }
+  // let nr1 = parseInt(newArray2[posOfNumber].split(":")[0]);
+
+  // posOfNumber = posOfZero;
+  // for (let i = 0; i < 2000; i++) {
+  //   posOfNumber = posOfNumber + 1;
+  //   if (posOfNumber > newArray2.length - 1) {
+  //     posOfNumber = 0;
+  //   }
+  // }
+  // let nr2 = parseInt(newArray2[posOfNumber].split(":")[0]);
+
+  // posOfNumber = posOfZero;
+  // for (let i = 0; i < 3000; i++) {
+  //   posOfNumber = posOfNumber + 1;
+  //   if (posOfNumber > newArray2.length - 1) {
+  //     posOfNumber = 0;
+  //   }
+  // }
+  // let nr3 = parseInt(newArray2[posOfNumber].split(":")[0]);
+
+  // console.log(
+  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      nr1, nr2, nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 85 \n",
+  //   "color: white; background: black; font-weight: bold",
+  //   "",
+  //   nr1,
+  //   nr2,
+  //   nr3
+  // );
+
+  // console.log(
+  //   "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      nr1+nr2+nr3    \x1b[8m\x1b[40m\x1b[0m%c a.jsx 94 \n",
+  //   "color: white; background: black; font-weight: bold",
+  //   "",
+  //   nr1 + nr2 + nr3
+  // );
+
+  // let dataToRender = [];
+  // newArray.forEach((row) => {
+  //   dataToRender.push([row]);
+  // });
 
   // *********************************************************************************
 
