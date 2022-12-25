@@ -62,7 +62,7 @@ import Day25b from "./2022/Day25/b";
 function App() {
   return (
     <div className="App">
-      <Day20b />
+      <Day25a />
     </div>
   );
 }
