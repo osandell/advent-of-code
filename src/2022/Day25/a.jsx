@@ -4,7 +4,7 @@ import rData from "./realData";
 import Render from "../../Render";
 import { to } from "mathjs";
 
-const data = eData.split(/\n/).map((row) => row.split(""));
+const data = rData.split(/\n/).map((row) => row.split(""));
 
 const getDecimalFromSnafu = (snafu) => {
   let decimalNr = 0;
@@ -62,27 +62,26 @@ const getSnafuArrFromDecimal = (decimal) => {
 
 const getSnafuFromSnfuArr = (snafuArr) => {
   let totalSnafu = snafuArr.splice(0, 1)[0].split("");
-  debugger;
+  // debugger;
   snafuArr.forEach((snafu) => {
     let index = totalSnafu.length - snafu.length;
     let foundNon2 = false;
-    let firstIteration = true;
     switch (totalSnafu[index]) {
       case "=":
-        totalSnafu[index] = "0";
+        totalSnafu[index] = snafu.length === 1 ? snafu : "0";
         break;
       case "-":
-        totalSnafu[index] = "1";
+        totalSnafu[index] = snafu.length === 1 ? snafu : "1";
         break;
       case "0":
-        totalSnafu[index] = "2";
+        totalSnafu[index] = snafu.length === 1 ? snafu : "2";
         break;
       case "1":
+        totalSnafu[index] = snafu.length === 1 ? snafu : "=";
         for (let i = index - 1; i >= 0; i--) {
           let char = totalSnafu[i];
           if (char === "2") {
             totalSnafu[i] = "=";
-            firstIteration = false;
           } else {
             if (!foundNon2) {
               switch (totalSnafu[i]) {
@@ -110,11 +109,11 @@ const getSnafuFromSnfuArr = (snafuArr) => {
         }
         break;
       case "2":
-        for (let i = index; i >= 0; i--) {
+        totalSnafu[index] = "-";
+        for (let i = index - 1; i >= 0; i--) {
           let char = totalSnafu[i];
           if (char === "2") {
-            totalSnafu[i] = firstIteration ? "-" : "=";
-            firstIteration = false;
+            totalSnafu[i] = "=";
           } else {
             if (!foundNon2) {
               switch (totalSnafu[i]) {
@@ -157,12 +156,17 @@ export default () => {
   test = getDecimalFromSnafu(["2", "2", "2", "2", "2"]);
   test = getDecimalFromSnafu(["2", "0", "2", "0"]);
 
-  let snafuArr = getSnafuArrFromDecimal(201);
+  let snafuArr = getSnafuArrFromDecimal(totalDecimal);
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    snafuArr    \x1b[8m\x1b[40m\x1b[0m\n",
+    "color: white; background: black; font-weight: bold",
+    snafuArr
+  );
   let snafu = getSnafuFromSnfuArr(snafuArr);
   console.log(
     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    snafu    \x1b[8m\x1b[40m\x1b[0m\n",
     "color: white; background: black; font-weight: bold",
-    snafu
+    snafu.join("")
   );
 
   return null;
