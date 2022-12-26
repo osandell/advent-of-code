@@ -55,14 +55,16 @@ import Day20b from "./2022/Day20/b";
 // import Day23a from "./2022/Day23/a";
 // import Day23b from "./2022/Day23/b";
 import Day24a from "./2022/Day24/a";
+import Day24anew from "./2022/Day24/anew";
 import Day24b from "./2022/Day24/b";
+import Day24c from "./2022/Day24/c";
 import Day25a from "./2022/Day25/a";
 import Day25b from "./2022/Day25/b";
 
 function App() {
   return (
     <div className="App">
-      <Day25a />
+      <Day24c />
     </div>
   );
 }
