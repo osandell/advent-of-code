@@ -59,12 +59,14 @@ export default () => {
   let bustedMoves = [];
   let highestPosX = 0;
   let dataToRender = [];
+  let quickestNrOfMoves = 99999999;
 
   let maps = [];
 
-  for (let k = 10; k < 25; k++) {
+  let TEST_NR_OF_MOVES = 314;
+  for (let k = TEST_NR_OF_MOVES + 1; k < TEST_NR_OF_MOVES + 2; k++) {
     let nrOfMovesToFinish = k;
-    for (let currMove = 0; currMove < nrOfMovesToFinish + 1; currMove++) {
+    for (let currMove = 0; currMove < nrOfMovesToFinish; currMove++) {
       // if (currMove === 127) debugger;
 
       currData = [];
@@ -195,6 +197,7 @@ export default () => {
       }
     }
 
+    // debugger;
     maps = maps.reverse();
 
     data = maps[0];
@@ -203,7 +206,7 @@ export default () => {
     data.forEach((row, rowIndex) => {
       let newRow = [];
       row.forEach((tile, tileIndex) => {
-        if (rowIndex === 5 && tileIndex === 6) {
+        if (rowIndex === data.length - 1 && tileIndex === data[0].length - 2) {
           newRow.push("0");
         } else {
           newRow.push("");
@@ -228,42 +231,53 @@ export default () => {
       }
     };
 
-    // for (let i = 0; i < moveNr; i++) {
-    for (let i = 0; i < nrOfMovesToFinish; i++) {
+    let mapIndex = 0;
+    let playerMove = false;
+    data = maps[mapIndex];
+    mapIndex++;
+    for (let i = 0; i < moveNr; i++) {
+      // for (let i = 0; i < nrOfMovesToFinish * 2 - 2; i++) {
       // if (moveNr === 5) debugger;
-
-      data = maps[i + 1];
-
-      data.forEach((row, rowIndex) => {
-        row.forEach((tile, tileIndex) => {
-          let lowest = 99999999999999999;
-          let lowestIndex = -1;
-          if (rowIndex === 3 && tileIndex === 4) {
-            // debugger;
-          }
-          check(rowIndex - 1, tileIndex, rowIndex, tileIndex);
-          check(rowIndex + 1, tileIndex, rowIndex, tileIndex);
-          check(rowIndex, tileIndex - 1, rowIndex, tileIndex);
-          check(rowIndex, tileIndex + 1, rowIndex, tileIndex);
+      if (playerMove) {
+        data = maps[mapIndex];
+        data.forEach((row, rowIndex) => {
+          row.forEach((tile, tileIndex) => {
+            let lowest = 99999999999999999;
+            let lowestIndex = -1;
+            if (rowIndex === 3 && tileIndex === 4) {
+              // debugger;
+            }
+            check(rowIndex - 1, tileIndex, rowIndex, tileIndex);
+            check(rowIndex + 1, tileIndex, rowIndex, tileIndex);
+            check(rowIndex, tileIndex - 1, rowIndex, tileIndex);
+            check(rowIndex, tileIndex + 1, rowIndex, tileIndex);
+          });
         });
-      });
 
-      // clean away busted moves
-      data.forEach((row, rowIndex) => {
-        row.forEach((tile, tileIndex) => {
-          if (
-            nrOfMovesMap[rowIndex][tileIndex] !== "" &&
-            (data[rowIndex][tileIndex].includes(">") ||
-              data[rowIndex][tileIndex].includes("<") ||
-              data[rowIndex][tileIndex].includes("^") ||
-              data[rowIndex][tileIndex].includes("v"))
-          ) {
-            nrOfMovesMap[rowIndex][tileIndex] = "";
-          }
+        // clean away busted moves
+        data.forEach((row, rowIndex) => {
+          row.forEach((tile, tileIndex) => {
+            if (
+              nrOfMovesMap[rowIndex][tileIndex] !== "" &&
+              (data[rowIndex][tileIndex].includes(">") ||
+                data[rowIndex][tileIndex].includes("<") ||
+                data[rowIndex][tileIndex].includes("^") ||
+                data[rowIndex][tileIndex].includes("v"))
+            ) {
+              nrOfMovesMap[rowIndex][tileIndex] = "";
+            }
+          });
         });
-      });
+        playerMove = false;
+        mapIndex++;
+      } else {
+        data = maps[mapIndex];
+
+        playerMove = true;
+      }
     }
 
+    let foundTopLeft = false;
     dataToRender = [];
     data.forEach((row, rowIndex) => {
       let newRow = [];
@@ -272,7 +286,10 @@ export default () => {
           nrOfMovesMap[rowIndex][tileIndex] !== "" &&
           nrOfMovesMap[rowIndex][tileIndex] !== undefined
         ) {
-          tile = tile + nrOfMovesMap[rowIndex][tileIndex];
+          tile = foundTopLeft
+            ? tile + nrOfMovesMap[rowIndex][tileIndex]
+            : tile + nrOfMovesMap[rowIndex][tileIndex] + "";
+          foundTopLeft = true;
         }
         newRow.push(tile);
       });
@@ -280,14 +297,18 @@ export default () => {
     });
 
     if (dataToRender[0][1] !== "") {
-      console.log(
-        "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c          k    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 289 \n",
-        "color: white; background: black; font-weight: bold",
-        "",
-        k
-      );
+      if (k - 1 < quickestNrOfMoves) {
+        quickestNrOfMoves = k - 1;
+      }
     }
   }
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      quickestNrOfMoves    \x1b[8m\x1b[40m\x1b[0m%c c.jsx 297 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    quickestNrOfMoves
+  );
 
   // *********************************************************************************
 
