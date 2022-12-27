@@ -51,31 +51,39 @@ export default () => {
     },
   ];
 
-  for (let j = 0; j < 6; j++) {
+  for (let j = 0; j < 20; j++) {
     for (let i = 0; i < data.length; i++) {
       data[i].items.forEach((item) => {
         let worryLevel = item;
+
+        if (j % 10 === 0) console.log(j, worryLevel);
 
         worryLevel = data[i].operation(worryLevel);
 
         data[i].inspectedTimes = data[i].inspectedTimes + 1;
 
         if (worryLevel % data[i].test === 0n) {
-          // data[data[i].true].items.push(worryLevel);
-          data[data[i].true].items.push(
-            (worryLevel % data[data[i].true].test) + data[data[i].true].test
-          );
+          data[data[i].true].items.push(worryLevel);
         } else {
-          console.log(
-            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              data[data[i].true].test    \x1b[8m\x1b[40m\x1b[0m%c f.jsx 56 \n",
-            "color: white; background: black; font-weight: bold",
-            "",
-            worryLevel % data[data[i].true].test
-          );
-          // data[data[i].false].items.push(worryLevel);
-          data[data[i].false].items.push(
-            (worryLevel % data[data[i].false].test) + data[data[i].false].test
-          );
+          // let twentyThreeRest = worryLevel % 23n;
+          // let nineteenRest = worryLevel % 19n;
+          // let seventeenRest = worryLevel % 17n;
+          // let thirteenRest = worryLevel % 13n;
+          // let theNumber = 0n;
+
+          // for (let i = 0n; i < 1000000n; i++) {
+          //   if (
+          //     i % 23n === twentyThreeRest &&
+          //     i % 13n === thirteenRest &&
+          //     i % 19n === nineteenRest &&
+          //     i % 17n === seventeenRest
+          //   ) {
+          //     theNumber = i;
+          //     break;
+          //   }
+          // }
+
+          data[data[i].false].items.push(worryLevel);
         }
       });
       data[i].items = [];
