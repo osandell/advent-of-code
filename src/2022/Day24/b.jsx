@@ -5,7 +5,7 @@ import fiftyData from "./fifty";
 import Render from "../../Render";
 
 export default () => {
-  let data = eData.split(/\n/).map((row) => row.split(""));
+  let data = rData.split(/\n/).map((row) => row.split(""));
 
   // *********************************************************************************
   // *********************************************************************************
@@ -15,7 +15,7 @@ export default () => {
   // const [moveNr, setMoveNr] = useState(7005625); mer än 10 min tror jag, men går.. högsta typ 145
   // const [moveNr, setMoveNr] = useState(1409);
   // const [moveNr, setMoveNr] = useState(680);
-  const [moveNr, setMoveNr] = useState(0);
+  const [moveNr, setMoveNr] = useState(950);
   // const [moveNr, setMoveNr] = useState(2192);
   // *********************************************************************************
   // *********************************************************************************
@@ -55,32 +55,43 @@ export default () => {
     if (
       data[y] &&
       data[y][x] &&
-      parseInt(data[y][x]) === i - 1 &&
+      data[y][x].includes("old") &&
+      !data[rowIndex][tileIndex].includes("new") &&
       !data[rowIndex][tileIndex].includes("<") &&
       !data[rowIndex][tileIndex].includes(">") &&
       !data[rowIndex][tileIndex].includes("^") &&
       !data[rowIndex][tileIndex].includes("v") &&
       !data[rowIndex][tileIndex].includes("#")
     ) {
-      let nr = parseInt(data[rowIndex][tileIndex]);
-      if (nr >= 0) {
-        data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
-          nr.toString(),
-          ""
-        );
-      }
-
       if (
         rowIndex === data.length - 1 &&
         tileIndex === data[0].length - 2 &&
         !hasTurnedBackHome
       ) {
+        // debugger;
         data.forEach((row, rowIndex) => {
           row.forEach((tile, tileIndex) => {
-            let nr = parseInt(data[rowIndex][tileIndex]).toString();
-            if (nr >= 0) {
+            if (data[rowIndex][tileIndex].includes("old:")) {
+              // debugger;
+              let nr = data[rowIndex][tileIndex].split("old:")[1].split("]")[0];
               data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
-                nr.toString(),
+                nr,
+                ""
+              );
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                "old:]",
+                ""
+              );
+            }
+
+            if (data[rowIndex][tileIndex].includes("new:")) {
+              let nr = data[rowIndex][tileIndex].split("new:")[1].split("]")[0];
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                nr,
+                ""
+              );
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                "new:]",
                 ""
               );
             }
@@ -95,12 +106,30 @@ export default () => {
         hasTurnedBackHome &&
         !hasCoughtCandy
       ) {
+        // debugger;
         data.forEach((row, rowIndex) => {
           row.forEach((tile, tileIndex) => {
-            let nr = parseInt(data[rowIndex][tileIndex]).toString();
-            if (nr >= 0) {
+            if (data[rowIndex][tileIndex].includes("old:")) {
+              // debugger;
+              let nr = data[rowIndex][tileIndex].split("old:")[1].split("]")[0];
               data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
-                nr.toString(),
+                nr,
+                ""
+              );
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                "old:]",
+                ""
+              );
+            }
+
+            if (data[rowIndex][tileIndex].includes("new:")) {
+              let nr = data[rowIndex][tileIndex].split("new:")[1].split("]")[0];
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                nr,
+                ""
+              );
+              data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+                "new:]",
                 ""
               );
             }
@@ -109,7 +138,8 @@ export default () => {
         hasCoughtCandy = true;
       }
 
-      data[rowIndex][tileIndex] = data[rowIndex][tileIndex] + i.toString();
+      data[rowIndex][tileIndex] =
+        data[rowIndex][tileIndex] + "new:[" + i.toString() + "]";
       return true;
     }
 
@@ -220,27 +250,57 @@ export default () => {
         }
       }
     }
+    // if (currMove === 5) debugger;
 
-    // TODO: se till så att den markerar alla gamla nummber med "old"... sen lägger till nya och tar bort gamla
     for (let rowIndex = data.length - 1; rowIndex >= 0; rowIndex--) {
       for (let tileIndex = data[0].length - 1; tileIndex >= 0; tileIndex--) {
         let nr = parseInt(data[rowIndex][tileIndex]).toString();
         if (nr >= 0) {
-          // data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
-          //   nr.toString(),
-          //   "old:" + nr.toString()
-          // );
+          data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+            nr.toString(),
+            "old:[" + nr.toString() + "]"
+          );
+        }
+      }
+    }
+
+    for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
+      for (let tileIndex = 0; tileIndex < data[0].length; tileIndex++) {
+        // if (rowIndex === 1 && tileIndex === 2 && currMove === 5) debugger;
+        check(rowIndex - 1, tileIndex, rowIndex, tileIndex, currMove);
+        check(rowIndex + 1, tileIndex, rowIndex, tileIndex, currMove);
+        check(rowIndex, tileIndex + 1, rowIndex, tileIndex, currMove);
+        check(rowIndex, tileIndex - 1, rowIndex, tileIndex, currMove);
+        check(rowIndex, tileIndex, rowIndex, tileIndex, currMove);
+      }
+    }
+
+    for (let rowIndex = data.length - 1; rowIndex >= 0; rowIndex--) {
+      for (let tileIndex = data[0].length - 1; tileIndex >= 0; tileIndex--) {
+        if (data[rowIndex][tileIndex].includes("old:")) {
+          // debugger;
+          let nr = data[rowIndex][tileIndex].split("old:")[1].split("]")[0];
+          data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(nr, "");
+          data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+            "old:]",
+            ""
+          );
         }
       }
     }
 
     for (let rowIndex = data.length - 1; rowIndex >= 0; rowIndex--) {
       for (let tileIndex = data[0].length - 1; tileIndex >= 0; tileIndex--) {
-        if (rowIndex === 4 && tileIndex === 5 && currMove === 22) debugger;
-        check(rowIndex - 1, tileIndex, rowIndex, tileIndex, currMove);
-        check(rowIndex + 1, tileIndex, rowIndex, tileIndex, currMove);
-        check(rowIndex, tileIndex + 1, rowIndex, tileIndex, currMove);
-        check(rowIndex, tileIndex, rowIndex, tileIndex, currMove);
+        if (data[rowIndex][tileIndex].includes("new:")) {
+          data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+            "new:[",
+            ""
+          );
+          data[rowIndex][tileIndex] = data[rowIndex][tileIndex].replace(
+            "]",
+            ""
+          );
+        }
       }
     }
 
