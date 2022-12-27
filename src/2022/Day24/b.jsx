@@ -21,9 +21,9 @@ export default () => {
   // *********************************************************************************
   // const [moveNr, setMoveNr] = useState(7005625); mer än 10 min tror jag, men går.. högsta typ 145
   // const [moveNr, setMoveNr] = useState(1409);
-  // const [moveNr, setMoveNr] = useState(680);
+  const [moveNr, setMoveNr] = useState(680);
   // const [moveNr, setMoveNr] = useState(30);
-  const [moveNr, setMoveNr] = useState(2192);
+  // const [moveNr, setMoveNr] = useState(2192);
   // *********************************************************************************
   // *********************************************************************************
   // *********************************************************************************
