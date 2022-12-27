@@ -4,18 +4,18 @@ import rData from "./realData";
 import Render from "../../Render";
 
 export default () => {
-  const data = eData
+  const data = rData
     .split("\n\n")
     .map((monkeyChunk) => monkeyChunk.split("\n"))
     .map((line, index) => {
-      const funcsExample = [
+      const funcsE = [
         (old) => old * 19,
         (old) => old + 6,
         (old) => old * old,
         (old) => old + 3,
       ];
 
-      const funcsReal = [
+      const funcsR = [
         (old) => old * 13,
         (old) => old + 4,
         (old) => old * 11,
@@ -31,8 +31,7 @@ export default () => {
           .split(": ")[1]
           .split(", ")
           .map((nr) => parseInt(nr)),
-        // operation: funcsReal[index],
-        operation: funcsExample[index],
+        operation: funcsR[index],
         test: parseInt(line[3].split("by ")[1]),
         true: parseInt(line[4].split("monkey ")[1]),
         false: parseInt(line[5].split("monkey ")[1]),
@@ -40,80 +39,65 @@ export default () => {
       };
     });
 
-  for (let j = 0; j < 20; j++) {
+  var startTime = performance.now();
+  for (let j = 0; j < 10000; j++) {
     for (let i = 0; i < data.length; i++) {
       data[i].items.forEach((item) => {
         let worryLevel = item;
 
-        // if (j % 1000 === 0) console.log(j, worryLevel);
-
-        worryLevel = data[i].operation(worryLevel);
+        if (j % 100 === 0) console.log(j, worryLevel);
 
         data[i].inspectedTimes = data[i].inspectedTimes + 1;
 
-        if (worryLevel % data[i].test === 0) {
-          data[data[i].true].items.push(worryLevel);
-        } else {
-          let twoRest = worryLevel % 2;
-          let threeRest = worryLevel % 3;
-          let fiveRest = worryLevel % 5;
-          let sevenRest = worryLevel % 7;
-          let elevenRest = worryLevel % 11;
-          let thirteenRest = worryLevel % 13;
-          let seventeenRest = worryLevel % 17;
-          let nineteenRest = worryLevel % 19;
-          let twentyThreeRest = worryLevel % 23;
-          let theNumber = 0;
-
-          for (let k = 0; k < 1000000; k++) {
-            // if (k % 1000 === 0) console.log(k);
+        let result = data[i].operation(worryLevel);
+        if (result > 9007199254740991) {
+          for (let k = 0; k < 9007199254740991; k++) {
             if (
-              k % 23 === twentyThreeRest &&
-              k % 13 === thirteenRest &&
-              k % 19 === nineteenRest &&
-              k % 17 === seventeenRest
+              k % 2 === worryLevel % 2 &&
+              k % 3 === worryLevel % 3 &&
+              k % 5 === worryLevel % 5 &&
+              k % 7 === worryLevel % 7 &&
+              k % 11 === worryLevel % 11 &&
+              // k % 23 === worryLevel % 23 &&
+              k % 13 === worryLevel % 13 &&
+              k % 17 === worryLevel % 17 &&
+              k % 19 === worryLevel % 19
             ) {
-              // if (
-              //   k % 2 === twoRest &&
-              //   k % 3 === threeRest &&
-              //   k % 5 === fiveRest &&
-              //   k % 7 === sevenRest &&
-              //   k % 11 === elevenRest &&
-              //   k % 13 === thirteenRest &&
-              //   k % 17 === seventeenRest &&
-              //   k % 19 === nineteenRest
-              // ) {
-              theNumber = i;
+              worryLevel = k;
               break;
             }
           }
 
-          console.log(
-            "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c              theNumber    \x1b[8m\x1b[40m\x1b[0m%c fReal.jsx 91 \n",
-            "color: white; background: black; font-weight: bold",
-            "",
-            theNumber
-          );
+          worryLevel = data[i].operation(worryLevel);
+        } else {
+          worryLevel = result;
+        }
 
-          // data[data[i].false].items.push(worryLevel);
-          data[data[i].false].items.push(theNumber);
+        if (worryLevel % data[i].test === 0) {
+          data[data[i].true].items.push(worryLevel);
+        } else {
+          data[data[i].false].items.push(worryLevel);
         }
       });
       data[i].items = [];
     }
   }
+  var endTime = performance.now();
 
   console.log(
-    data[0].inspectedTimes,
-    data[1].inspectedTimes,
-    data[2].inspectedTimes,
-    data[3].inspectedTimes
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      done:    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 437 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    endTime - startTime
   );
 
   let inspectedTimesArr = data
     .map((monkey) => monkey.inspectedTimes)
-    .sort()
-    .reverse();
+    .sort((a, b) => b - a);
+
+  for (let i = 0; i < inspectedTimesArr.length; i++) {
+    console.log(inspectedTimesArr[i]);
+  }
 
   console.log(
     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    inspectedTimesArr    \x1b[8m\x1b[40m\x1b[0m\n",
