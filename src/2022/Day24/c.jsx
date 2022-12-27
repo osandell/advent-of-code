@@ -5,7 +5,7 @@ import fiftyData from "./fifty";
 import Render from "../../Render";
 
 export default () => {
-  let data = rData.split(/\n/).map((row) => row.split(""));
+  let data = eData.split(/\n/).map((row) => row.split(""));
   // let data = JSON.parse(fiftyData);
 
   let moves = [{ position: [0, 1], data: data }];
@@ -63,8 +63,8 @@ export default () => {
 
   let maps = [];
 
-  let TEST_NR_OF_MOVES = 314;
-  for (let k = TEST_NR_OF_MOVES + 1; k < TEST_NR_OF_MOVES + 2; k++) {
+  let TEST_NR_OF_MOVES = 19;
+  for (let k = TEST_NR_OF_MOVES + 1; k < TEST_NR_OF_MOVES + 1; k++) {
     let nrOfMovesToFinish = k;
     for (let currMove = 0; currMove < nrOfMovesToFinish; currMove++) {
       // if (currMove === 127) debugger;
@@ -207,13 +207,15 @@ export default () => {
       let newRow = [];
       row.forEach((tile, tileIndex) => {
         if (rowIndex === data.length - 1 && tileIndex === data[0].length - 2) {
-          newRow.push("0");
+          newRow.push("1");
         } else {
           newRow.push("");
         }
       });
       nrOfMovesMap.push(newRow);
     });
+
+    let drewOnesLastTime = true;
 
     const check = (y, x, rowIndex, tileIndex) => {
       // if we are net to End and we are in an empty tile...
@@ -225,9 +227,11 @@ export default () => {
         data[rowIndex][tileIndex] === ""
       ) {
         let test = parseInt(nrOfMovesMap[y][x]);
-        nrOfMovesMap[rowIndex][tileIndex] = (
-          parseInt(nrOfMovesMap[y][x]) + 1
-        ).toString();
+        nrOfMovesMap[rowIndex][tileIndex] = drewOnesLastTime ? "2" : "1";
+
+        // nrOfMovesMap[rowIndex][tileIndex] = (
+        //   parseInt(nrOfMovesMap[y][x]) + 1
+        // ).toString();
       }
     };
 
@@ -235,8 +239,8 @@ export default () => {
     let playerMove = false;
     data = maps[mapIndex];
     mapIndex++;
-    for (let i = 0; i < moveNr; i++) {
-      // for (let i = 0; i < nrOfMovesToFinish * 2 - 2; i++) {
+    // for (let i = 0; i < moveNr; i++) {
+    for (let i = 0; i < nrOfMovesToFinish * 2 - 2; i++) {
       // if (moveNr === 5) debugger;
       if (playerMove) {
         data = maps[mapIndex];
@@ -257,19 +261,35 @@ export default () => {
         // clean away busted moves
         data.forEach((row, rowIndex) => {
           row.forEach((tile, tileIndex) => {
-            if (
-              nrOfMovesMap[rowIndex][tileIndex] !== "" &&
-              (data[rowIndex][tileIndex].includes(">") ||
-                data[rowIndex][tileIndex].includes("<") ||
-                data[rowIndex][tileIndex].includes("^") ||
-                data[rowIndex][tileIndex].includes("v"))
-            ) {
-              nrOfMovesMap[rowIndex][tileIndex] = "";
+            // if (
+            //   nrOfMovesMap[rowIndex][tileIndex] !== "" &&
+            //   (data[rowIndex][tileIndex].includes(">") ||
+            //     data[rowIndex][tileIndex].includes("<") ||
+            //     data[rowIndex][tileIndex].includes("^") ||
+            //     data[rowIndex][tileIndex].includes("v"))
+            // ) {
+            //   nrOfMovesMap[rowIndex][tileIndex] = "";
+            // }
+
+            if (drewOnesLastTime) {
+              if (nrOfMovesMap[rowIndex][tileIndex].includes("1")) {
+                nrOfMovesMap[rowIndex][tileIndex] = "";
+              }
+            } else {
+              if (nrOfMovesMap[rowIndex][tileIndex].includes("2")) {
+                nrOfMovesMap[rowIndex][tileIndex] = "";
+              }
             }
           });
         });
         playerMove = false;
         mapIndex++;
+
+        if (drewOnesLastTime) {
+          drewOnesLastTime = false;
+        } else {
+          drewOnesLastTime = true;
+        }
       } else {
         data = maps[mapIndex];
 
