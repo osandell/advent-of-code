@@ -6,13 +6,14 @@ import test2 from "./test2";
 
 const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
-// const INITIAL_MOVE_NR = 12000;
-const INITIAL_MOVE_NR = 2000;
+// const INITIAL_MOVE_NR = 11542;for example data 2022 settled
+// const INITIAL_MOVE_NR = 11747; for real data 2022 settled
+const INITIAL_MOVE_NR = 40000;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const data = eData.split("").map((direction) => {
+const data = rData.split("").map((direction) => {
   switch (direction) {
     case "<":
       return false;
@@ -440,7 +441,7 @@ export default () => {
     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      done:    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 437 \n",
     "color: white; background: black; font-weight: bold",
     "",
-    startTime - endTime - startTime
+    endTime - startTime
   );
 
   // *********************************************************************************
