@@ -8,7 +8,7 @@ const MAP_SIZE = 30;
 const ROPE_LENGTH = 10;
 // const INITIAL_MOVE_NR = 11542;for example data 2022 settled
 // const INITIAL_MOVE_NR = 11747; for real data 2022 settled
-const INITIAL_MOVE_NR = 40000;
+const INITIAL_MOVE_NR = 11800;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -368,6 +368,10 @@ export default () => {
   // *********************************************************************************
   var startTime = performance.now();
   for (let m = 0; m <= moveNr; m++) {
+    if (nrOfSettledShapes === 6825) {
+      break;
+    }
+
     if (moveCounter === data.length) {
       moveCounter = 0;
     }
