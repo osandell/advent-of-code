@@ -4,11 +4,10 @@ import rData from "./realData";
 import Render from "../../Render";
 import test2 from "./test2";
 
-const MAP_SIZE = 30;
-const ROPE_LENGTH = 10;
+const MAP_HEIGHT = 120;
 // const INITIAL_MOVE_NR = 11542;for example data 2022 settled
 // const INITIAL_MOVE_NR = 11747; for real data 2022 settled
-const INITIAL_MOVE_NR = 11800;
+const INITIAL_MOVE_NR = 25;
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -74,7 +73,7 @@ export default () => {
   let nrOfSettledShapes = 0;
 
   let filledTiles = [];
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < MAP_HEIGHT; i++) {
     filledTiles.push([false, false, false, false, false, false, false]);
   }
 
@@ -395,7 +394,7 @@ export default () => {
       for (let j = 0; j < 7; j++) {
         // debugger;
         if (checkIsPartOfGround(j, i)) {
-          newRow.push("#");
+          newRow.push("@");
         } else if (checkIsPartOfShape(j, i)) {
           newRow.push("@");
         } else {
@@ -415,7 +414,7 @@ export default () => {
       }
 
       let truncateSize = 30;
-      if (pileHeight > 70) {
+      if (pileHeight > MAP_HEIGHT - 10) {
         currentShapeYPos =
           pileHeight + 2 + getShapeHeight(currentShape) - truncateSize;
 
@@ -531,8 +530,8 @@ export default () => {
         emptyTileIndicator={""}
         shouldRenderBinarily={false}
         shouldInvertX={false}
-        shouldInvertY={true}
-        sizeX={"20px"}
+        shouldInvertY={false}
+        sizeX={"6px"}
         sizeY={"4px"}
         isCenterOrigin={false}
       />
