@@ -50,8 +50,6 @@ export default () => {
 
   let result = 0;
 
-  let blueprint1 = blueprints[0];
-
   let oreRobots = 1;
   let clayRobots = 0;
   let obsidianRobots = 0;
@@ -61,37 +59,16 @@ export default () => {
   let obsidians = 0;
   let geodes = 0;
 
-  let isBuildingOreRobot = false;
-  let isBuildingClayRobot = false;
-  let isBuildingObsidianRobot = false;
-  let isBuildingGeodeRobot = false;
-
   let minToBuildOreRobot;
   let minToBuildClayRobot;
   let minLeft;
   let maxClay;
   let maxClayIfBuildingOreRobot;
 
-  let shouldBuildObsidianRobotNext = false;
-  let shouldBuildGeodeRobotNext = false;
-  let shouldBuildClayRobotNext = false;
-
   let obsidianRobLineOresPerMinuteCost = 0;
   let geodeRobLineOresPerMinuteCost = 0;
 
-  let specificBlueprint = 0;
-
-  let choices = [];
-
-  function randomIntFromInterval(min, max) {
-    // min and max included
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  let highscore = { score: 0, iteration: 0 };
-  let highscores = [];
-
-  const calculateBestChoice = ({
+  const calculateResult = ({
     ores,
     clays,
     obsidians,
@@ -105,37 +82,36 @@ export default () => {
   }) => {
     turnsLeft--;
 
-    let geodeRobResult = { result: 0 };
-    let obsidianRobResult = { result: 0 };
-    let clayRobResult = { result: 0 };
-    let oreRobResult = { result: 0 };
-    let abstainResult = { result: 0 };
+    if (!turnsLeft) return geodes + geodeRobots;
+
+    let geodeRobResult = 0;
+    let obsidianRobResult = 0;
+    let clayRobResult = 0;
+    let oreRobResult = 0;
+    let abstainResult = 0;
 
     /////////////////
     // Geode Robot
     /////////////////
     if (
       ores >= blueprints[bpNr].geodeRobot.ore &&
-      obsidians >= blueprints[bpNr].geodeRobot.obsidian
+      obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
+      turnsLeft < 13
     ) {
       // make another check
-      if (turnsLeft > 0) {
-        geodeRobResult = calculateBestChoice({
-          ores: ores - blueprints[bpNr].geodeRobot.ore + oreRobots,
-          clays: clays + clayRobots,
-          obsidians:
-            obsidians - blueprints[bpNr].geodeRobot.obsidian + obsidianRobots,
-          geodes: geodes + geodeRobots,
-          oreRobots,
-          clayRobots,
-          obsidianRobots,
-          geodeRobots: geodeRobots + 1,
-          turnsLeft,
-          bpNr,
-        });
-      } else {
-        geodeRobResult = geodes + geodeRobots;
-      }
+      geodeRobResult = calculateResult({
+        ores: ores - blueprints[bpNr].geodeRobot.ore + oreRobots,
+        clays: clays + clayRobots,
+        obsidians:
+          obsidians - blueprints[bpNr].geodeRobot.obsidian + obsidianRobots,
+        geodes: geodes + geodeRobots,
+        oreRobots,
+        clayRobots,
+        obsidianRobots,
+        geodeRobots: geodeRobots + 1,
+        turnsLeft,
+        bpNr,
+      });
     }
 
     /////////////////
@@ -143,78 +119,68 @@ export default () => {
     /////////////////
     if (
       ores >= blueprints[bpNr].obsidianRobot.ore &&
-      clays >= blueprints[bpNr].obsidianRobot.clay
+      clays >= blueprints[bpNr].obsidianRobot.clay &&
+      turnsLeft < 20 &&
+      turnsLeft > 9
     ) {
       // make another check
-      if (turnsLeft > 0) {
-        obsidianRobResult = calculateBestChoice({
-          ores: ores - blueprints[bpNr].obsidianRobot.ore + oreRobots,
-          clays: clays - blueprints[bpNr].obsidianRobot.clay + clayRobots,
-          obsidians: obsidians + obsidianRobots,
-          geodes: geodes + geodeRobots,
-          oreRobots,
-          clayRobots,
-          obsidianRobots: obsidianRobots + 1,
-          geodeRobots,
-          turnsLeft,
-          bpNr,
-        });
-      } else {
-        obsidianRobResult = { result: geodes + geodeRobots };
-      }
+      obsidianRobResult = calculateResult({
+        ores: ores - blueprints[bpNr].obsidianRobot.ore + oreRobots,
+        clays: clays - blueprints[bpNr].obsidianRobot.clay + clayRobots,
+        obsidians: obsidians + obsidianRobots,
+        geodes: geodes + geodeRobots,
+        oreRobots,
+        clayRobots,
+        obsidianRobots: obsidianRobots + 1,
+        geodeRobots,
+        turnsLeft,
+        bpNr,
+      });
     }
 
     /////////////////
     // Clay Robot
     /////////////////
-    if (ores >= blueprints[bpNr].clayRobot.ore) {
+    if (ores >= blueprints[bpNr].clayRobot.ore && turnsLeft > 17) {
       // make another check
-      if (turnsLeft > 0) {
-        clayRobResult = calculateBestChoice({
-          ores: ores - blueprints[bpNr].clayRobot.ore + oreRobots,
-          clays: clays + clayRobots,
-          obsidians: obsidians + obsidianRobots,
-          geodes: geodes + geodeRobots,
-          oreRobots,
-          clayRobots: clayRobots + 1,
-          obsidianRobots,
-          geodeRobots,
-          turnsLeft,
-          bpNr,
-        });
-      } else {
-        clayRobResult = { result: geodes + geodeRobots };
-      }
+      clayRobResult = calculateResult({
+        ores: ores - blueprints[bpNr].clayRobot.ore + oreRobots,
+        clays: clays + clayRobots,
+        obsidians: obsidians + obsidianRobots,
+        geodes: geodes + geodeRobots,
+        oreRobots,
+        clayRobots: clayRobots + 1,
+        obsidianRobots,
+        geodeRobots,
+        turnsLeft,
+        bpNr,
+      });
     }
 
     /////////////////
     // Ore Robot
     /////////////////
-    if (ores >= blueprints[bpNr].oreRobot.ore) {
+    if (ores >= blueprints[bpNr].oreRobot.ore && turnsLeft > 17) {
       // make another check
-      if (turnsLeft > 0) {
-        oreRobResult = calculateBestChoice({
-          ores: ores - blueprints[bpNr].oreRobot.ore + oreRobots,
-          clays: clays + clayRobots,
-          obsidians: obsidians + obsidianRobots,
-          geodes: geodes + geodeRobots,
-          oreRobots: oreRobots + 1,
-          clayRobots,
-          obsidianRobots,
-          geodeRobots,
-          turnsLeft,
-          bpNr,
-        });
-      } else {
-        oreRobResult = { result: geodes + geodeRobots };
-      }
+      oreRobResult = calculateResult({
+        ores: ores - blueprints[bpNr].oreRobot.ore + oreRobots,
+        clays: clays + clayRobots,
+        obsidians: obsidians + obsidianRobots,
+        geodes: geodes + geodeRobots,
+        oreRobots: oreRobots + 1,
+        clayRobots,
+        obsidianRobots,
+        geodeRobots,
+        turnsLeft,
+        bpNr,
+      });
     }
 
     /////////////////
     // Abstain
     /////////////////
-    if (turnsLeft > 0) {
-      abstainResult = calculateBestChoice({
+    if (!geodeRobResult && !obsidianRobResult) {
+      abstainResult = calculateResult({
         ores: ores + oreRobots,
         clays: clays + clayRobots,
         obsidians: obsidians + obsidianRobots,
@@ -226,67 +192,30 @@ export default () => {
         turnsLeft,
         bpNr,
       });
-    } else {
-      abstainResult = { result: geodes + geodeRobots };
     }
 
     if (
-      abstainResult.result > geodeRobResult.result &&
-      abstainResult.result > obsidianRobResult.result &&
-      abstainResult.result > clayRobResult.result &&
-      abstainResult.result > oreRobResult.result
+      abstainResult > geodeRobResult &&
+      abstainResult > obsidianRobResult &&
+      abstainResult > clayRobResult &&
+      abstainResult > oreRobResult
     ) {
-      if (turnsLeft > 0) {
-        return {
-          result: abstainResult.result,
-          choices: ["abstain"].concat(abstainResult.choices),
-        };
-      } else {
-        return { result: abstainResult.result, choices: ["abstain"] };
-      }
+      return abstainResult;
     } else if (
-      geodeRobResult.result > obsidianRobResult.result &&
-      geodeRobResult.result > clayRobResult.result &&
-      geodeRobResult.result > oreRobResult.result
+      geodeRobResult > obsidianRobResult &&
+      geodeRobResult > clayRobResult &&
+      geodeRobResult > oreRobResult
     ) {
-      if (turnsLeft > 0) {
-        return {
-          result: geodeRobResult.result,
-          choices: ["geodeRob"].concat(geodeRobResult.choices),
-        };
-      } else {
-        return { result: geodeRobResult.result, choices: ["geodeRob"] };
-      }
+      return geodeRobResult;
     } else if (
-      obsidianRobResult.result > clayRobResult.result &&
-      obsidianRobResult.result > oreRobResult.result
+      obsidianRobResult > clayRobResult &&
+      obsidianRobResult > oreRobResult
     ) {
-      if (turnsLeft > 0) {
-        return {
-          result: obsidianRobResult.result,
-          choices: ["obsidianRob"].concat(obsidianRobResult.choices),
-        };
-      } else {
-        return { result: obsidianRobResult.result, choices: ["obsidianRob"] };
-      }
-    } else if (clayRobResult.result > oreRobResult.result) {
-      if (turnsLeft > 0) {
-        return {
-          result: clayRobResult.result,
-          choices: ["clayRob"].concat(clayRobResult.choices),
-        };
-      } else {
-        return { result: clayRobResult.result, choices: ["clayRob"] };
-      }
+      return obsidianRobResult;
+    } else if (clayRobResult > oreRobResult) {
+      return clayRobResult;
     } else {
-      if (turnsLeft > 0) {
-        return {
-          result: oreRobResult.result,
-          choices: ["oreRob"].concat(oreRobResult.choices),
-        };
-      } else {
-        return { result: oreRobResult.result, choices: ["oreRob"] };
-      }
+      return oreRobResult;
     }
   };
 
@@ -300,16 +229,18 @@ export default () => {
   for (let bpNr = 0; bpNr < 1; bpNr++) {
     // debugger;
 
-    let result = calculateBestChoice({
-      ores: 3,
-      clays: 14,
-      obsidians: 7,
+    // 1 ore-collecting robot collects 1 ore; you now have 4 ore.
+
+    let result = calculateResult({
+      ores: 0,
+      clays: 0,
+      obsidians: 0,
       geodes: 0,
-      oreRobots: 2,
-      clayRobots: 7,
-      obsidianRobots: 4,
-      geodeRobots: 1,
-      turnsLeft: 12,
+      oreRobots: 1,
+      clayRobots: 0,
+      obsidianRobots: 0,
+      geodeRobots: 0,
+      turnsLeft: 32,
       bpNr,
     });
 
