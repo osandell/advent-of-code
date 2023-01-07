@@ -95,7 +95,7 @@ export default () => {
   var startTime = performance.now();
   for (let i = 0; i < 256 * 256 * 256; i++) {
     // for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-    for (let bpNr = 0; bpNr < 1; bpNr++) {
+    for (let bpNr = 1; bpNr < 2; bpNr++) {
       oreRobots = 1;
       clayRobots = 0;
       geodeRobots = 0;
@@ -124,6 +124,16 @@ export default () => {
         //   );
         // }
 
+        if (
+          !!((i >> 0) & 0x1) &&
+          !!((i >> 1) & 0x1) &&
+          !!((i >> 2) & 0x1) &&
+          !!((i >> 3) & 0x1) &&
+          !!((i >> 4) & 0x1)
+        ) {
+          debugger;
+        }
+
         if (currMove >= 17) {
           // debugger;
         }
@@ -138,7 +148,7 @@ export default () => {
         // Geode Robot production. Determine if doing so the next move would
         // mean it's too late and if so do it this move.
         if (
-          (nrOfMovesUntilEnoughObsidians - 1) * oreRobots <
+          nrOfMovesUntilEnoughObsidians * oreRobots <
           blueprints[bpNr].geodeRobot.ore
         ) {
           shouldBuildGeodeRobotNext = true;
@@ -164,7 +174,7 @@ export default () => {
         // to slow down Obsidian Robot production. Determine if doing so the
         // next move would mean it's too late and if so do it this move.
         if (
-          (nrOfMovesUntilEnoughClay - 1) * oreRobots <
+          nrOfMovesUntilEnoughClay * oreRobots <
             blueprints[bpNr].obsidianRobot.ore &&
           !shouldBuildGeodeRobotNext
         ) {
