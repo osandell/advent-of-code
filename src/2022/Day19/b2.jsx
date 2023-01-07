@@ -1,15 +1,7 @@
-import React, { useState } from "react";
 import eData from "./exampleData";
-import rData from "./realData";
-import rData2 from "./realData2";
-import Render from "../../Render";
+import rData from "./realData2";
 
-let totalTime = 24;
-const INITIAL_MOVE_NR = 24;
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const blueprints = eData.split(/\n/).map((row) => {
+const blueprints = rData.split(/\n/).map((row) => {
   return {
     oreRobot: { ore: parseInt(row.split(" ")[6]) },
     clayRobot: { ore: parseInt(row.split(" ")[12]) },
@@ -23,51 +15,8 @@ const blueprints = eData.split(/\n/).map((row) => {
     },
   };
 });
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 export default () => {
-  let currMove = 0;
-
-  const totalNrOfMoves = 99999999999999999999999999;
-
-  const [moveNr, setMoveNr] = useState(INITIAL_MOVE_NR);
-  const moveNrRef = React.useRef(moveNr);
-  moveNrRef.current = moveNr;
-
-  const startPlaying = () => {
-    if (moveNr < totalNrOfMoves) {
-      const timer = setInterval(() => {
-        moveNrRef.current < totalNrOfMoves
-          ? setMoveNr(moveNrRef.current + 1)
-          : clearInterval(timer);
-      }, 30);
-    }
-  };
-
-  // *********************************************************************************
-
-  let result = 0;
-
-  let oreRobots = 1;
-  let clayRobots = 0;
-  let obsidianRobots = 0;
-  let geodeRobots = 0;
-  let ores = 0;
-  let clays = 0;
-  let obsidians = 0;
-  let geodes = 0;
-
-  let minToBuildOreRobot;
-  let minToBuildClayRobot;
-  let minLeft;
-  let maxClay;
-  let maxClayIfBuildingOreRobot;
-
-  let obsidianRobLineOresPerMinuteCost = 0;
-  let geodeRobLineOresPerMinuteCost = 0;
-
   const calculateResult = ({
     ores,
     clays,
@@ -95,8 +44,7 @@ export default () => {
     /////////////////
     if (
       ores >= blueprints[bpNr].geodeRobot.ore &&
-      obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
-      turnsLeft < 13
+      obsidians >= blueprints[bpNr].geodeRobot.obsidian
     ) {
       // make another check
       geodeRobResult = calculateResult({
@@ -120,8 +68,7 @@ export default () => {
     if (
       ores >= blueprints[bpNr].obsidianRobot.ore &&
       clays >= blueprints[bpNr].obsidianRobot.clay &&
-      turnsLeft < 20 &&
-      turnsLeft > 9
+      turnsLeft < 30
     ) {
       // make another check
       obsidianRobResult = calculateResult({
@@ -141,7 +88,7 @@ export default () => {
     /////////////////
     // Clay Robot
     /////////////////
-    if (ores >= blueprints[bpNr].clayRobot.ore && turnsLeft > 17) {
+    if (ores >= blueprints[bpNr].clayRobot.ore && turnsLeft > 13) {
       // make another check
       clayRobResult = calculateResult({
         ores: ores - blueprints[bpNr].clayRobot.ore + oreRobots,
@@ -179,7 +126,7 @@ export default () => {
     /////////////////
     // Abstain
     /////////////////
-    if (!geodeRobResult && !obsidianRobResult) {
+    if (!geodeRobResult) {
       abstainResult = calculateResult({
         ores: ores + oreRobots,
         clays: clays + clayRobots,
@@ -225,10 +172,9 @@ export default () => {
     ""
   );
   var startTime = performance.now();
-  // for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-  for (let bpNr = 0; bpNr < 1; bpNr++) {
-    // debugger;
-
+  for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
+    // for (let bpNr = 0; bpNr < 1; bpNr++) {
+    // debugger; 16640
     // 1 ore-collecting robot collects 1 ore; you now have 4 ore.
 
     let result = calculateResult({
@@ -249,63 +195,9 @@ export default () => {
       "color: white; background: black; font-weight: bold",
       result
     );
-
-    // highscore = { score: 0, iteration: 0 };
-    //   oreRobots = 1;
-    //   clayRobots = 0;
-    //   geodeRobots = 0;
-    //   obsidianRobots = 0;
-    //   ores = 0;
-    //   clays = 0;
-    //   obsidians = 0;
-    //   geodes = 0;
-    //   shouldBuildObsidianRobotNext = false;
-    //   shouldBuildGeodeRobotNext = false;
-    //   shouldBuildClayRobotNext = false;
-    //   obsidianRobLineOresPerMinuteCost = 0;
-    //   geodeRobLineOresPerMinuteCost = 0;
-    //     for (let i = 0; i < oreRobots; i++) {
-    //       ores++;
-    //     }
-    //     for (let i = 0; i < clayRobots; i++) {
-    //       clays++;
-    //     }
-    //     for (let i = 0; i < obsidianRobots; i++) {
-    //       obsidians++;
-    //     }
-    //     for (let i = 0; i < geodeRobots; i++) {
-    //       geodes++;
-    //     }
-    //     if (isBuildingOreRobot) {
-    //       oreRobots++;
-    //       isBuildingOreRobot = false;
-    //     }
-    //     if (isBuildingClayRobot) {
-    //       clayRobots++;
-    //       isBuildingClayRobot = false;
-    //     }
-    //     if (isBuildingObsidianRobot) {
-    //       obsidianRobots++;
-    //       isBuildingObsidianRobot = false;
-    //     }
-    //     if (isBuildingGeodeRobot) {
-    //       geodeRobots++;
-    //       isBuildingGeodeRobot = false;
-    //     }
-    //     obsidianRobLineOresPerMinuteCost =
-    //       clayRobots / blueprints[bpNr].obsidianRobot.clay;
-    //     geodeRobLineOresPerMinuteCost =
-    //       obsidianRobots / blueprints[bpNr].geodeRobot.obsidian;
-    //   }
-    //   if (geodes > highscore.score) {
-    //     highscore.score = geodes;
-    //     highscore.iteration = i;
-    //   }
-    // highscores[bpNr] = highscore.score;
   }
 
   var endTime = performance.now();
-
   console.log(
     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      done:    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 437 \n",
     "color: white; background: black; font-weight: bold",
@@ -313,102 +205,5 @@ export default () => {
     endTime - startTime
   );
 
-  // *********************************************************************************
-
-  return (
-    <div>
-      {" "}
-      !!!!??????!!!!?????????!?!?!?!++++?????+++???? !?+++????????????????????
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(0)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Beginning
-        </button>
-        <button
-          onClick={() => moveNr > 9 && setMoveNr(moveNr - 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 9 ? "black" : "lightGray",
-          }}
-        >
-          Prev 10
-        </button>
-        <button
-          onClick={() => moveNr > 0 && setMoveNr(moveNr - 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr > 0 ? "black" : "lightGray",
-          }}
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => startPlaying()}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(moveNr + 1)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves - 9 && setMoveNr(moveNr + 10)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves - 9 ? "black" : "lightGray",
-          }}
-        >
-          Next 10
-        </button>
-        <button
-          onClick={() => moveNr < totalNrOfMoves && setMoveNr(totalNrOfMoves)}
-          style={{
-            marginRight: "8px",
-            color: moveNr < totalNrOfMoves ? "black" : "lightGray",
-          }}
-        >
-          End
-        </button>
-      </div>
-      <div style={{ marginTop: "24px" }}>Minute: {moveNr}</div>
-      <div style={{ marginTop: "24px" }}>Result: {result}</div>
-      <div style={{ marginTop: "24px" }}>OreRobots: {oreRobots}</div>
-      <div style={{ marginTop: "24px" }}>ClayRobots: {clayRobots}</div>
-      <div style={{ marginTop: "24px" }}>ObsidianRobots: {obsidianRobots}</div>
-      <div style={{ marginTop: "24px" }}>GeodeRobots: {geodeRobots}</div>
-      <div style={{ marginTop: "24px" }}>Ores: {ores}</div>
-      <div style={{ marginTop: "24px" }}>Clays: {clays}</div>
-      <div style={{ marginTop: "24px" }}>Obsidians: {obsidians}</div>
-      <div style={{ marginTop: "24px" }}>Geodes: {geodes}</div>
-      <div style={{ marginTop: "24px" }}>
-        minToBuildOreRobot: {minToBuildOreRobot}
-      </div>
-      <div style={{ marginTop: "24px" }}>
-        minToBuildClayRobot: {minToBuildClayRobot}
-      </div>
-      <div style={{ marginTop: "24px" }}>
-        maxClayIfBuildingOreRobot: {maxClayIfBuildingOreRobot}
-      </div>
-      <div style={{ marginTop: "24px" }}>maxClay: {maxClay}</div>
-      <div style={{ marginTop: "24px" }}>minLeft: {minLeft}</div>
-      <div style={{ marginTop: "24px" }}>
-        total drif cost:{" "}
-        {obsidianRobLineOresPerMinuteCost + geodeRobLineOresPerMinuteCost}
-      </div>
-    </div>
-  );
+  return null;
 };
