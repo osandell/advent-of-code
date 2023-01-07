@@ -473,7 +473,7 @@ bool checkWillCollide(Shape currentPieceShape, char currentPiecePos[2], bool row
 // move 11745 should have settledpieces 2022
 
 // after only update rows for settled pieces: 1000000 takes around 2900 ms.
-long long testMove = 10000000;
+long long testMove = 10000000000;
 
 
 void updateMap(bool rows[NR_OF_ROWS][NR_OF_COLUMNS], Shape currentPieceShape, char currentPiecePos[2]) {
@@ -516,10 +516,9 @@ int main() {
 	int currMove = 0;
 	for (currMove = 0; currMove < testMove + 1; currMove++) {
 
-		if (nrOfSettledPieces == 2022) {
+		if (nrOfSettledPieces == 1000000000) {
 			break;
 		}
-
 
 		if (moveCounter == dataLength) {
 			moveCounter = 0;
@@ -537,9 +536,9 @@ int main() {
 		moveCounter++;
 
 		if (checkWillCollide(currentPieceShape, currentPiecePos, rows)) {
-			/*if (currMove > 1136 && currMove < 200001) {
-				std::cout << '\a';
-			}*/
+		//	/*if (currMove > 1136 && currMove < 200001) {
+		//		std::cout << '\a';
+		//	}*/
 			addPieceToMap(rows, currentPieceShape, currentPiecePos);
 
 			char pieceHeight = getPieceHeight(currentPieceShape);
