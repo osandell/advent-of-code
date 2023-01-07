@@ -1,0 +1,65 @@
+Man vill så tidigt så möjligt få till en sits där det går 3,5 OBROB per OREROB
+eller nä...  OREROBs behövs ju även för att bygga OREROBS, CLAYROBS och OBROBS... så det lär väl gå åt många flre OREROBS än OBROBS
+
+
+Man vill så tidigt så möjligt få till en sits där det 
+
+Tillverkas 3,5 OB per ORE ***som blir över efter all annan tillverkning***
+
+Tillverkas 4.66667 CL per ORE ***som blir över efter all annan tillverkning***
+
+Egentligen är det väl förresten bara 2 rattar att skruva på?? hur ofta ska man köpa en OREROB kontra CLAYROB när chans ges?
+
+När chans ges räknar jag som när man inte stör inköp av OBROBS eller GEOROBS...
+För man vill väl ALLTID har FLER OBROBS och GEOROBS tror jag...
+
+Om man tänker på OBROB-linan och GEOROB-linan som två olika verksamheter som har var sin driftskostnad så borde den gå att räkna ut såhär:
+
+Om man ex har 1 OBROB så har GEOROB-linan för tillfället en driftskostnad på typ 2.285 ORE / min
+Har man då också 7 CLAYROBS så har OBROB-linan för tillfället en driftskostnad på 1.5 ORE / min
+
+Sammanlagt alltså en driftskostnad på 3.785 ORE / min
+
+Man behöver mao 4 OREROBS enbart för att täcka dessa 2 driftskostnader.
+
+Men i takt med att man bygger fler av OBROBS och GEOROBS så kommer driftskostnaden successivt öka och man kommer behöva fler OREROBS för att kompensera för detta.
+
+Hade man bara matat på med OREROBS så hade tillverkningstakten på OREROBS ökat exponentiellt och tillverkningstakten för OBROBS och GEOROBS hade ökat men med konstant hastighet.
+
+Bättre vore att  avvara en del av OREsen för att bygga fler CLAYROBS och därmed öka tillverkningshastigheten på OBROBS och GEOROBS snabbare.
+
+Frågan är hur ofta man bör satsa på en CLAYROB kontra OREROB?
+
+Om vi leker med tanken att man har 100 OREROBS... det täcker driftskostnaderna för OBROBS + GEOROBS och man kan bygga typ 30 clayrobs på en minut dessutom.
+Då har man väl på tok för mkt OREROBS tänker jag.... Man borde bara ha råd att bygga max 1 CLAYROB / min... kanske... 
+
+
+Eller kan man tänka så här: om man inte har tillräckligt med OREROBS för att täcka upp driftskostnaden (3.785), alltså 4 st för tillfället så bör man bygga en ny OREROB... annars bör man bygga en CLAYROB så att driftskostnaden ökar. 
+
+MÖJLIGEN bör man titta på hur läget kommer se ut X antal drag framåt i tiden när man tar detta beslut istället för att titta enbart på nuläget. Risken är väl då att man tex köper en CLAYROB, driftskostnaden går upp betydligt över vad man har täckning för och tillverkningstakten av nya OBROBS och GEOROBS stannar av.
+
+Från början har man ju ingen driftskostnad.... bör man då bygga en clayrob så snabbt som möjligt?
+
+
+Vi tar första blueprinten som exempel...
+
+Då man byggt sin första CLAYROB kommer man ha en driftskostnat på ringa 0.214
+
+1 OREROB täcker in det så vi satsar på ny CLAYROB
+
+
+
+
+
+
+BP1
+Det ultimat optimala tillståndet vore att ha 2 ore robots + 7 obsidian robots.
+då hade man kunnat skapa en ny geode robot varje turn....
+
+Men har man bara 32 turns vill man tydligen inte helt uppnå det tillståndet utan man nöjer sig med 5 obsidian robots. Då kan man producera en geode robot nästan varje turn. Hade man satsat på alla 7 obsidian robots istället hade man fått offra 3 geode robots mot slutet och därmed förlorat en stor del av slutresultatet....
+
+Det måste ju gå att räkna ut allt detta... ju kortare session desto längre ifrån optimala tillståndet får man nöja sig att stanna...
+
+
+
+

@@ -33,20 +33,18 @@ export default () => {
 
     if (!turnsLeft) return geodes + geodeRobots;
 
+    let highestResult = 0;
     let geodeRobResult = 0;
     let obsidianRobResult = 0;
-    let clayRobResult = 0;
-    let oreRobResult = 0;
-    let abstainResult = 0;
 
     /////////////////
     // Geode Robot
     /////////////////
     if (
       ores >= blueprints[bpNr].geodeRobot.ore &&
-      obsidians >= blueprints[bpNr].geodeRobot.obsidian
+      obsidians >= blueprints[bpNr].geodeRobot.obsidian &&
+      turnsLeft < 13
     ) {
-      // make another check
       geodeRobResult = calculateResult({
         ores: ores - blueprints[bpNr].geodeRobot.ore + oreRobots,
         clays: clays + clayRobots,
@@ -60,6 +58,7 @@ export default () => {
         turnsLeft,
         bpNr,
       });
+      if (geodeRobResult > highestResult) highestResult = geodeRobResult;
     }
 
     /////////////////
@@ -68,9 +67,9 @@ export default () => {
     if (
       ores >= blueprints[bpNr].obsidianRobot.ore &&
       clays >= blueprints[bpNr].obsidianRobot.clay &&
-      turnsLeft < 30
+      turnsLeft < 19 &&
+      turnsLeft > 5
     ) {
-      // make another check
       obsidianRobResult = calculateResult({
         ores: ores - blueprints[bpNr].obsidianRobot.ore + oreRobots,
         clays: clays - blueprints[bpNr].obsidianRobot.clay + clayRobots,
@@ -83,14 +82,14 @@ export default () => {
         turnsLeft,
         bpNr,
       });
+      if (obsidianRobResult > highestResult) highestResult = obsidianRobResult;
     }
 
     /////////////////
     // Clay Robot
     /////////////////
     if (ores >= blueprints[bpNr].clayRobot.ore && turnsLeft > 13) {
-      // make another check
-      clayRobResult = calculateResult({
+      const result = calculateResult({
         ores: ores - blueprints[bpNr].clayRobot.ore + oreRobots,
         clays: clays + clayRobots,
         obsidians: obsidians + obsidianRobots,
@@ -102,14 +101,14 @@ export default () => {
         turnsLeft,
         bpNr,
       });
+      if (result > highestResult) highestResult = result;
     }
 
     /////////////////
     // Ore Robot
     /////////////////
-    if (ores >= blueprints[bpNr].oreRobot.ore && turnsLeft > 17) {
-      // make another check
-      oreRobResult = calculateResult({
+    if (ores >= blueprints[bpNr].oreRobot.ore && turnsLeft > 23) {
+      const result = calculateResult({
         ores: ores - blueprints[bpNr].oreRobot.ore + oreRobots,
         clays: clays + clayRobots,
         obsidians: obsidians + obsidianRobots,
@@ -121,13 +120,14 @@ export default () => {
         turnsLeft,
         bpNr,
       });
+      if (result > highestResult) highestResult = result;
     }
 
     /////////////////
-    // Abstain
+    // Abstain manufaturing robot
     /////////////////
-    if (!geodeRobResult) {
-      abstainResult = calculateResult({
+    if (!obsidianRobResult && !geodeRobResult) {
+      const result = calculateResult({
         ores: ores + oreRobots,
         clays: clays + clayRobots,
         obsidians: obsidians + obsidianRobots,
@@ -139,31 +139,10 @@ export default () => {
         turnsLeft,
         bpNr,
       });
+      if (result > highestResult) highestResult = result;
     }
 
-    if (
-      abstainResult > geodeRobResult &&
-      abstainResult > obsidianRobResult &&
-      abstainResult > clayRobResult &&
-      abstainResult > oreRobResult
-    ) {
-      return abstainResult;
-    } else if (
-      geodeRobResult > obsidianRobResult &&
-      geodeRobResult > clayRobResult &&
-      geodeRobResult > oreRobResult
-    ) {
-      return geodeRobResult;
-    } else if (
-      obsidianRobResult > clayRobResult &&
-      obsidianRobResult > oreRobResult
-    ) {
-      return obsidianRobResult;
-    } else if (clayRobResult > oreRobResult) {
-      return clayRobResult;
-    } else {
-      return oreRobResult;
-    }
+    return highestResult;
   };
 
   console.log(
@@ -171,31 +150,33 @@ export default () => {
     "color: white; background: black; font-weight: bold",
     ""
   );
+
+  const results = [];
   var startTime = performance.now();
   for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-    // for (let bpNr = 0; bpNr < 1; bpNr++) {
-    // debugger; 16640
-    // 1 ore-collecting robot collects 1 ore; you now have 4 ore.
-
-    let result = calculateResult({
-      ores: 0,
-      clays: 0,
-      obsidians: 0,
-      geodes: 0,
-      oreRobots: 1,
-      clayRobots: 0,
-      obsidianRobots: 0,
-      geodeRobots: 0,
-      turnsLeft: 32,
-      bpNr,
-    });
-
-    console.log(
-      "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c        result    \x1b[8m\x1b[40m\x1b[0m\n",
-      "color: white; background: black; font-weight: bold",
-      result
+    results.push(
+      calculateResult({
+        ores: 0,
+        clays: 0,
+        obsidians: 0,
+        geodes: 0,
+        oreRobots: 1,
+        clayRobots: 0,
+        obsidianRobots: 0,
+        geodeRobots: 0,
+        turnsLeft: 32,
+        bpNr,
+      })
     );
   }
+
+  // Right answer: 21840 (12, 35, 52)
+  let total = results.reduce((acc, cur) => acc * cur);
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c    total    \x1b[8m\x1b[40m\x1b[0m\n",
+    "color: white; background: black; font-weight: bold",
+    total
+  );
 
   var endTime = performance.now();
   console.log(
