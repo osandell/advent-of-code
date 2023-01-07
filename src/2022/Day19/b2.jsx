@@ -4,7 +4,7 @@ import rData from "./realData2";
 import Render from "../../Render";
 
 let totalTime = 24;
-const INITIAL_MOVE_NR = 0;
+const INITIAL_MOVE_NR = 24;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -85,15 +85,21 @@ export default () => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  let highscores = [];
+  let highscore = { score: 0, iteration: 0 };
 
-  for (let i = 0; i < 1; i++) {
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      start of measure    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 90 \n",
+    "color: white; background: black; font-weight: bold",
+    ""
+  );
+  var startTime = performance.now();
+  for (let i = 0; i < 256 * 256 * 256; i++) {
     // for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-    for (let bpNr = 1; bpNr < 2; bpNr++) {
+    for (let bpNr = 0; bpNr < 1; bpNr++) {
       oreRobots = 1;
       clayRobots = 0;
-      obsidianRobots = 0;
       geodeRobots = 0;
+      obsidianRobots = 0;
       ores = 0;
       clays = 0;
       obsidians = 0;
@@ -107,8 +113,18 @@ export default () => {
       // for (let bpNr = specificBlueprint; bpNr < specificBlueprint + 1; bpNr++) {
       minLeft = totalTime - moveNr;
 
-      for (let i = 0; i < moveNr; i++) {
-        if (i >= 17) {
+      for (let currMove = 0; currMove < moveNr; currMove++) {
+        // if (i === 256 * 256 * 256 - 1) debugger;
+        // if (i === 10) {
+        //   console.log(
+        //     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c            (myInt >> n) & 0x1    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 117 \n",
+        //     "color: white; background: black; font-weight: bold",
+        //     "",
+        //     !!((i >> currMove) & 0x1)
+        //   );
+        // }
+
+        if (currMove >= 17) {
           // debugger;
         }
         /////////////////
@@ -168,38 +184,60 @@ export default () => {
         /////////////////
         // Ore Robot
         /////////////////
-        if (
-          oreRobots <
-            obsidianRobLineOresPerMinuteCost + geodeRobLineOresPerMinuteCost &&
-          !shouldBuildObsidianRobotNext &&
-          !shouldBuildGeodeRobotNext &&
-          ores >= blueprints[bpNr].oreRobot.ore
-        ) {
-          isBuildingOreRobot = true;
-          ores -= blueprints[bpNr].oreRobot.ore;
+        let shouldTryToBuildOreRobot = !!((i >> currMove) & 0x1);
+
+        if (shouldTryToBuildOreRobot) {
+          if (
+            !shouldBuildObsidianRobotNext &&
+            !shouldBuildGeodeRobotNext &&
+            ores >= blueprints[bpNr].oreRobot.ore
+          ) {
+            isBuildingOreRobot = true;
+            ores -= blueprints[bpNr].oreRobot.ore;
+          }
+        } else {
+          if (
+            !shouldBuildObsidianRobotNext &&
+            !shouldBuildGeodeRobotNext &&
+            ores >= blueprints[bpNr].clayRobot.ore
+          ) {
+            isBuildingClayRobot = true;
+            ores -= blueprints[bpNr].clayRobot.ore;
+          }
         }
 
-        if (
-          i < 5 &&
-          !shouldBuildObsidianRobotNext &&
-          !shouldBuildGeodeRobotNext &&
-          ores >= blueprints[bpNr].oreRobot.ore
-        ) {
-          isBuildingOreRobot = true;
-          ores -= blueprints[bpNr].oreRobot.ore;
-        }
+        // if (
+        //   oreRobots <
+        //     obsidianRobLineOresPerMinuteCost + geodeRobLineOresPerMinuteCost &&
+        //   !shouldBuildObsidianRobotNext &&
+        //   !shouldBuildGeodeRobotNext &&
+        //   ores >= blueprints[bpNr].oreRobot.ore
+        // ) {
+        //   isBuildingOreRobot = true;
+        //   ores -= blueprints[bpNr].oreRobot.ore;
+        // }
+
+        // if (
+        //   i < 5 &&
+        //   !shouldBuildObsidianRobotNext &&
+        //   !shouldBuildGeodeRobotNext &&
+        //   ores >= blueprints[bpNr].oreRobot.ore
+        // ) {
+        //   isBuildingOreRobot = true;
+        //   ores -= blueprints[bpNr].oreRobot.ore;
+        // }
 
         /////////////////
         // Clay Robot
         /////////////////
-        if (
-          !shouldBuildObsidianRobotNext &&
-          !shouldBuildGeodeRobotNext &&
-          ores >= blueprints[bpNr].clayRobot.ore
-        ) {
-          isBuildingClayRobot = true;
-          ores -= blueprints[bpNr].clayRobot.ore;
-        }
+        // if (
+        //   !shouldBuildObsidianRobotNext &&
+        //   !shouldBuildGeodeRobotNext &&
+        //   ores >= blueprints[bpNr].clayRobot.ore
+        // ) {
+        //   isBuildingClayRobot = true;
+        //   ores -= blueprints[bpNr].clayRobot.ore;
+        // }
 
         for (let i = 0; i < oreRobots; i++) {
           ores++;
@@ -237,7 +275,28 @@ export default () => {
           obsidianRobots / blueprints[bpNr].geodeRobot.obsidian;
       }
     }
+
+    if (geodes > highscore.score) {
+      highscore.score = geodes;
+      highscore.iteration = i;
+    }
   }
+
+  var endTime = performance.now();
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      done:    \x1b[8m\x1b[40m\x1b[0m%c b.jsx 437 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    endTime - startTime
+  );
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highscore    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 295 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    highscore
+  );
 
   // *********************************************************************************
 
