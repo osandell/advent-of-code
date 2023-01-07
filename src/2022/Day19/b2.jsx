@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import eData from "./exampleData";
-import rData from "./realData2";
+import rData from "./realData";
+import rData2 from "./realData2";
 import Render from "../../Render";
 
 let totalTime = 24;
@@ -8,7 +9,7 @@ const INITIAL_MOVE_NR = 24;
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-const blueprints = eData.split(/\n/).map((row) => {
+const blueprints = rData.split(/\n/).map((row) => {
   return {
     oreRobot: { ore: parseInt(row.split(" ")[6]) },
     clayRobot: { ore: parseInt(row.split(" ")[12]) },
@@ -86,6 +87,7 @@ export default () => {
   }
 
   let highscore = { score: 0, iteration: 0 };
+  let highscores = [];
 
   console.log(
     "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      start of measure    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 90 \n",
@@ -93,9 +95,11 @@ export default () => {
     ""
   );
   var startTime = performance.now();
-  for (let i = 0; i < 256 * 256 * 256; i++) {
-    // for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
-    for (let bpNr = 1; bpNr < 2; bpNr++) {
+  for (let bpNr = 0; bpNr < blueprints.length; bpNr++) {
+    highscore = { score: 0, iteration: 0 };
+    for (let i = 0; i < 256 * 256 * 256; i++) {
+      // for (let i = 4196; i < 4196 + 1; i++) {
+      // for (let bpNr = 0; bpNr < 1; bpNr++) {
       oreRobots = 1;
       clayRobots = 0;
       geodeRobots = 0;
@@ -124,17 +128,17 @@ export default () => {
         //   );
         // }
 
-        if (
-          !!((i >> 0) & 0x1) &&
-          !!((i >> 1) & 0x1) &&
-          !!((i >> 2) & 0x1) &&
-          !!((i >> 3) & 0x1) &&
-          !!((i >> 4) & 0x1)
-        ) {
-          debugger;
-        }
+        // if (
+        //   !!((i >> 0) & 0x1) &&
+        //   !!((i >> 1) & 0x1) &&
+        //   !!((i >> 2) & 0x1) &&
+        //   !!((i >> 3) & 0x1) &&
+        //   !!((i >> 4) & 0x1)
+        // ) {
+        //   debugger;
+        // }
 
-        if (currMove >= 17) {
+        if (i === 4196) {
           // debugger;
         }
         /////////////////
@@ -183,7 +187,8 @@ export default () => {
         if (
           ores >= blueprints[bpNr].obsidianRobot.ore &&
           clays >= blueprints[bpNr].obsidianRobot.clay &&
-          shouldBuildObsidianRobotNext === true
+          shouldBuildObsidianRobotNext === true &&
+          !isBuildingGeodeRobot
         ) {
           isBuildingObsidianRobot = true;
           shouldBuildObsidianRobotNext = false;
@@ -200,7 +205,9 @@ export default () => {
           if (
             !shouldBuildObsidianRobotNext &&
             !shouldBuildGeodeRobotNext &&
-            ores >= blueprints[bpNr].oreRobot.ore
+            ores >= blueprints[bpNr].oreRobot.ore &&
+            !isBuildingGeodeRobot &&
+            !isBuildingObsidianRobot
           ) {
             isBuildingOreRobot = true;
             ores -= blueprints[bpNr].oreRobot.ore;
@@ -209,7 +216,9 @@ export default () => {
           if (
             !shouldBuildObsidianRobotNext &&
             !shouldBuildGeodeRobotNext &&
-            ores >= blueprints[bpNr].clayRobot.ore
+            ores >= blueprints[bpNr].clayRobot.ore &&
+            !isBuildingGeodeRobot &&
+            !isBuildingObsidianRobot
           ) {
             isBuildingClayRobot = true;
             ores -= blueprints[bpNr].clayRobot.ore;
@@ -284,12 +293,13 @@ export default () => {
         geodeRobLineOresPerMinuteCost =
           obsidianRobots / blueprints[bpNr].geodeRobot.obsidian;
       }
+      if (geodes > highscore.score) {
+        highscore.score = geodes;
+        highscore.iteration = i;
+      }
     }
 
-    if (geodes > highscore.score) {
-      highscore.score = geodes;
-      highscore.iteration = i;
-    }
+    highscores[bpNr] = highscore.score;
   }
 
   var endTime = performance.now();
@@ -302,10 +312,24 @@ export default () => {
   );
 
   console.log(
-    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highscore    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 295 \n",
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      highscores    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 295 \n",
     "color: white; background: black; font-weight: bold",
     "",
-    highscore
+    highscores
+  );
+
+  let sumOfQualityLevels = 0;
+
+  highscores.forEach((score, index) => {
+    let id = index + 1;
+    sumOfQualityLevels += score * id;
+  });
+
+  console.log(
+    "\x1b[8m\x1b[40m\x1b[0m\x1b[7m%c      sumOfQualityLevels    \x1b[8m\x1b[40m\x1b[0m%c b2.jsx 328 \n",
+    "color: white; background: black; font-weight: bold",
+    "",
+    sumOfQualityLevels
   );
 
   // *********************************************************************************
